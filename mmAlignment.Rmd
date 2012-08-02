@@ -1,0 +1,5 @@
+# mmAlignment
+
+When we do alignment of Affymetrix probes to the genome, typically we simply align only the probes designated by Affy as **perfect matches**, or *PM* probes. And we get out a lot of data that way. However, if we are doing alignment and requiring that any reported alignment have no mis-matches, then why not generate the **mis-match** or *MM* sequences, and align those as well to see if we generate additional alignments that are useful.
+
+It is possible that this will generate nothing extra, due to the fact that it is the complement of the 13th base that is substituted, but it is also possible that we will suddenly have more useful probes.
