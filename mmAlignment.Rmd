@@ -1,5 +1,358 @@
+```{r knitrSetup}
+# sets output for inline results nicely
+knit_hooks$set(inline = identity) 
+
+# kills knitr if there is an error, therefore we don't waste time generating error messages
+knit_hooks$set(error = function(x, options) stop(x)) 
+```
+
+```{r rSetup}
+# these are extremely useful options for working in R
+options(save.defaults=list(compress="xz"), stringsAsFactors=FALSE)
+require(affy)
+require(Biostrings)
+```
+
 # mmAlignment
 
 When we do alignment of Affymetrix probes to the genome, typically we simply align only the probes designated by Affy as **perfect matches**, or *PM* probes. And we get out a lot of data that way. However, if we are doing alignment and requiring that any reported alignment have no mis-matches, then why not generate the **mis-match** or *MM* sequences, and align those as well to see if we generate additional alignments that are useful.
 
 It is possible that this will generate nothing extra, due to the fact that it is the complement of the 13th base that is substituted, but it is also possible that we will suddenly have more useful probes.
+
+## Which organisms?
+
+I want to do this on two different rodents, **rat** and **mouse**, mainly because we are contrasting two different states of genomes, the **rat** being rather poorly annotated and the **mouse** being much better annotated, but both rodents. We will also examine **human**, just because everything we do eventually we want to apply to human health.
+
+## Platforms
+
+We will examine the 3' Expression arrays from Affy, because they were the original product, and there is a rather large amount of literature out there examining issues with the *MM* probes.
+
+## Sequence out function
+
+This is a function that will be used to write out the probe sequences for alignment to the genome.
+
+```{r seqWriteFun}
+seqWriteFun <- function(cdfList, cdfName, probeDat, faFile){
+		
+	allPM.singleIndx <- sapply(cdfList, function(x){x[,1]})
+	allPM.singleIndx <- unlist(allPM.singleIndx, use.names=F)
+	
+	allMM.singleIndx <- sapply(cdfList, function(x){x[,2]})
+	allMM.singleIndx <- unlist(allMM.singleIndx, use.names=F)
+	
+	allPM.xy <- indices2xy(allPM.singleIndx, cdf=cdfName)
+	allMM.xy <- indices2xy(allMM.singleIndx, cdf=cdfName)
+	
+	probePM.xy <- as.matrix(probeDat[,c("x","y")])
+	probePM.singleIndx <- xy2indices(probePM.xy[,1], probePM.xy[,2], cdf=cdfName)
+	
+	probePM.seq <- DNAStringSet(probeDat$sequence)
+	names(probePM.seq) <- paste("pm", probeDat$Probe.Set.Name, probeDat$x, probeDat$y, sep=".")
+	
+	probeMM.seq <- probePM.seq
+	subseq(probeMM.seq, start=13, end=13) <- complement(subseq(probeMM.seq, start=13, end=13))
+	
+	## Now resort *Everything* so that we can generate the proper ids for the MM probe sequences
+	allOrd <- order(allPM.singleIndx)
+	allPM.singleIndx <- allPM.singleIndx[allOrd]
+	allPM.xy <- allPM.xy[allOrd,]
+	allMM.singleIndx <- allMM.singleIndx[allOrd]
+	allMM.xy <- allMM.xy[allOrd,]
+	
+	probeOrd <- order(probePM.singleIndx)
+	probePM.singleIndx <- probePM.singleIndx[probeOrd]
+	probePM.xy <- probePM.xy[probeOrd,]
+	
+	probePM.seq <- probePM.seq[probeOrd]
+	probeMM.seq <- probeMM.seq[probeOrd]
+	probeDat <- probeDat[probeOrd,]
+	
+	names(probeMM.seq) <- paste("mm", probeDat$Probe.Set.Name, allMM.xy[,1],
+															allMM.xy[,2], sep=".")
+	
+	write.XStringSet(probePM.seq, filepath=faFile, format="fasta")
+	write.XStringSet(probeMM.seq, filepath=faFile, append=T, format="fasta")
+	return(list(pm=probePM.seq, mm=probeMM.seq))
+}
+
+```
+
+## Probe Alignments
+
+For each organism, get the alignment of the **PM** and **MM** probes to the reference
+genome of interest, and see how many **PM** and **MM** probes align, and how much **more**
+information we could possibly get.
+
+Note that the parameters for *Bowtie* allows zero mismatches, and *all* alignments
+to the reference genome are reported. This allows us to check the possibility of 
+having a single alignment for the **PM**, but multiple alignments for the associated
+**MM** probe.
+
+
+```{r ratFA, message=FALSE}
+require(rat2302probe)
+data(rat2302probe)
+require(rat2302cdf)
+ratCDF <- as.list(rat2302cdf)
+rat.pm.mm <- seqWriteFun(ratCDF, "rat2302cdf", rat2302probe, "rat2302_pm.mm.fa")
+```
+
+```
+export BOWTIE_INDEXES="/bio/data/GoldenPath/Rn/rn4/"
+bowtie -v 0 -f -a rn4 rat2302_pm.mm.fa rat2302_pm.mm.map
+```
+
+```{r musFA}
+require(mouse4302probe)
+data(mouse4302probe)
+require(mouse4302cdf)
+musCDF <- as.list(mouse4302cdf)
+mus.pm.mm <- seqWriteFun(musCDF, "mouse4302cdf", mouse4302probe, "mus4302_pm.mm.fa")
+```
+
+```
+export BOWTIE_INDEXES="/bio/data/GoldenPath/Mm/mm10/"
+bowtie -v 0 -f -a mm10indices mus4302_pm.mm.fa mus4302_pm.mm.map
+```
+
+```{r hsaFA}
+require(hgu133plus2probe)
+data(hgu133plus2probe)
+require(hgu133plus2cdf)
+hsaCDF <- as.list(hgu133plus2cdf)
+hsa.pm.mm <- seqWriteFun(hsaCDF, "hgu133plus2cdf", hgu133plus2probe, "hgu133p2_pm.mm.fa")
+```
+
+```
+export BOWTIE_INDEXES="/bio/data/GoldenPath/Hs/hg19/"
+bowtie -v 0 -f -a hg19 hgu133p2_pm.mm.fa hgu133p2_pm.mm.map
+```
+
+
+## Analyze data
+
+```{r readRatData}
+ratLoc <- read.table("rat2302_pm.mm.map.gz", stringsAsFactors=F, sep="\t", strip.white=T)
+ratLoc <- ratLoc[,1:5]
+names(ratLoc) <- c("probeID", "strand", "chr", "start", "sequence")
+ratLoc$end <- ratLoc$start + 25
+
+ratStatus <- sapply(strsplit(ratLoc$probeID, ".", fixed=T), function(x){x[1]})
+ratLoc$type <- ratStatus
+
+ratLocPM <- ratLoc[(ratLoc$type == "pm"),]
+dupPM <- unique(ratLocPM$probeID[duplicated(ratLocPM$probeID)])
+ratLocPM <- ratLocPM[!(ratLocPM$probeID %in% dupPM),]
+
+ratLocMM <- ratLoc[(ratLoc$type == "mm"),]
+```
+
+Based on the **MM** results, we are going to look at the **MM** probes that mapped
+to the genome, and see if they have associated **PM** probes that mapped to the genome.
+Then we will check if the **MM** and **PM** probes map to exons and where. 
+
+```{r ratFindLocs}
+uniqMM <- unique(ratLocMM$probeID)
+
+mm2pm <- cbind(names(rat.pm.mm$mm), names(rat.pm.mm$pm))
+
+# trim to just those MM we have
+mm2pm <- mm2pm[(mm2pm[,1] %in% uniqMM),]
+
+# trim the PM locs to those that have associated MM probes that we found
+ratLocPM <- ratLocPM[(ratLocPM$probeID %in% mm2pm[,2]),]
+mm2pm <- mm2pm[(mm2pm[,2] %in% ratLocPM$probeID),]
+ratLocMM <- ratLocMM[(ratLocMM$probeID %in% mm2pm[,1]),]
+
+uniqMM <- unique(ratLocMM$probeID)
+```
+
+Read in the exon data from UCSC. This was downloaded as a BED file. We are using
+exon level data because we are looking for probes that will measure transcriptional
+events. Then for each **PM**, get it and the associated **MM** locations on the genome,
+as well as associated exons. Note that we are going to use both the exon data and the 
+aligned EST data from UCSC to get as much genomic coverage as possible.
+
+```{r ratExons}
+require(GenomicRanges)
+reLoc <- read.table("rat_refseq170812_bed.gz", sep="\t", header=F)
+names(reLoc) <- c("chr", "start", "stop", "refID", "x", "strand")
+reInt <- GRanges(seqnames=Rle(reLoc$chr), ranges=IRanges(reLoc$start, reLoc$stop),
+								 strand=Rle(reLoc$strand), names=reLoc$refID)
+
+
+estLoc <- read.table("rat_est170812_bed", sep="\t", header=F, quote="")
+
+ratIntPM <- GRanges(seqnames=Rle(ratLocPM$chr), ranges=IRanges(ratLocPM$start, ratLocPM$end),
+										strand=Rle(ratLocPM$strand), names=ratLocPM$probeID)
+ratIntMM <- GRanges(seqnames=Rle(ratLocMM$chr), ranges=IRanges(ratLocMM$start, ratLocMM$end),
+										strand=Rle(ratLocMM$strand), names=ratLocMM$probeID)
+
+pm2re <- as.matrix(findOverlaps(ratIntPM, reInt, type="within", select="all"))
+mm2re <- as.matrix(findOverlaps(ratIntMM, reInt, type="within", select="all"))
+```
+
+After determining overlap of probes and possible expression locations, determine
+which **PM** probes might suffer from **MM** probes binding in parts of the genome
+that *can* potentially be expressed.
+
+After that, use the *refseq* data and the unique **PM** and **MM** hits to 
+
+
+
+nPM.rn <- sum(pm.mm.status == "pm")
+nMM.rn <-sum(pm.mm.status == "mm")
+nPM.rn
+nMM.rn
+
+```
+
+This resulted in a gain of `r nMM.rn / nPM.rn * 100` percent information. Not too terribly much. Do we get any better for other organisms and chips?
+
+
+## Mouse
+
+```{r loadMouseData}
+require(mouse4302probe)
+data(mouse4302probe)
+
+require(mouse4302cdf)
+
+allCDF <- as.list(mouse4302cdf)
+allPM.singleIndx <- sapply(allCDF, function(x){x[,1]})
+allPM.singleIndx <- unlist(allPM.singleIndx, use.names=F)
+
+allMM.singleIndx <- sapply(allCDF, function(x){x[,2]})
+allMM.singleIndx <- unlist(allMM.singleIndx, use.names=F)
+
+allPM.xy <- indices2xy(allPM.singleIndx, cdf="mouse4302cdf")
+allMM.xy <- indices2xy(allMM.singleIndx, cdf="mouse4302cdf")
+
+probePM.xy <- as.matrix(mouse4302probe[,c("x","y")])
+probePM.singleIndx <- xy2indices(probePM.xy[,1], probePM.xy[,2], cdf="mouse4302cdf")
+
+probePM.seq <- DNAStringSet(mouse4302probe$sequence)
+names(probePM.seq) <- paste("pm", mouse4302probe$Probe.Set.Name, mouse4302probe$x, mouse4302probe$y, sep=".")
+
+probeMM.seq <- probePM.seq
+subseq(probeMM.seq, start=13, end=13) <- complement(subseq(probeMM.seq, start=13, end=13))
+
+## Now resort *Everything* so that we can generate the proper ids for the MM probe sequences
+allOrd <- order(allPM.singleIndx)
+allPM.singleIndx <- allPM.singleIndx[allOrd]
+allPM.xy <- allPM.xy[allOrd,]
+allMM.singleIndx <- allMM.singleIndx[allOrd]
+allMM.xy <- allMM.xy[allOrd,]
+
+probeOrd <- order(probePM.singleIndx)
+probePM.singleIndx <- probePM.singleIndx[probeOrd]
+probePM.xy <- probePM.xy[probeOrd,]
+
+probePM.seq <- probePM.seq[probeOrd]
+probeMM.seq <- probeMM.seq[probeOrd]
+mouse4302probe <- mouse4302probe[probeOrd,]
+
+names(probeMM.seq) <- paste("mm", mouse4302probe$Probe.Set.Name, allMM.xy[,1],
+														allMM.xy[,2], sep=".")
+
+write.XStringSet(probePM.seq, filepath="mouse4302_pm.mm.fa", format="fasta")
+write.XStringSet(probeMM.seq, filepath="mouse4302_pm.mm.fa", append=T, format="fasta")
+```
+
+### Run the alignment for the probes
+
+Allow zero mismatches, and squelch anything that maps at more than one location.
+
+```
+export BOWTIE_INDEXES="/bio/data/GoldenPath/Mm/mm10/"
+bowtie -v 0 -f -m 1 mm10indices mouse4302_pm.mm.fa mouse4302_pm.mm.map
+```
+
+```{r readRatData}
+probeLoc <- read.table("mouse4302_pm.mm.map.gz", stringsAsFactors=F, sep="\t", strip.white=T)
+probeLoc <- probeLoc[,1:5]
+names(probeLoc) <- c("probeID", "strand", "chr", "start", "sequence")
+probeLoc$end <- probeLoc$start + 25
+
+pm.mm.status <- sapply(strsplit(probeLoc$probeID, ".", fixed=T), function(x){x[1]})
+nPM.mm <- sum(pm.mm.status == "pm")
+nMM.mm <- sum(pm.mm.status == "mm")
+nPM.mm
+nMM.mm
+```
+
+This resulted in a gain of `r nMM.mm / nPM.mm * 100` percent information. 
+
+## Human
+
+```{r loadMouseData}
+require(hgu133plus2probe)
+data(hgu133plus2probe)
+
+require(hgu133plus2cdf)
+
+allCDF <- as.list(hgu133plus2cdf)
+allPM.singleIndx <- sapply(allCDF, function(x){x[,1]})
+allPM.singleIndx <- unlist(allPM.singleIndx, use.names=F)
+
+allMM.singleIndx <- sapply(allCDF, function(x){x[,2]})
+allMM.singleIndx <- unlist(allMM.singleIndx, use.names=F)
+
+allPM.xy <- indices2xy(allPM.singleIndx, cdf="hgu133plus2cdf")
+allMM.xy <- indices2xy(allMM.singleIndx, cdf="hgu133plus2cdf")
+
+probePM.xy <- as.matrix(hgu133plus2probe[,c("x","y")])
+probePM.singleIndx <- xy2indices(probePM.xy[,1], probePM.xy[,2], cdf="hgu133plus2cdf")
+
+probePM.seq <- DNAStringSet(hgu133plus2probe$sequence)
+names(probePM.seq) <- paste("pm", hgu133plus2probe$Probe.Set.Name, hgu133plus2probe$x, hgu133plus2probe$y, sep=".")
+
+probeMM.seq <- probePM.seq
+subseq(probeMM.seq, start=13, end=13) <- complement(subseq(probeMM.seq, start=13, end=13))
+
+## Now resort *Everything* so that we can generate the proper ids for the MM probe sequences
+allOrd <- order(allPM.singleIndx)
+allPM.singleIndx <- allPM.singleIndx[allOrd]
+allPM.xy <- allPM.xy[allOrd,]
+allMM.singleIndx <- allMM.singleIndx[allOrd]
+allMM.xy <- allMM.xy[allOrd,]
+
+probeOrd <- order(probePM.singleIndx)
+probePM.singleIndx <- probePM.singleIndx[probeOrd]
+probePM.xy <- probePM.xy[probeOrd,]
+
+probePM.seq <- probePM.seq[probeOrd]
+probeMM.seq <- probeMM.seq[probeOrd]
+hgu133plus2probe <- hgu133plus2probe[probeOrd,]
+
+names(probeMM.seq) <- paste("mm", hgu133plus2probe$Probe.Set.Name, allMM.xy[,1],
+														allMM.xy[,2], sep=".")
+
+write.XStringSet(probePM.seq, filepath="hgu133plus2_pm.mm.fa", format="fasta")
+write.XStringSet(probeMM.seq, filepath="hgu133plus2_pm.mm.fa", append=T, format="fasta")
+```
+
+### Run the alignment for the probes
+
+Allow zero mismatches, and squelch anything that maps at more than one location.
+
+```
+export BOWTIE_INDEXES="/bio/data/GoldenPath/Hs/hg19/"
+bowtie -v 0 -f -m 1 hg19 hgu133plus2_pm.mm.fa hgu133plus2_pm.mm.map
+```
+
+```{r readRatData}
+probeLoc <- read.table("hgu133plus2_pm.mm.map.gz", stringsAsFactors=F, sep="\t", strip.white=T)
+probeLoc <- probeLoc[,1:5]
+names(probeLoc) <- c("probeID", "strand", "chr", "start", "sequence")
+probeLoc$end <- probeLoc$start + 25
+
+pm.mm.status <- sapply(strsplit(probeLoc$probeID, ".", fixed=T), function(x){x[1]})
+nPM.hs <- sum(pm.mm.status == "pm")
+nMM.hs <- sum(pm.mm.status == "mm")
+nPM.hs
+nMM.hs
+```
+
+This resulted in a gain of `r nMM.mm / nPM.mm * 100` percent information.
+

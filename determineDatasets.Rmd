@@ -1,0 +1,14 @@
+# Which platforms to examine?
+
+We need to figure out which platforms (outside of human, mouse and rat) would have decent amounts of data to examine. The other big possibililties are of course:
+
+*Saccharomyces cerevisiae*
+*Caenorhabditis elegans*
+*Drosophila melanogaster*
+*Arabidopsis Thaliana*
+*Xenopus laevis*
+*Plasmodium / Anopholes Gambiae*
+*Danio rerio* - this might be more difficult without the data automatically in 
+Bioconductor, but could still be done
+
+All of the above except D. rerio have CDF files on Bioconductor, and really, we can get almost anything we want off of the Affymetrix(r) website.
