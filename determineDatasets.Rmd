@@ -12,3 +12,70 @@ We need to figure out which platforms (outside of human, mouse and rat) would ha
 Bioconductor, but could still be done
 
 All of the above except D. rerio have CDF files on Bioconductor, and really, we can get almost anything we want off of the Affymetrix(r) website.
+
+# What datasets are available?
+
+Look at the GEO database, and see for each organism what Affymetrix(r) platforms are available, how many experiments are there, and have raw (CEL) data to go with them.
+
+```{r surfGeo}
+require(GEOmetadb)
+# getSQLiteFile() # run this once. Ran Aug 27, 2012
+
+con <- dbConnect(SQLite(),'GEOmetadb.sqlite')
+
+useOrgs <- c("'Saccharomyces cerevisiae'",
+						 "'Homo sapiens'",
+						 "'Mus musculus'",
+						 "'Rattus norvegicus'",
+						 "'Caenorhabditis elegans'",
+						 "'Drosophila melanogaster'",
+						 "'Arabidopsis Thaliana'",
+						 "'Xenopus laevis'",
+						 "'Anopholes Gambiae'",
+						 "'Danio rerio'")
+
+orgStr <- paste("(", paste(useOrgs, collapse=","), ")", sep="")
+
+gplQuery <- paste("SELECT gpl.title,",
+									"gpl.catalog_number,",
+									"gpl.data_row_count,",
+									"gpl.organism,",
+									"gpl.gpl,",
+									"gpl.description",
+									" FROM gpl WHERE ",
+									"gpl.manufacturer='Affymetrix' AND ",
+									"gpl.organism IN ", orgStr, sep="")
+
+affyGPL <- dbGetQuery(con, gplQuery)
+
+useGPL <- paste("'", affyGPL$gpl, "'", sep="")
+gplStr <- paste("(", paste(useGPL, collapse=","), ")", sep="")
+gsmQuery 
+
+
+hasCEL <- dbGetQuery(con, "select gsm.title, gsm.gsm, gsm.gpl, gsm")
+
+useTables <- c("gsm", "gse_gsm", "gse", "gse_gpl", "gpl")
+tableNames <- sapply(useTables, function(x){
+	tmpID <- dbListFields(con, x)
+	paste(x, tmpID, sep=".")
+})
+tableNames <- unlist(tableNames, use.names=F)
+
+tmpSql <- paste("select * FROM gsm JOIN gse_gsm ON gsm.gsm=gse_gsm.gsm",
+ " JOIN gse ON gse_gsm.gse=gse.gse",
+ " JOIN gse_gpl ON gse_gpl.gse=gse.gse",
+ " JOIN gpl ON gse_gpl.gpl=gpl.gpl",
+ "WHERE",
+ " gpl.manufacturer='Affymetrix' AND",
+ " gpl.organism IN", orgStr, " AND",
+ " gsm.supplementary_file LIKE '%CEL.gz'",sep=" ")
+tmpRes <- dbGetQuery(con, tmpSql)
+
+rs <- dbGetQuery(con,paste("select gpl.bioc_package,gsm.gpl,",
+ "gsm,gsm.supplementary_file",
+ "from gsm join gpl on gsm.gpl=gpl.gpl",
+ "where gpl.manufacturer='Affymetrix'",
+ "and gsm.supplementary_file like '%CEL.gz' "))
+
+```
