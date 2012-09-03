@@ -1,0 +1,45 @@
+```{r rsetup}
+options(save.defaults=list(compress="xz"), stringsAsFactors=FALSE)
+```
+
+# Examine Results
+
+## Read in the Saccharomyces cerevisiae data and see what we have
+
+```{r loadSc}
+require(GenomicRanges)
+seqLoc <- readBamGappedAlignments("seqData/mappedSequences_sc3.bam", use.names=T)
+
+classSeq <- sapply(strsplit(names(seqLoc), ".", fixed=T), function(x){x[1]})
+sum(classSeq == "mm")
+```
+
+There is only `r sum(classSeq == "mm")` mismatch probe that aligns to the genome for yeast, so we will ignore yeast from further analysis.
+
+## Check all organisms
+
+```{r countAll}
+allFile <- dir('seqData/')
+bamFile <- grep(".bam", allFile, fixed=T, value=T)
+lapply(bamFile, function(x){
+	tmpSeq <- readBamGappedAlignments(file.path("seqData", x), use.names=T)
+	nAlign <- length(names(tmpSeq))
+	uniqProbes <- unique(names(tmpSeq))
+	probeClass <- sapply(strsplit(uniqProbes, ".", fixed=T), function(y){y[1]})
+	nPM <- sum(probeClass == "pm") # number of PM probes that align
+	nMM <- sum(probeClass == "mm") # number of MM probes that align
+	
+	# remove duplicates first
+	allProbes <- names(tmpSeq)
+	dupProbes <- unique(allProbes[duplicated(allProbes)])
+	
+	dupClass <- sapply(strsplit(dupProbes, ".", fixed=T), function(y){y[1]})
+	dupPM <- sum(dupClass == "pm")
+	dupMM <- sum(dupClass == "mm")
+	
+	nonDup <- allProbes[!(allProbes %in% dupProbes)]
+	nonClass <- sapply(strsplit(nonDup, ".", fixed=T), function(y){y[1]})
+	nonPM <- sum(nonClass == "pm")
+	nonMM <- sum(nonClass == "mm")
+})
+```

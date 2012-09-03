@@ -23,20 +23,19 @@ require(GEOmetadb)
 
 con <- dbConnect(SQLite(),'GEOmetadb.sqlite')
 
-useOrgs <- c("'Saccharomyces cerevisiae'",
-						 "'Homo sapiens'",
-						 "'Mus musculus'",
-						 "'Rattus norvegicus'",
-						 "'Caenorhabditis elegans'",
-						 "'Drosophila melanogaster'",
-						 "'Arabidopsis Thaliana'",
-						 "'Xenopus laevis'",
-						 "'Anopholes Gambiae'",
-						 "'Danio rerio'")
+useOrgs <- c("Saccharomyces cerevisiae",
+						 "Homo sapiens",
+						 "Mus musculus",
+						 "Rattus norvegicus",
+						 "Caenorhabditis elegans",
+						 "Drosophila melanogaster",
+						 "Arabidopsis Thaliana",
+						 "Xenopus laevis",
+						 "Anopholes Gambiae",
+						 "Danio rerio")
 
-orgStr <- paste("(", paste(useOrgs, collapse=","), ")", sep="")
 
-gplQuery <- paste("SELECT gpl.title,",
+gplOrgs <- paste("SELECT gpl.title,",
 									"gpl.catalog_number,",
 									"gpl.data_row_count,",
 									"gpl.organism,",
@@ -44,17 +43,64 @@ gplQuery <- paste("SELECT gpl.title,",
 									"gpl.description",
 									" FROM gpl WHERE ",
 									"gpl.manufacturer='Affymetrix' AND ",
-									"gpl.organism IN ", orgStr, sep="")
+									"gpl.organism='", useOrgs, "'", sep="")
 
-affyGPL <- dbGetQuery(con, gplQuery)
+names(gplOrgs) <- useOrgs
 
-useGPL <- paste("'", affyGPL$gpl, "'", sep="")
-gplStr <- paste("(", paste(useGPL, collapse=","), ")", sep="")
-gsmQuery 
+gplInfo <- lapply(names(gplOrgs), function(inOrg){
+	affyGPL <- dbGetQuery(con, gplOrgs[inOrg])
+	write.table(affyGPL, file=paste(inOrg, ".txt", sep=""), sep="\t", row.names=F)
+})
 
+```
 
-hasCEL <- dbGetQuery(con, "select gsm.title, gsm.gsm, gsm.gpl, gsm")
+After looking through the results, come up with either new search strings for the sql or actual lists of GPL's to use.
 
+```{r gplDef}
+defGPL <- list(celegans=c("GPL200", "GPL13993", "GPL13995"), 
+							 drerio="GPL1319",
+							 dmelano=c("GPL1322", "GPL13770"),
+							 scerevisiae=c("GPL90", "GPL13150"),
+							 xlaevis="GPL10756")
+
+srchGPL <- list(hsapiens=c("'%Affymetrix Human Genome U133 Plus 2.0 Array%'",
+													 "'%Affymetrix GeneChip Human Genome U133 Plus 2.0 Array%'",
+													 "'%Human Genome U133 Plus 2.0%'"),
+								mmusculus=c("'%Affymetrix GeneChip Mouse Genome 430 2.0%'",
+														"'%Affymetrix Mouse Genome 430 2.0 Array%'"),
+								rnorvegicus=c("'%Affymetrix Rat Genome 230 2.0 Array%'",
+															"'%Affymetrix GeneChip Rat Genome 230 2.0 Array%'"))
+# for each 'srchGPL', go in and query the gpl table and see what we get back as
+# far as organism, etc
+
+gplStr <- paste("SELECT gpl.title,",
+									"gpl.catalog_number,",
+									"gpl.data_row_count,",
+									"gpl.organism,",
+									"gpl.gpl,",
+									"gpl.description",
+									" FROM gpl WHERE ",
+								"gpl.title LIKE ", collapse="")
+
+gplUSE <- lapply(srchGPL, function(inStr){
+	tmpDat <- lapply(inStr, function(sqlQ){
+		fullQ <- paste(gplStr, sqlQ, sep="")
+		dbGetQuery(con, fullQ)
+	})
+})
+
+defGPL2 <- lapply(gplUSE, function(x){
+	aG <- unique(unlist(sapply(x, function(y){y$gpl})))
+})
+
+allGPL <- c(defGPL2, defGPL)
+```
+
+We have gotten out the **GPL** for Affymetrix(r) arrays for each model organism. Now we want to find those samples 
+that have supplementary data for each one, and then get the unique *GSE's*. We will also verify that the organism in
+**Ch1** matches the organism on the array.
+
+```{r getSamples}
 useTables <- c("gsm", "gse_gsm", "gse", "gse_gpl", "gpl")
 tableNames <- sapply(useTables, function(x){
 	tmpID <- dbListFields(con, x)
@@ -62,20 +108,25 @@ tableNames <- sapply(useTables, function(x){
 })
 tableNames <- unlist(tableNames, use.names=F)
 
-tmpSql <- paste("select * FROM gsm JOIN gse_gsm ON gsm.gsm=gse_gsm.gsm",
- " JOIN gse ON gse_gsm.gse=gse.gse",
- " JOIN gse_gpl ON gse_gpl.gse=gse.gse",
- " JOIN gpl ON gse_gpl.gpl=gpl.gpl",
- "WHERE",
- " gpl.manufacturer='Affymetrix' AND",
- " gpl.organism IN", orgStr, " AND",
- " gsm.supplementary_file LIKE '%CEL.gz'",sep=" ")
-tmpRes <- dbGetQuery(con, tmpSql)
+getSql <- paste("select * FROM gsm JOIN gse_gsm ON gsm.gsm=gse_gsm.gsm",
+								" JOIN gse ON gse_gsm.gse=gse.gse",
+								" JOIN gse_gpl ON gse_gpl.gse=gse.gse",
+								" JOIN gpl ON gse_gpl.gpl=gpl.gpl",
+								" WHERE",
+								" gsm.supplementary_file LIKE '%CEL.gz' AND",
+								" gpl.gpl IN ", sep="")
 
-rs <- dbGetQuery(con,paste("select gpl.bioc_package,gsm.gpl,",
- "gsm,gsm.supplementary_file",
- "from gsm join gpl on gsm.gpl=gpl.gpl",
- "where gpl.manufacturer='Affymetrix'",
- "and gsm.supplementary_file like '%CEL.gz' "))
+affyData <- lapply(allGPL, function(inGPL){
+	useGPL <- paste("'", inGPL, "'", sep="")
+	useGPL <- paste("(", paste(useGPL, collapse=","), ")", sep="")
+	q <- paste(getSql, useGPL, sep="", collapse="")
+	qDat <- dbGetQuery(con, q)
+	names(qDat) <- tableNames
+	
+	sameOrg <- qDat$gsm.organism_ch1 == qDat$gpl.organism
+	qDat <- qDat[sameOrg,]
+	list(nExp=length(unique(qDat$gse.gse)), sampDat=qDat)
+})
+
 
 ```
