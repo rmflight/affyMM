@@ -21,7 +21,7 @@ There is only `r sum(classSeq == "mm")` mismatch probe that aligns to the genome
 ```{r countAll}
 allFile <- dir('seqData/')
 bamFile <- grep(".bam", allFile, fixed=T, value=T)
-lapply(bamFile, function(x){
+allData <- lapply(bamFile, function(x){
 	tmpSeq <- readBamGappedAlignments(file.path("seqData", x), use.names=T)
 	nAlign <- length(names(tmpSeq))
 	uniqProbes <- unique(names(tmpSeq))
@@ -41,5 +41,32 @@ lapply(bamFile, function(x){
 	nonClass <- sapply(strsplit(nonDup, ".", fixed=T), function(y){y[1]})
 	nonPM <- sum(nonClass == "pm")
 	nonMM <- sum(nonClass == "mm")
+	return(c(nPM=nPM, nMM=nMM, dupPM=dupPM, dupMM=dupMM, nonPM=nonPM, nonMM=nonMM))
 })
+names(allData) <- bamFile
+allData
 ```
+
+So we can basically ignore yeast. However, everything else it looks like we get *some* **MM** alignments. What kinds of questions can we ask with this data?
+
+ * For those **PM** that don't map uniquely, what is the distribution of the # of matches?
+ * Same question for the **MM** probes
+ * How many **PM** have associated **MM** with perfect matches elsewhere in the genome?
+   * How does that change between those **PM** that map uniquely and those that are duplicates?
+   * Do those **PM** with **MM** that map to genome have higher intensities?
+     * This will require loading multiple **CEL** files for the chip. -> which ones should we use? Should we just take a random sample of the ones available, i.e. one from each condition in a GSE across multiple GSE's??
+     * Should we restrict this to **PM** and **MM** that map to exons?
+ * Restricting to those probes that map uniquely:
+   * Making new probesets based on Refseq, and requiring a minimum of 3 probes per transcript:
+     * Again, do we restrict to just exons?
+     * How many probesets do we get based on just **PM** probes?
+     * How many probesets do we get when including **MM** probes?
+     * How many probesets change their composition when **MM** probes are allowed?
+     * How do diff. gene results change when **MM** probes are included?
+     
+ Looking at the five human genomes we have:
+ * How does the number of probes that align uniquely change in each class of **PM** and **MM**?
+   * i.e. for each probe that has a unique alignment in each version of the genome, track whether it:
+     * aligns uniquely, aligns non-uniquely, or does not align in each of the other genomes
+   * How do we summarize this information in a useful manner?
+     * Venn diagrams??
