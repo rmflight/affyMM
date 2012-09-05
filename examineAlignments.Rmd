@@ -1,5 +1,13 @@
 ```{r rsetup}
 options(save.defaults=list(compress="xz"), stringsAsFactors=FALSE)
+require(GenomicRanges)
+require(ggplot2)
+```
+
+```{r functionDef}
+probeClass <- function(probeIDs){
+	sapply(strsplit(probeIDs, ".", fixed=T), function(y){y[1]})
+}
 ```
 
 # Examine Results
@@ -7,7 +15,7 @@ options(save.defaults=list(compress="xz"), stringsAsFactors=FALSE)
 ## Read in the Saccharomyces cerevisiae data and see what we have
 
 ```{r loadSc}
-require(GenomicRanges)
+
 seqLoc <- readBamGappedAlignments("seqData/mappedSequences_sc3.bam", use.names=T)
 
 classSeq <- sapply(strsplit(names(seqLoc), ".", fixed=T), function(x){x[1]})
@@ -32,6 +40,9 @@ allData <- lapply(bamFile, function(x){
 	# remove duplicates first
 	allProbes <- names(tmpSeq)
 	dupProbes <- unique(allProbes[duplicated(allProbes)])
+	
+	dupFile <- paste(strsplit(x, ".", fixed=T)[[1]][1], "_multMatch.txt", sep="", collapse="")
+	cat(dupProbes, file=file.path("seqData", dupFile), sep="\n")
 	
 	dupClass <- sapply(strsplit(dupProbes, ".", fixed=T), function(y){y[1]})
 	dupPM <- sum(dupClass == "pm")
@@ -63,6 +74,87 @@ So we can basically ignore yeast. However, everything else it looks like we get 
      * How many probesets do we get when including **MM** probes?
      * How many probesets change their composition when **MM** probes are allowed?
      * How do diff. gene results change when **MM** probes are included?
+     
+## Answer questions above
+
+```{r useOrgs}
+useData <- c(rn4="mappedSequences_rn4.bam", hg19="mappedSequences_hg19.bam", mm9="mappedSequences_mm9.bam",
+						 mm10="mappedSequences_mm10.bam", ce6="mappedSequences_ce6.bam", dm3="mappedSequences_dm3.bam",
+						 dr6="mappedSequences_dr6.bam")
+useData <- c("rn4", "hg19", "mm9", "mm10", "ce6", "dm3", "dr6")
+allData <- lapply(useData[1], function(inData){
+	bamFile <- paste("mappedSequences_", inData, ".bam", sep="", collapse="")
+	tmpSeq <- readBamGappedAlignments(file.path("seqData", bamFile), use.names=T)
+	tmpSeq <- as(tmpSeq, "GRanges")
+	allAlign <- names(tmpSeq)
+	affyCntr <- unique(grep("AFFX", allAlign, value=T))
+	keepSeq <- which(!(allAlign %in% affyCntr))
+	allAlign <- allAlign[keepSeq]
+	tmpSeq <- tmpSeq[keepSeq]
+	nAlign <- length(allAlign)
+	
+	mStatus <- duplicated(allAlign)
+	multProbes <- unique(allAlign[mStatus]) # those probes aligning to multiple locations in the genome
+	
+	singProbes <- unique(allAlign[!mStatus])
+	singSeq <- tmpSeq[which(!mStatus)]
+	
+	multClass <- probeClass(multProbes)
+	pmMult <- multProbes[multClass == "pm"]
+	mmMult <- multProbes[multClass == "mm"]
+	
+	pmMultCnt <- sapply(pmMult, function(x){
+		sum(allAlign %in% x)
+	})
+	
+	mmMultCnt <- sapply(mmMult, function(x){
+		sum(allAlign %in% x)
+	})
+	
+	multCnt <- data.frame(cnt=c(pmMultCnt, mmMultCnt), class=c(rep("pm", length(pmMultCnt)), rep("mm", length(mmMultCnt))))
+	
+	trimMult <- multCnt[multCnt[,1] <= 10,]
+	cntMM <- hist(trimMult$cnt[trimMult$class == "mm"], breaks=10, plot=F)
+	cntPM <- hist(trimMult$cnt[trimMult$class == "pm"], breaks=10, plot=F)
+	
+	# ggplot(trimMult, aes(x=cnt, colour=class)) + geom_density() + xlim(0, 10)
+	
+	# because the mm matches are much fewer, it makes far more sense to reverse the question of associations between PM and MM probes, and ask how many of the MM probes that map to the genome have an associated PM match?
+	
+	# restrict to those probes that align to exons
+	## Note that these exons are artificial, created using mergeBED to get essentially transcribed regions
+	exonFile <- paste(inData, "_mergeExons.bed.gz", sep="", collapse="")
+	useExons <- read.table(file.path("seqData", exonFile), sep="\t")
+	exonInt <- GRanges(seqnames=Rle(useExons[,1]), ranges=IRanges(useExons[,2], useExons[,3]),
+										 strand=Rle(useExons[,4]))
+	
+	exonOverlaps <- subsetByOverlaps(query=tmpSeq, subject=exonInt, minoverlap=23, type="any")
+	
+	hasExonProbes <- names(exonOverlaps)
+	exonProbeClass <- probeClass(hasExonProbes)
+	
+	mmExons <- hasExonProbes[exonProbeClass == "mm"]
+	
+	uniqProbes <- unique(names(tmpSeq))
+	probeClass <- sapply(strsplit(uniqProbes, ".", fixed=T), function(y){y[1]})
+	nPM <- sum(probeClass == "pm") # number of PM probes that align
+	nMM <- sum(probeClass == "mm") # number of MM probes that align
+	
+	# remove duplicates first
+	allProbes <- names(tmpSeq)
+	dupProbes <- unique(allProbes[duplicated(allProbes)])
+	
+	dupClass <- sapply(strsplit(dupProbes, ".", fixed=T), function(y){y[1]})
+	dupPM <- sum(dupClass == "pm")
+	dupMM <- sum(dupClass == "mm")
+	
+	nonDup <- allProbes[!(allProbes %in% dupProbes)]
+	nonClass <- sapply(strsplit(nonDup, ".", fixed=T), function(y){y[1]})
+	nonPM <- sum(nonClass == "pm")
+	nonMM <- sum(nonClass == "mm")
+	return(c(nPM=nPM, nMM=nMM, dupPM=dupPM, dupMM=dupMM, nonPM=nonPM, nonMM=nonMM))
+})
+```
      
  Looking at the five human genomes we have:
  * How does the number of probes that align uniquely change in each class of **PM** and **MM**?
