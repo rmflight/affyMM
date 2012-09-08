@@ -31,7 +31,7 @@ There is only `r sum(classSeq == "mm")` mismatch probe that aligns to the genome
 allFile <- dir('seqData/')
 bamFile <- grep(".bam", allFile, fixed=T, value=T)
 allData <- lapply(bamFile, function(x){
-	tmpSeq <- readBamGappedAlignments(file.path("seqData", x), use.names=T)
+	tmpSeq <- readGappedAlignments(file.path("seqData", x), use.names=T)
 	nAlign <- length(names(tmpSeq))
 	uniqProbes <- unique(names(tmpSeq))
 	probeClass <- sapply(strsplit(uniqProbes, ".", fixed=T), function(y){y[1]})
@@ -79,7 +79,7 @@ So we can basically ignore yeast. However, everything else it looks like we get 
 ## Answer questions above
 
 ```{r useOrgs}
-useData <- c("rn4", "hg19", "mm9", "mm10", "ce6", "dm3", "dr6")
+useData <- c("dm3", "dr6", "xtropicalis", "rn4", "hg19", "mm9", "mm10", "ce6")
 allData <- lapply(useData, function(inData){
 	bamFile <- paste("mappedSequences_", inData, ".bam", sep="", collapse="")
 	tmpSeq <- readGappedAlignments(file.path("seqData", bamFile), use.names=T)
@@ -181,10 +181,10 @@ save(list=c(".sessionInfo", ".datetime", "allData"), file="allData_mmResults.RDa
 This gives the **MM** probes that aligned (either exons or anywhere), as well as the associated **PM** probes, and the number of alignments. For each of the organisms, we will load 20 randomly selected **CEL** files and examine both the **PM** intensities compared to **MM** for those that did and did not align to exons, and examine the distribution of intensities of all **MM** probes and locate the aligned uniquely **MM** probes in the distribution.
 
 ```{r intensityComparison}
-celLoc <- c(hg19="hs", mm9="mm", mm10="mm", rn4="rn", dr6="dr", dm3="dm", ce6="ce")
+celLoc <- c(hg19="hs", mm9="mm", mm10="mm", rn4="rn", dr6="dr", dm3="dm", ce6="ce", xtropicalis="xt")
 useDatNames <- names(allData)
 
-lapply(useDatNames, function(inOrg){
+denData <- lapply(useDatNames, function(inOrg){
 	tmpDat <- allData[[inOrg]]
 	useCel <- file.path("randomCels", celLoc[inOrg])
 	celDat <- ReadAffy(celfile.path=useCel)
@@ -231,7 +231,12 @@ lapply(useDatNames, function(inOrg){
 	pm.mm.Diff <- pIntensity[pm.mm.Corr$pm,] - pIntensity[pm.mm.Corr$mm,]
 	sumNeg <- apply(pm.mm.Diff, 1, function(x){sum(x < 0)})
 	
-	isNeg <- sumNeg >= 9
+	minSum <- 9
+	if (inOrg == "xtropicalis"){
+		minSum <- 2
+	}
+	
+	isNeg <- sumNeg >= minSum
 	sum(isNeg) / nrow(pm.mm.Corr)
 	pmNeg <- rownames(pm.mm.Diff[isNeg,])
 	# of those that show *some* negatives, how many are in our probe lists based on *MM* alignments?
@@ -266,8 +271,15 @@ lapply(useDatNames, function(inOrg){
 	
 	plotInt <- rbind(allInt, useInt)
 	outPlot <- ggplot(plotInt, aes(x=probeInt, colour=probeType)) + geom_density() + opts(title=inData)
+	
+	cdf2Det <- grep("cdf", search(), value=T)
+	detach(cdf2Det, character.only=T)
+	
 	return(list(outDat=outDat, plot=outPlot))
 })
+.sessionInfo <- sessionInfo()
+.datetime <- Sys.time()
+save(denData, .sessionInfo, .datetime, file="densityPlotData.RData")
 ```
      
  Looking at the five human genomes we have:
