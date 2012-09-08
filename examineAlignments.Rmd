@@ -282,6 +282,11 @@ denData <- lapply(useDatNames, function(inOrg){
 save(denData, .sessionInfo, .datetime, file="densityPlotData.RData")
 ```
      
+ To Do: Send Eric links to the 5 human genomes assemblies that we have.
+ 
+ Extra analysis: For each organism, find the biggest negative difference, and for that particular
+ experiment and probeset, look at the signal distributions of the PM probes and MM probes (without the MM probe that caused problem), and look at where the MM probe falls in the distribution. How does the summarization value change with and without thise PM-MM pair? 
+ Then define a new probeset based on the exon the MM probe aligns to, and look at the PM signal distribution and where the MM probe intensity now falls. What is the summary value for this probeset with and without the MM probe?
  Looking at the five human genomes we have:
  * How does the number of probes that align uniquely change in each class of **PM** and **MM**?
    * i.e. for each probe that has a unique alignment in each version of the genome, track whether it:
