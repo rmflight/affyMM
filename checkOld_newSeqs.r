@@ -18,8 +18,24 @@ for (iDat in 1:nDat){
 	newE <- new.env()
 	load(newRDat[iDat], env=newE)
 	
-	isPM <- all.equal(orgE$pm.mm.dat$pm, newE$pm.mm.dat$pm)
-	isMM <- all.equal(orgE$pm.mm.dat$mm, newE$pm.mm.dat$mm)
+	orgPM <- as.character(orgE$pm.mm.dat$pm)
+	orgPM <- orgPM[order(names(orgPM))]
+	
+	orgMM <- as.character(orgE$pm.mm.dat$mm)
+	orgMM <- orgMM[order(names(orgMM))]
+	
+	newPM <- as.character(newE$pm.mm.dat$pm)
+	newPM <- newPM[order(names(newPM))]
+	
+	newMM <- as.character(newE$pm.mm.dat$mm)
+	newMM <- newMM[order(names(newMM))]
+	
+	isPM <- all.equal(orgPM, newPM)
+	isMM <- all.equal(orgMM, newMM)
 	
 	allInfo[[iDat]] <- list(pm=isPM, mm=isMM)
+	rm(orgE, newE, orgPM, newPM, orgMM, newMM)
 }
+
+names(allInfo) <- basename(orgRDat)
+allInfo
