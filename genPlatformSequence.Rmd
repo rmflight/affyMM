@@ -1,0 +1,156 @@
+```{r rSetup}
+# these are extremely useful options for working in R
+options(stringsAsFactors=FALSE)
+require(affy)
+require(Biostrings)
+```
+
+# Write probe sequences out with the mismatches
+
+```{r seqWriteFun}
+seqWriteFun <- function(cdfList, cdfName, probeDat, faFile){
+		
+	probePM.xy <- as.matrix(probeDat[,c("x","y")])
+		
+	probePM.seq <- DNAStringSet(probeDat$sequence)
+	names(probePM.seq) <- paste("pm", probeDat$Probe.Set.Name, probeDat$x, probeDat$y, sep=".")
+	
+	probeMM.seq <- probePM.seq
+	subseq(probeMM.seq, start=13, end=13) <- complement(subseq(probeMM.seq, start=13, end=13))
+	
+	probeMM.xy <- cbind(probePM.xy[,1], probePM.xy[,2] + 1)
+	
+		
+	names(probeMM.seq) <- paste("mm", probeDat$Probe.Set.Name, probeMM.xy[,1],
+															probeMM.xy[,2], sep=".")
+	
+	write.XStringSet(probePM.seq, filepath=faFile, format="fasta")
+	write.XStringSet(probeMM.seq, filepath=faFile, append=T, format="fasta")
+	return(list(pm=probePM.seq, mm=probeMM.seq))
+}
+```
+
+For each organism and platform, write out the PM and MM sequences for subsequent alignment to the respective genome.
+
+# Human
+
+```{r hsaFA}
+require(hgu133plus2probe)
+data(hgu133plus2probe)
+probeDat <- hgu133plus2probe
+require(hgu133plus2cdf)
+hsaCDF <- as.list(hgu133plus2cdf)
+pm.mm.dat <- seqWriteFun(hsaCDF, "hgu133plus2cdf", hgu133plus2probe, "seqData/hgu133p2_pm.mm.fa")
+.sessionInfo <- sessionInfo()
+.datetime <- Sys.time()
+save(pm.mm.dat, probeDat, .sessionInfo, .datetime, file='seqData/hsa.pm.mm.RData')
+rm(list=c("hgu133plus2probe", "hgu133plus2cdf", "probeDat", "hsaCDF", "pm.mm.dat"))
+```
+
+# Mouse
+
+```{r musFA}
+require(mouse4302probe)
+data(mouse4302probe)
+probeDat <- mouse4302probe
+require(mouse4302cdf)
+musCDF <- as.list(mouse4302cdf)
+pm.mm.dat <- seqWriteFun(musCDF, "mouse4302cdf", mouse4302probe, "seqData/mus4302_pm.mm.fa")
+.sessionInfo <- sessionInfo()
+.datetime <- Sys.time()
+save(pm.mm.dat, probeDat, .sessionInfo, .datetime, file="seqData/mus.pm.mm.RData")
+rm(list=c("mouse4302probe", "mouse4302cdf", "probeDat", "musCDF", "pm.mm.dat"))
+```
+
+# Rat
+
+```{r ratFA, message=FALSE}
+require(rat2302probe)
+data(rat2302probe)
+probeDat <- rat2302probe
+require(rat2302cdf)
+ratCDF <- as.list(rat2302cdf)
+pm.mm.dat <- seqWriteFun(ratCDF, "rat2302cdf", rat2302probe, "seqData/rat2302_pm.mm.fa")
+.sessionInfo <- sessionInfo()
+.datetime <- Sys.time()
+save(pm.mm.dat, probeDat, .sessionInfo, .datetime, file="seqData/rat.pm.mm.RData")
+rm(list=c("rat2302probe", "rat2302cdf", "probeDat", "ratCDF", "pm.mm.dat"))
+```
+
+# C elegans
+
+```{r ceFA, message=FALSE}
+require(celegansprobe)
+data(celegansprobe)
+probeDat <- celegansprobe
+require(celeganscdf)
+cdfDat <- as.list(celeganscdf)
+pm.mm.dat <- seqWriteFun(cdfDat, "celeganscdf", probeDat, "seqData/celegans_pm.mm.fa")
+.sessionInfo <- sessionInfo()
+.datetime <- Sys.time()
+save(pm.mm.dat, probeDat, .sessionInfo, .datetime, file="seqData/celegans.pm.mm.RData")
+rm(list=c("celegansprobe", "cdfDat", "probeDat", "pm.mm.dat"))
+```
+
+# D melanogaster
+
+```{r dmFA, message=FALSE}
+require(drosophila2probe)
+data(drosophila2probe)
+probeDat <- drosophila2probe
+require(drosophila2cdf)
+cdfDat <- as.list(drosophila2cdf)
+pm.mm.dat <- seqWriteFun(cdfDat, "drosophila2cdf", probeDat, "seqData/drosophila2_pm.mm.fa")
+.sessionInfo <- sessionInfo()
+.datetime <- Sys.time()
+save(pm.mm.dat, probeDat, .sessionInfo, .datetime, file="seqData/drosophila2.pm.mm.RData")
+rm(list=c("drosophila2probe", "cdfDat", "probeDat", "pm.mm.dat"))
+```
+
+
+# X tropicalis
+
+```{r xlFA, message=FALSE}
+require(xtropicalisprobe)
+data(xtropicalisprobe)
+probeDat <- xtropicalisprobe
+require(xtropicaliscdf)
+cdfDat <- as.list(xtropicaliscdf)
+pm.mm.dat <- seqWriteFun(cdfDat, "xtropicaliscdf", probeDat, "seqData/xtropicalis_pm.mm.fa")
+.sessionInfo <- sessionInfo()
+.datetime <- Sys.time()
+save(pm.mm.dat, probeDat, .sessionInfo, .datetime, file="seqData/xtropicalis.pm.mm.RData")
+rm(list=c("xtropicalisprobe", "cdfDat", "probeDat", "pm.mm.dat"))
+```
+
+# D rerio
+
+```{r drFA, message=FALSE}
+require(zebrafishprobe)
+data(zebrafishprobe)
+probeDat <- zebrafishprobe
+require(zebrafishcdf)
+cdfDat <- as.list(zebrafishcdf)
+pm.mm.dat <- seqWriteFun(cdfDat, "zebrafishcdf", probeDat, "seqData/zebrafish_pm.mm.fa")
+.sessionInfo <- sessionInfo()
+.datetime <- Sys.time()
+save(pm.mm.dat, probeDat, .sessionInfo, .datetime, file="seqData/zebrafish.pm.mm.RData")
+rm(list=c("zebrafishprobe", "cdfDat", "probeDat", "pm.mm.dat"))
+```
+
+# S cerevisiae
+
+```{r scFA1, message=FALSE}
+require(yeast2probe)
+data(yeast2probe)
+probeDat <- yeast2probe
+require(yeast2cdf)
+cdfDat <- as.list(yeast2cdf)
+pm.mm.dat <- seqWriteFun(cdfDat, "yeast2cdf", probeDat, "seqData/yeast2_pm.mm.fa")
+.sessionInfo <- sessionInfo()
+.datetime <- Sys.time()
+save(pm.mm.dat, probeDat, .sessionInfo, .datetime, file="seqData/yeast2.pm.mm.RData")
+rm(list=c("yeast2probe", "cdfDat", "probeDat", "pm.mm.dat"))
+```
+
+"bowtie -p 5 -f -v 0 --all --sam index/xt3 /home/robert/mismatchSequencing/xlaevis2_pm.mm.fa /home/robert/mismatchSequencing/alignments/XenTrop/xt3.sam"
