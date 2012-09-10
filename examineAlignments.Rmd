@@ -1,5 +1,5 @@
 ```{r rsetup}
-options(save.defaults=list(compress="xz"), stringsAsFactors=FALSE)
+options(stringsAsFactors=FALSE)
 require(GenomicRanges)
 require(ggplot2)
 require(affy)
