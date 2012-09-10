@@ -198,6 +198,138 @@ allData <- lapply(useData, function(inData){
 	
 	# new variables: probeAlign, allCnts, exonIntervals
 	
+	## Load up the experimental data and rename
+	{
+		useCel <- file.path("randomCels", celLoc[inData])
+		celDat <- ReadAffy(celfile.path=useCel)
+		
+		bCel <- bg.correct.mas(celDat)
+		
+		pmIndx <- indexProbes(bCel, which="pm")
+		mmIndx <- indexProbes(bCel, which="mm")
+		useP <- names(pmIndx)
+		
+		lenP <- sapply(pmIndx, length) # how many probes in each probeset
+		pName <- rep(useP, lenP)
+		pmIndx <- unlist(pmIndx, use.names=F)
+		pmXY <- indices2xy(pmIndx, abatch=bCel)
+		mmIndx <- unlist(mmIndx, use.names=F)
+		mmXY <- indices2xy(mmIndx, abatch=bCel)
+		
+		pmName <- paste("pm", pName, pmXY[,1], pmXY[,2], sep=".")
+		mmName <- paste("mm", pName, mmXY[,1], mmXY[,2], sep=".")
+		
+		probeNames <- c(pmName, mmName)
+		orgName <- c(pmIndx, mmIndx)
+		
+		nameReord <- order(orgName)
+		orgName <- orgName[nameReord]
+		probeNames <- probeNames[nameReord]
+	
+		pIntensity <- rbind(pm(bCel), mm(bCel))
+		pIntensity <- pIntensity[(order(as.integer(rownames(pIntensity)))),]
+	
+		all.equal(as.integer(rownames(pIntensity)), orgName)
+		rownames(pIntensity) <- probeNames
+	
+		pm.mm.Corr <- data.frame(pm=pmName, mm=mmName) # correspondence between them
+		n.affyCtrl <- grep("AFFX", pm.mm.Corr$pm, invert=T)
+		pm.mm.Corr <- pm.mm.Corr[n.affyCtrl,]
+		
+		n.affyCtrl <- grep("AFFX", rownames(pIntensity), invert=T)
+		pIntensity <- pIntensity[n.affyCtrl,]
+		
+		indx2Name <- data.frame(indx=orgName, name=probeNames)
+		
+		rm(celDat, n.affyCtrl, probeNames, orgName, pmName, mmName, useP,
+			 lenP, pName, pmIndx, pmXY, mmIndx, mmXY, nameReord)
+	}
+	
+	# new variables: indx2name, pIntensity, pm.mm.Corr, bCel
+	
+	# calculate how many negatives are the result of mm aligning in genome
+	{
+		pm.mm.Diff <- pIntensity[pm.mm.Corr$pm,] - pIntensity[pm.mm.Corr$mm,]
+		sumNeg <- apply(pm.mm.Diff, 1, function(x){sum(x < 0)})
+		
+		minSum <- 9
+		if (inData == "xtropicalis"){
+			minSum <- 2
+		}
+		
+		isNeg <- sumNeg >= minSum
+		sum(isNeg) / nrow(pm.mm.Corr)
+		pmNeg <- rownames(pm.mm.Diff[isNeg,])
+		# of those that show *some* negatives, how many are in our probe lists based on *MM* alignments?
+		allPM.fromMM <- allCnts$pmProbe
+		nallPM <- length(allPM.fromMM)
+		nallPM.inNeg <- sum(allPM.fromMM %in% pmNeg) 
+		
+		# and just those where the *MM* aligns to an exon?
+		fromExon <- !(is.na(allCnts$pm.E))
+		allPM.fromExon <- allCnts$pmProbe[fromExon]
+		nallPM.Exon <- length(allPM.fromExon)
+		nallPM.Exon.inNeg <- sum(allPM.fromExon %in% pmNeg)
+		
+		allMM.fromExon <- allCnts$mmProbe[fromExon]
+		
+		outDat <- c(nallPM=nallPM, nallPM.inNeg=nallPM.inNeg, nallPM.Exon=nallPM.Exon, nallPm.Exon.inNeg=nallPM.Exon.inNeg)
+		
+		rm(sumNeg, minSum, isNeg, pmNeg, allPM.fromMM, nallPM, nallPM.inNeg, fromExon,
+		 allPM.fromExon, allPM.fromMM, allMM.fromExon, nallPM.Exon, nallPM.Exon.inNeg)
+	}
+	
+	
+	
+	# new variables are: outDat, pm.mm.Diff
+	
+	# and what about the distribution of MM intensities?
+	nSamp <- 10000
+	allMMInt <- log2(as.vector(pIntensity[pm.mm.Corr$mm,]))
+	allMMInt <- sample(allMMInt, nSamp)
+	allPMInt <- log2(as.vector(pIntensity[pm.mm.Corr$pm,]))
+	allPMInt <- sample(allPMInt, nSamp)
+	allInt <- data.frame(probeInt=c(allMMInt, allPMInt), probeType=c(rep("mm.all", length(allMMInt)), rep("pm.all", length(allPMInt))) )
+	
+	mm.probeInt <- log2(as.vector(pIntensity[allMM.fromExon,]))
+	pm.probeInt <- log2(as.vector(pIntensity[allPM.fromExon,]))
+	useInt <- data.frame(probeInt=c(mm.probeInt, pm.probeInt), probeType=c(rep("mm.exon", length(mm.probeInt)),
+																																				 rep("pm.exon", length(mm.probeInt))))
+	
+	plotInt <- rbind(allInt, useInt)
+	outPlotAllExp <- ggplot(plotInt, aes(x=probeInt, colour=probeType)) + geom_density() + labs(title=inData)
+	
+	# For those MM probes that overlap with exons, find the biggest PM - MM difference 
+	# and examine some properties
+	exonDat <- tmpDat[!(is.na(tmpDat$pm.E)),]
+	exonSingleMM <- (exonDat$mm.E == 1) & (exonDat$pm.E == 1) # start with those
+	exonDatSingleMM <- exonDat[exonSingleMM,]
+	exonSingleDifs <- pm.mm.Diff[(exonDat$pmProbe[exonSingleMM]),]
+	
+	useMin <- which.min(exonSingleDifs)
+	r = ((useMin-1) %% nrow(exonSingleDifs)) + 1
+	c = floor((useMin-1) / nrow(exonSingleDifs)) + 1
+	
+	probeSetP <- strsplit(rownames(exonSingleDifs)[r], ".", fixed=T)
+	probeSetP <- probeSetP[[1]][2]
+	useProbes <- grep(probeSetP, rownames(pIntensity), value=T)
+	probeSetInt <- pIntensity[useProbes, c]
+	probeSetInt <- data.frame(intensity=(probeSetInt), probeID=names(probeSetInt),
+														probeClass=probeClass(names(probeSetInt)))
+	
+	
+	investigateProbes <- c(exonDatSingleMM$pmProbe[r], exonDatSingleMM$mmProbe[r])
+	useProbes <- which(!(rownames(probeSetInt) %in% investigateProbes))
+	
+	probeSetDen <- probeSetInt[useProbes,]
+	investigateInt <- probeSetInt[-useProbes,]
+	
+	investigateInt$y <- 0
+	
+	# this looks at the mm and pm distribution without 
+	bl.Plot1 <- ggplot() + geom_histogram(data=probeSetDen, aes(x=intensity, fill=probeClass), alpha=.5, position="identity") + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3)
+	bl.Plot2 <- ggplot() + geom_density(data=probeSetDen, aes(x=intensity, colour=probeClass)) + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3)
+	
 	
 })
 
