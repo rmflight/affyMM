@@ -254,7 +254,7 @@ denData <- lapply(useDatNames, function(inOrg){
 	
 	outDat <- c(nallPM=nallPM, nallPM.inNeg=nallPM.inNeg, nallPM.Exon=nallPM.Exon, nallPm.Exon.inNeg=nallPM.Exon.inNeg)
 	
-	rm(pm.mm.Diff, n.affyCtrl, probeNames, orgName, nameReord, pmIndx, mmIndx)
+	rm(n.affyCtrl, probeNames, orgName, nameReord, pmIndx, mmIndx)
 	
 	# and what about the distribution of MM intensities?
 	nSamp <- 10000
@@ -270,7 +270,41 @@ denData <- lapply(useDatNames, function(inOrg){
 																																				 rep("pm.exon", length(mm.probeInt))))
 	
 	plotInt <- rbind(allInt, useInt)
-	outPlot <- ggplot(plotInt, aes(x=probeInt, colour=probeType)) + geom_density() + opts(title=inData)
+	outPlotAllExp <- ggplot(plotInt, aes(x=probeInt, colour=probeType)) + geom_density() + labs(title=inData)
+	
+	# For those MM probes that overlap with exons, find the biggest PM - MM difference 
+	# and examine some properties
+	exonDat <- tmpDat[!(is.na(tmpDat$pm.E)),]
+	exonSingleMM <- (exonDat$mm.E == 1) & (exonDat$pm.E == 1) # start with those
+	exonDatSingleMM <- exonDat[exonSingleMM,]
+	exonSingleDifs <- pm.mm.Diff[(exonDat$pmProbe[exonSingleMM]),]
+	
+	useMin <- which.min(exonSingleDifs)
+	r = ((useMin-1) %% nrow(exonSingleDifs)) + 1
+	c = floor((useMin-1) / nrow(exonSingleDifs)) + 1
+	
+	probeSetP <- strsplit(rownames(exonSingleDifs)[r], ".", fixed=T)
+	probeSetP <- probeSetP[[1]][2]
+	useProbes <- grep(probeSetP, rownames(pIntensity), value=T)
+	probeSetInt <- pIntensity[useProbes, c]
+	probeSetInt <- data.frame(intensity=(probeSetInt), probeID=names(probeSetInt),
+														probeClass=probeClass(names(probeSetInt)))
+	
+	
+	investigateProbes <- c(exonDatSingleMM$pmProbe[r], exonDatSingleMM$mmProbe[r])
+	useProbes <- which(!(rownames(probeSetInt) %in% investigateProbes))
+	
+	probeSetDen <- probeSetInt[useProbes,]
+	investigateInt <- probeSetInt[-useProbes,]
+	
+	investigateInt$y <- 0
+	
+	# this looks at the mm and pm distribution without 
+	bl.Plot1 <- ggplot() + geom_histogram(data=probeSetDen, aes(x=intensity, fill=probeClass), alpha=.5, position="identity") + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3)
+	bl.Plot2 <- ggplot() + geom_density(data=probeSetDen, aes(x=intensity, colour=probeClass)) + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3)
+	
+	# now grab all of the probes that align to the same location as the mismatch
+	
 	
 	cdf2Det <- grep("cdf", search(), value=T)
 	detach(cdf2Det, character.only=T)
