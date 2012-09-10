@@ -78,31 +78,38 @@ So we can basically ignore yeast. However, everything else it looks like we get 
      
 ## Answer questions above
 
-```{r useOrgs}
+```{r examinData}
 useData <- c("dm3", "dr6", "xtropicalis", "rn4", "hg19", "mm9", "mm10", "ce6")
+celLoc <- c(hg19="hs", mm9="mm", mm10="mm", rn4="rn", dr6="dr", dm3="dm", ce6="ce", xtropicalis="xt")
+
 allData <- lapply(useData, function(inData){
+	inData <- "dm3" #testing purposes
+	{# grab the data we need
 	bamFile <- paste("mappedSequences_", inData, ".bam", sep="", collapse="")
-	tmpSeq <- readGappedAlignments(file.path("seqData", bamFile), use.names=T)
-	tmpSeq <- as(tmpSeq, "GRanges")
-	probeNames <- names(tmpSeq)
+	probeAlign <- readGappedAlignments(file.path("seqData", bamFile), use.names=T)
+	probeAlign <- as(probeAlign, "GRanges")
+	probeNames <- names(probeAlign)
 	pClass <- probeClass(probeNames)
-	elementMetadata(tmpSeq) <- data.frame(probeNames=names(tmpSeq), class=pClass) # put probe IDs in here so they don't become mangled
-	names(tmpSeq) <- NULL
+	elementMetadata(probeAlign) <- data.frame(probeNames=probeNames, class=pClass) # put probe IDs in here so they don't become mangled
+	names(probeAlign) <- NULL
 	affyCntr <- unique(grep("AFFX", probeNames, value=T))
 	keepSeq <- which(!(probeNames %in% affyCntr))
-	probeNames <- probeNames[keepSeq]
-	tmpSeq <- tmpSeq[keepSeq] 
-	nProbes <- length(probeNames)
+	probeAlign <- probeAlign[keepSeq] 
+		
+	rm(bamFile, probeNames, pClass, affyCntr, keepSeq)
+	}
 	
-	mStatus <- duplicated(probeNames)
-	multProbes <- unique(probeNames[mStatus]) # those probes aligning to multiple locations in the genome
-	
-	singProbes <- unique(probeNames[!mStatus])
-	singSeq <- tmpSeq[which(!mStatus)]
-	
-	multClass <- probeClass(multProbes)
-	pmMult <- multProbes[multClass == "pm"]
-	mmMult <- multProbes[multClass == "mm"]
+	# commented code chunks that may be useful later
+	{ 
+# 	mStatus <- duplicated(probeNames)
+# 	multProbes <- unique(probeNames[mStatus]) # those probes aligning to multiple locations in the genome
+# 	
+# 	singProbes <- unique(probeNames[!mStatus])
+# 	singSeq <- tmpSeq[which(!mStatus)]
+# 	
+# 	multClass <- probeClass(multProbes)
+# 	pmMult <- multProbes[multClass == "pm"]
+# 	mmMult <- multProbes[multClass == "mm"]
 	
 # 	pmMultCnt <- sapply(pmMult, function(x){
 # 		sum(allAlign %in% x)
@@ -121,67 +128,85 @@ allData <- lapply(useData, function(inData){
 	# ggplot(trimMult, aes(x=cnt, colour=class)) + geom_density() + xlim(0, 10)
 	
 	# because the mm matches are much fewer, it makes far more sense to reverse the question of associations between PM and MM probes, and ask how many of the MM probes that map to the genome have an associated PM match?
+	}
 	
-	# what about if we don't restrict to exons
-	allStatus <- elementMetadata(tmpSeq)$class
-	mmAlign <- unique(probeNames[allStatus == "mm"])
-	mmAlignIndx <- lapply(mmAlign, function(x){which(probeNames %in% x)})
+	# new variables kept: probeAlign
 	
-	mmAlignSplit <- strsplit(mmAlign, ".", fixed=T)
-	pmAlign <- sapply(mmAlignSplit, function(inMM){
-		nEl <- length(inMM)
-		pmLoc <- as.character(as.integer(inMM[nEl]) - 1)
-		paste("pm", paste(inMM[seq(2, nEl-1)], sep=".", collapse="."), pmLoc, sep=".", collapse=".")
-	})
+	###
+	## For each mm probe that had an alignment to the genome, find the associated
+	## pm probe and count for both of them how many alignments they had.
 	
-	pmAlignIndx <- lapply(pmAlign, function(x){which(probeNames %in% x)})
-	
-	allCnts <- data.frame(pm=(sapply(pmAlignIndx, length)), mm=(sapply(mmAlignIndx, length)),
-												mmProbe=mmAlign, pmProbe=pmAlign)
-	rownames(allCnts) <- NULL
+	# For everything: count the number of alignments to the genome
+	{
+		probeNames <- elementMetadata(probeAlign)$probeNames
+		allClass <- elementMetadata(probeAlign)$class
+		mmAlign <- unique(probeNames[allClass == "mm"])
+		mmAlignIndx <- lapply(mmAlign, function(x){which(probeNames %in% x)})
 		
+		mmAlignSplit <- strsplit(mmAlign, ".", fixed=T)
+		pmAlign <- sapply(mmAlignSplit, function(inMM){
+			nEl <- length(inMM)
+			pmLoc <- as.character(as.integer(inMM[nEl]) - 1)
+			paste("pm", paste(inMM[seq(2, nEl-1)], sep=".", collapse="."), pmLoc, sep=".", collapse=".")
+		})
+		
+		pmAlignIndx <- lapply(pmAlign, function(x){which(probeNames %in% x)})
+		
+		allCnts <- data.frame(pm=(sapply(pmAlignIndx, length)), mm=(sapply(mmAlignIndx, length)),
+													mmProbe=mmAlign, pmProbe=pmAlign)
+		rownames(allCnts) <- NULL
+		
+		rm(allClass, mmAlign, mmAlignIndx, mmAlignSplit, pmAlign, pmAlignIndx)
+	}
+	
+	# New variables kept: probeAlign, allCnts
+	
 	# restrict to those probes that align to exons
-	## Note that these exons are artificial, created using mergeBED to get essentially transcribed regions
-	exonFile <- paste(inData, "_mergeExons.bed.gz", sep="", collapse="")
-	useExons <- read.table(file.path("seqData", exonFile), sep="\t")
-	exonInt <- GRanges(seqnames=Rle(useExons[,1]), ranges=IRanges(useExons[,2], useExons[,3]),
-										 strand=Rle(useExons[,4]))
-	
-	exonOverlaps <- subsetByOverlaps(query=tmpSeq, subject=exonInt, minoverlap=23, type="any")
-	
-	hasExonProbes <- elementMetadata(exonOverlaps)$probeNames
-	exonProbeClass <- elementMetadata(exonOverlaps)$class
-	
-	mmExons <- unique(hasExonProbes[exonProbeClass == "mm"])
-	mmIntIndx <- sapply(mmExons, function(x){which(hasExonProbes %in% x)})
-	# figure out the associated PM probes
-	mmSplit <- strsplit(mmExons, ".", fixed=T)
-	pmExons <- sapply(mmSplit, function(inMM){
-		nEl <- length(inMM)
-		pmLoc <- as.character(as.integer(inMM[nEl]) - 1)
-		paste("pm", paste(inMM[seq(2, nEl-1)], sep=".", collapse="."), pmLoc, sep=".", collapse=".")
-	})
-	
-	pmIntIndx <- lapply(pmExons, function(x){which(hasExonProbes %in% x)})
-	
-	exonCnts <- data.frame(pm=(sapply(pmIntIndx, length)), mm=(sapply(mmIntIndx, length)),
-												 mmProbe=mmExons, pmProbe=pmExons)
-	rownames(exonCnts) <- NULL
-	
-	allCnts <- merge(allCnts, exonCnts, by=c("pmProbe", "mmProbe"), all=T, suffixes=c(".A", ".E"))
+	# Note that these exons are artificial, created using mergeBED to get essentially transcribed regions inside of known genes
+	{
+		exonFile <- paste(inData, "_mergeExons.bed.gz", sep="", collapse="")
+		useExons <- read.table(file.path("seqData", exonFile), sep="\t")
+		exonIntervals <- GRanges(seqnames=Rle(useExons[,1]), ranges=IRanges(useExons[,2], useExons[,3]),
+											 strand=Rle(useExons[,4]))
 		
-	return(allCnts)
+		exonOverlaps <- subsetByOverlaps(query=probeAlign, subject=exonIntervals, minoverlap=23, type="any")
+		
+		hasExonProbes <- elementMetadata(exonOverlaps)$probeNames
+		exonProbeClass <- elementMetadata(exonOverlaps)$class
+		
+		mmExons <- unique(hasExonProbes[exonProbeClass == "mm"])
+		mmIntIndx <- sapply(mmExons, function(x){which(hasExonProbes %in% x)})
+		# figure out the associated PM probes
+		mmSplit <- strsplit(mmExons, ".", fixed=T)
+		pmExons <- sapply(mmSplit, function(inMM){
+			nEl <- length(inMM)
+			pmLoc <- as.character(as.integer(inMM[nEl]) - 1)
+			paste("pm", paste(inMM[seq(2, nEl-1)], sep=".", collapse="."), pmLoc, sep=".", collapse=".")
+		})
+		
+		pmIntIndx <- lapply(pmExons, function(x){which(hasExonProbes %in% x)})
+		
+		exonCnts <- data.frame(pm=(sapply(pmIntIndx, length)), mm=(sapply(mmIntIndx, length)),
+													 mmProbe=mmExons, pmProbe=pmExons)
+		rownames(exonCnts) <- NULL
+		
+		allCnts <- merge(allCnts, exonCnts, by=c("pmProbe", "mmProbe"), all=T, suffixes=c(".A", ".E"))
+		
+		rm(exonFile, useExons, exonOverlaps, hasExonProbes, exonProbeClass,
+			 mmExons, mmIntIndx, mmSplit, pmExons, pmIntIndx, exonCnts)
+	}
+	
+	# new variables: probeAlign, allCnts, exonIntervals
+	
+	
 })
-names(allData) <- useData
-.sessionInfo <- sessionInfo()
-.datetime <- Sys.time()
-save(list=c(".sessionInfo", ".datetime", "allData"), file="allData_mmResults.RData")
+
 ```
 
 This gives the **MM** probes that aligned (either exons or anywhere), as well as the associated **PM** probes, and the number of alignments. For each of the organisms, we will load 20 randomly selected **CEL** files and examine both the **PM** intensities compared to **MM** for those that did and did not align to exons, and examine the distribution of intensities of all **MM** probes and locate the aligned uniquely **MM** probes in the distribution.
 
 ```{r intensityComparison}
-celLoc <- c(hg19="hs", mm9="mm", mm10="mm", rn4="rn", dr6="dr", dm3="dm", ce6="ce", xtropicalis="xt")
+
 useDatNames <- names(allData)
 
 denData <- lapply(useDatNames, function(inOrg){
