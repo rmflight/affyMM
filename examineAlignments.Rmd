@@ -30,33 +30,41 @@ There is only `r sum(classSeq == "mm")` mismatch probe that aligns to the genome
 ```{r countAll}
 allFile <- dir('seqData/')
 bamFile <- grep(".bam", allFile, fixed=T, value=T)
-allData <- lapply(bamFile, function(x){
-	tmpSeq <- readGappedAlignments(file.path("seqData", x), use.names=T)
+nFile <- length(bamFile)
+cntDat <- matrix(0, nrow=nFile, ncol=6)
+colnames(cntDat) <- c("nPM", "nMM", "dupPM", "dupMM", "singPM", "singMM")
+
+for (iFile in 1:nFile){
+	tmpSeq <- readGappedAlignments(file.path("seqData", bamFile[iFile]), use.names=T)
 	nAlign <- length(names(tmpSeq))
 	uniqProbes <- unique(names(tmpSeq))
 	probeClass <- sapply(strsplit(uniqProbes, ".", fixed=T), function(y){y[1]})
-	nPM <- sum(probeClass == "pm") # number of PM probes that align
-	nMM <- sum(probeClass == "mm") # number of MM probes that align
+	cntDat[iFile, "nPM"] <- sum(probeClass == "pm") # number of PM probes that align
+	cntDat[iFile, "nMM"] <- sum(probeClass == "mm") # number of MM probes that align
 	
 	# remove duplicates first
 	allProbes <- names(tmpSeq)
 	dupProbes <- unique(allProbes[duplicated(allProbes)])
 	
-	dupFile <- paste(strsplit(x, ".", fixed=T)[[1]][1], "_multMatch.txt", sep="", collapse="")
+	dupFile <- paste(strsplit(bamFile[iFile], ".", fixed=T)[[1]][1], "_multMatch.txt", sep="", collapse="")
 	cat(dupProbes, file=file.path("seqData", dupFile), sep="\n")
 	
 	dupClass <- sapply(strsplit(dupProbes, ".", fixed=T), function(y){y[1]})
-	dupPM <- sum(dupClass == "pm")
-	dupMM <- sum(dupClass == "mm")
+	cntDat[iFile, "dupPM"] <- sum(dupClass == "pm")
+	cntDat[iFile, "dupMM"] <- sum(dupClass == "mm")
 	
 	nonDup <- allProbes[!(allProbes %in% dupProbes)]
 	nonClass <- sapply(strsplit(nonDup, ".", fixed=T), function(y){y[1]})
-	nonPM <- sum(nonClass == "pm")
-	nonMM <- sum(nonClass == "mm")
-	return(c(nPM=nPM, nMM=nMM, dupPM=dupPM, dupMM=dupMM, nonPM=nonPM, nonMM=nonMM))
-})
-names(allData) <- bamFile
-allData
+	cntDat[iFile, "singPM"] <- sum(nonClass == "pm")
+	cntDat[iFile, "singMM"] <- sum(nonClass == "mm")
+# 	tmpCnt <- data.frame()
+# 	rbind(cntDat)
+# 	return(c(nPM=nPM, nMM=nMM, dupPM=dupPM, dupMM=dupMM, nonPM=nonPM, nonMM=nonMM))
+}
+
+cntDat <- as.data.frame(cntDat)
+cntDat$alignment <- bamFile
+write.table(cntDat, file="alignmentCounts.txt", sep="\t", row.names=F, quote=F)
 ```
 
 So we can basically ignore yeast. However, everything else it looks like we get *some* **MM** alignments. What kinds of questions can we ask with this data?
@@ -79,11 +87,11 @@ So we can basically ignore yeast. However, everything else it looks like we get 
 ## Answer questions above
 
 ```{r examinData}
-useData <- c("dm3", "dr6", "xtropicalis", "rn4", "hg19", "mm9", "mm10", "ce6")
-celLoc <- c(hg19="hs", mm9="mm", mm10="mm", rn4="rn", dr6="dr", dm3="dm", ce6="ce", xtropicalis="xt")
+useData <- c("dm3", "dr6", "xtropicalis", "rn4", "hg19", "mm9", "mm10", "ce6", "yeast")
+celLoc <- c(hg19="hs", mm9="mm", mm10="mm", rn4="rn", dr6="dr", dm3="dm", ce6="ce", xtropicalis="xt", yeast="yeast")
 
-allData <- lapply(useData, function(inData){
-	inData <- "dm3" #testing purposes
+allData <- lapply(useData[1:2], function(inData){
+	#inData <- "dm3" #testing purposes
 	{# grab the data we need
 	bamFile <- paste("mappedSequences_", inData, ".bam", sep="", collapse="")
 	probeAlign <- readGappedAlignments(file.path("seqData", bamFile), use.names=T)
@@ -255,6 +263,8 @@ allData <- lapply(useData, function(inData){
 		minSum <- 9
 		if (inData == "xtropicalis"){
 			minSum <- 2
+		} else if (inData == "yeast"){
+			minSum <- 6
 		}
 		
 		isNeg <- sumNeg >= minSum
@@ -281,6 +291,8 @@ allData <- lapply(useData, function(inData){
 	
 	# new variables are: outDat, pm.mm.Diff, allMM.fromExon, allPM.fromExon
 	
+	if (outDat["nallPm.Exon.inNeg"] != 0){
+	
 	# and what about the distribution of probe intensities?
 	{
 		nSamp <- 10000
@@ -290,6 +302,9 @@ allData <- lapply(useData, function(inData){
 		allPMInt <- sample(allPMInt, nSamp)
 		allInt <- data.frame(probeInt=c(allMMInt, allPMInt), probeType=c(rep("mm.all", length(allMMInt)), rep("pm.all", length(allPMInt))) )
 		
+		nMM.fromExon <- length(allMM.fromExon)
+	
+	
 		mm.probeInt <- log2(as.vector(pIntensity[allMM.fromExon,]))
 		pm.probeInt <- log2(as.vector(pIntensity[allPM.fromExon,]))
 		useInt <- data.frame(probeInt=c(mm.probeInt, pm.probeInt), probeType=c(rep("mm.exon", length(mm.probeInt)),
@@ -298,61 +313,133 @@ allData <- lapply(useData, function(inData){
 		plotInt <- rbind(allInt, useInt)
 		outPlotAllExp <- ggplot(plotInt, aes(x=probeInt, colour=probeType)) + geom_density() + labs(title=inData)
 		rm(plotInt, useInt, mm.probeInt, pm.probeInt, allInt, allPMInt, allMMInt, nSamp,
-			 allMM.fromExon, allPM.fromExon)
+		 	allMM.fromExon, allPM.fromExon)
+		
 	}
 	
 	# For those MM probes that overlap with exons, find the biggest PM - MM difference 
 	# and examine some properties
 	{
+		# do the overlap of exons, because we will use it for every thing later on
+		exonOverlaps <- as.matrix(findOverlaps(probeAlign, exonIntervals, type="any", minoverlap=23))
+		
 		exonDat <- allCnts[!(is.na(allCnts$pm.E)),]
-		exonSingleMM <- (exonDat$mm.E == 1) & (exonDat$pm.E == 1) # start with those
-		exonDatSingleMM <- exonDat[exonSingleMM,]
-		exonSingleDifs <- pm.mm.Diff[(exonDat$pmProbe[exonSingleMM]),]
+		exonSingleMM <- (exonDat$mm.E == 1) # start with those where the MM aligned to a single exon
 		
-		useMin <- which.min(exonSingleDifs)
-		r = ((useMin-1) %% nrow(exonSingleDifs)) + 1
-		c = floor((useMin-1) / nrow(exonSingleDifs)) + 1
+		if (sum(exonSingleMM) != 0){
+			exonDatSingleMM <- exonDat[exonSingleMM,]
+			exonSingleDifs <- pm.mm.Diff[(exonDat$pmProbe[exonSingleMM]),]
+			
+			difCut <- -100
+			isNeg <- exonSingleDifs <= difCut
+			nNeg <- apply(isNeg, 1, sum)
+			
+			useDifs <- exonSingleDifs[nNeg > 0,]
+			
+			usePMs <- rownames(useDifs)
+			useDat <- exonDatSingleMM[(exonDatSingleMM$pmProbe %in% usePMs),]
+			nPMs <- nrow(useDifs)
+			
+			pmDifDat <- vector("list", nPMs)
+			
+			for (iPM in 1:nPMs){
+				probeSetP <- strsplit(usePMs[iPM], ".", fixed=T)
+				probeSetP <- probeSetP[[1]][2]
+				useProbes <- grep(probeSetP, rownames(pIntensity), value=T)
+				
+				# set up the data for the probeset, looking at where "our" probes hit
+				investigateProbes <- c(useDat$pmProbe[iPM], useDat$mmProbe[iPM]) # the interesting mm and pm
+				densityProbes <- useProbes[!(useProbes %in% investigateProbes)]  # all the other probes
+				
+				plot1Title <- paste(investigateProbes, collapse=":")
+				plot1Title <- paste("ProbeSetPlot", plot1Title, collapse="::", sep="::")
+				
+				otherPlotTitle <- paste("ExonMatchedPlot", investigateProbes[2], collapse="::", sep="::")
+				
+				# and the probes for the exon that go with the mm probe
+				mmLoc <- which(elementMetadata(probeAlign)$probeNames %in% investigateProbes[2])
+				exonHit <- exonOverlaps[exonOverlaps[,1] == mmLoc, 2]
+				otherHit <- exonOverlaps[exonOverlaps[,2] == exonHit, 1]
+				otherProbes <- elementMetadata(probeAlign)$probeNames[otherHit]
+				
+				isNeg <- which(useDifs[iPM,] <= difCut)
+				celNames <- colnames(useDifs[,isNeg])
+				
+				nNeg <- length(isNeg)
+				
+				plotDat <- vector("list", nNeg)
+				
+				for (iNeg in 1:nNeg){
+					
+					plot1Title <- paste(plot1Title, celNames[iNeg], collapse="::", sep="::")
+					otherPlotTitle <- paste(otherPlotTitle, celNames[iNeg], collapse="::", sep="::")
+					
+					probeSetInt <- pIntensity[densityProbes, isNeg[iNeg]]
+					probeSetInt <- data.frame(intensity=(probeSetInt), probeID=names(probeSetInt),
+																		probeClass=probeClass(names(probeSetInt)))
+					
+					investigateInt <- pIntensity[investigateProbes, isNeg[iNeg]]
+					investigateInt <- data.frame(intensity=(investigateInt), probeID=names(investigateInt),
+																			 probeClass=probeClass(names(investigateInt)),
+																			 y=0)
+					
+					
+					bl.Plot1 <- ggplot() + geom_histogram(data=probeSetInt, aes(x=intensity, fill=probeClass), alpha=.5, position="identity") + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3) + ggtitle(plot1Title)
+					bl.Plot2 <- ggplot() + geom_density(data=probeSetInt, aes(x=intensity, colour=probeClass)) + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3) + ggtitle(plot1Title)
+					
+					
+					if (length(otherProbes) != 1){
+					
+						otherInt <- pIntensity[otherProbes, isNeg[iNeg]]
+						otherInt <- data.frame(intensity=otherInt, probeID=names(otherInt), y=0)
+						
+						mmInt <- otherInt[investigateProbes[2],]
+						
+					
+						otherPlot <- ggplot(otherInt, aes(x=intensity)) + geom_point(data=mmInt, aes(x=intensity, y=y), size=4, colour="red") + ggtitle(otherPlotTitle)
+						if (nrow(otherInt) >= 5){
+							otherPlot <- otherPlot + geom_density()
+						} else {
+							otherPlot <- otherPlot + geom_histogram()
+						}
+					} else { 
+						otherPlot <- NA
+						otherInt <- NA
+					}
+					
+			
+					plotDat[[iNeg]] <- list(probeSetInt=probeSetInt, investigateInt=investigateInt, otherInt=otherInt,
+																		histPlot=bl.Plot1, denPlot=bl.Plot2, exonPlot=otherPlot)	
+					
+				}
+				pmDifDat[[iPM]] <- list(invProbes=investigateProbes, denProbes=densityProbes, otherProbes=otherProbes,
+																exonIndx=exonHit, plotDat=plotDat)
+			}
+			
+			.sessionInfo <- sessionInfo()
+			.timedate <- Sys.time()
+			outFile <- paste(inData, "_tmpResults.RData", sep="", collapse="")
+			save(.sessionInfo, .timedate, pmDifDat, file=outFile)
 		
-		probeSetP <- strsplit(rownames(exonSingleDifs)[r], ".", fixed=T)
-		probeSetP <- probeSetP[[1]][2]
-		useProbes <- grep(probeSetP, rownames(pIntensity), value=T)
-		probeSetInt <- pIntensity[useProbes, c]
-		probeSetInt <- data.frame(intensity=(probeSetInt), probeID=names(probeSetInt),
-															probeClass=probeClass(names(probeSetInt)))
-		
-		
-		investigateProbes <- c(exonDatSingleMM$pmProbe[r], exonDatSingleMM$mmProbe[r])
-		useProbes <- which(!(rownames(probeSetInt) %in% investigateProbes))
-		
-		probeSetDen <- probeSetInt[useProbes,]
-		investigateInt <- probeSetInt[-useProbes,]
-		
-		investigateInt$y <- 0
-		
-		# this looks at the mm and pm distribution without the interfering probes in the density calculation
-		bl.Plot1 <- ggplot() + geom_histogram(data=probeSetDen, aes(x=intensity, fill=probeClass), alpha=.5, position="identity") + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3)
-		bl.Plot2 <- ggplot() + geom_density(data=probeSetDen, aes(x=intensity, colour=probeClass)) + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3)
-		
-		rm(probeSetDen, investigateInt)
+		}	
+	
 	}
-	
-	# so, what are the other probes that belong with the mm probe on an exon?
-	exonOverlaps <- as.matrix(findOverlaps(probeAlign, exonIntervals, type="any", minoverlap=23))
-	mmLoc <- which(elementMetadata(probeAlign)$probeNames %in% investigateProbes[2])
-	exonHit <- exonOverlaps[exonOverlaps[,1] == mmLoc, 2]
-	otherHit <- exonOverlaps[exonOverlaps[,2] == exonHit, 1]
-	
-	exonIntervals[exonHit]
-	useProbes <- elementMetadata(probeAlign[otherHit])$probeNames
-	
-	pIntensity[useProbes, ]
 	
 	cdf2Det <- grep("cdf", search(), value=T)
 	detach(cdf2Det, character.only=T)
 	
-	return(list(outDat=outDat, plot=outPlot))
-
+	return(list(pmDifDat=pmDifDat, allPlot=outPlotAllExp, negDat=outDat))
+	
+	} else {
+		return(list(pmDifDat=NA, allPlot=NA, negDat=outDat))
+	}
+	
 })
+
+names(allData) <- useData
+.sessionInfo <- sessionInfo()
+.timedate <- Sys.time()
+save(.sessionInfo, .timedate, allData, file="counts_Plots_etc_allOrgs.RData")
 
 ```
 
