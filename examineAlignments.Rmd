@@ -9,6 +9,13 @@ require(affy)
 probeClass <- function(probeIDs){
 	sapply(strsplit(probeIDs, ".", fixed=T), function(y){y[1]})
 }
+
+probeSetName <- function(probeID){
+	splitName <- strsplit(probeID, ".", fixed=T)[[1]]
+	nSplit <- length(splitName)
+	rmSplit <- -1 * c(1, nSplit-1, nSplit)
+	paste(splitName[rmSplit], sep=".", collapse=".")
+}
 ```
 
 # Examine Results
@@ -90,7 +97,7 @@ So we can basically ignore yeast. However, everything else it looks like we get 
 useData <- c("dm3", "dr6", "xtropicalis", "rn4", "hg19", "mm9", "mm10", "ce6", "yeast")
 celLoc <- c(hg19="hs", mm9="mm", mm10="mm", rn4="rn", dr6="dr", dm3="dm", ce6="ce", xtropicalis="xt", yeast="yeast")
 
-allData <- lapply(useData[1:2], function(inData){
+allData <- lapply(useData, function(inData){
 	#inData <- "dm3" #testing purposes
 	{# grab the data we need
 	bamFile <- paste("mappedSequences_", inData, ".bam", sep="", collapse="")
@@ -100,7 +107,7 @@ allData <- lapply(useData[1:2], function(inData){
 	pClass <- probeClass(probeNames)
 	elementMetadata(probeAlign) <- data.frame(probeNames=probeNames, class=pClass) # put probe IDs in here so they don't become mangled
 	names(probeAlign) <- NULL
-	affyCntr <- unique(grep("AFFX", probeNames, value=T))
+	affyCntr <- unique(grep("AFFX", probeNames, value=T, ignore.case=T))
 	keepSeq <- which(!(probeNames %in% affyCntr))
 	probeAlign <- probeAlign[keepSeq] 
 		
@@ -285,7 +292,7 @@ allData <- lapply(useData[1:2], function(inData){
 		
 		outDat <- c(nallPM=nallPM, nallPM.inNeg=nallPM.inNeg, nallPM.Exon=nallPM.Exon, nallPm.Exon.inNeg=nallPM.Exon.inNeg)
 		
-		rm(sumNeg, minSum, isNeg, pmNeg, allPM.fromMM, nallPM, nallPM.inNeg, fromExon,
+		rm(sumNeg, minSum, isNeg, pmNeg, nallPM, nallPM.inNeg, fromExon,
 		   allPM.fromMM, nallPM.Exon, nallPM.Exon.inNeg)
 	}
 	
@@ -337,16 +344,19 @@ allData <- lapply(useData[1:2], function(inData){
 			useDifs <- exonSingleDifs[nNeg > 0,]
 			
 			usePMs <- rownames(useDifs)
+			usePMord <- order(usePMs)
+			usePMs <- usePMs[usePMord]
+			useDifs <- useDifs[usePMord,]
 			useDat <- exonDatSingleMM[(exonDatSingleMM$pmProbe %in% usePMs),]
+			useDat <- useDat[(order(useDat$pmProbe)),]
 			nPMs <- nrow(useDifs)
 			
 			pmDifDat <- vector("list", nPMs)
 			
 			for (iPM in 1:nPMs){
-				probeSetP <- strsplit(usePMs[iPM], ".", fixed=T)
-				probeSetP <- probeSetP[[1]][2]
-				useProbes <- grep(probeSetP, rownames(pIntensity), value=T)
+				probeSetP <- probeSetName(usePMs[iPM])
 				
+				useProbes <- grep(probeSetP, rownames(pIntensity), value=T)
 				# set up the data for the probeset, looking at where "our" probes hit
 				investigateProbes <- c(useDat$pmProbe[iPM], useDat$mmProbe[iPM]) # the interesting mm and pm
 				densityProbes <- useProbes[!(useProbes %in% investigateProbes)]  # all the other probes
@@ -388,7 +398,7 @@ allData <- lapply(useData[1:2], function(inData){
 					bl.Plot2 <- ggplot() + geom_density(data=probeSetInt, aes(x=intensity, colour=probeClass)) + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3) + ggtitle(plot1Title)
 					
 					
-					if (length(otherProbes) != 1){
+					if (length(otherProbes) > 1){
 					
 						otherInt <- pIntensity[otherProbes, isNeg[iNeg]]
 						otherInt <- data.frame(intensity=otherInt, probeID=names(otherInt), y=0)
