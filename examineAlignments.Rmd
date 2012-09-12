@@ -362,9 +362,9 @@ allData <- lapply(useData, function(inData){
 				densityProbes <- useProbes[!(useProbes %in% investigateProbes)]  # all the other probes
 				
 				plot1Title <- paste(investigateProbes, collapse=":")
-				plot1Title <- paste("ProbeSetPlot", plot1Title, collapse="::", sep="::")
+				plot1Title <- paste("ProbeSetPlot", plot1Title, collapse="\n", sep="\n")
 				
-				otherPlotTitle <- paste("ExonMatchedPlot", investigateProbes[2], collapse="::", sep="::")
+				otherPlotTitle <- paste("ExonMatchedPlot", investigateProbes[2], collapse="\n", sep="\n")
 				
 				# and the probes for the exon that go with the mm probe
 				mmLoc <- which(elementMetadata(probeAlign)$probeNames %in% investigateProbes[2])
@@ -381,8 +381,8 @@ allData <- lapply(useData, function(inData){
 				
 				for (iNeg in 1:nNeg){
 					
-					plot1Title <- paste(plot1Title, celNames[iNeg], collapse="::", sep="::")
-					otherPlotTitle <- paste(otherPlotTitle, celNames[iNeg], collapse="::", sep="::")
+					plot1Title_use <- paste(plot1Title, celNames[iNeg], collapse="\n", sep="\n")
+					otherPlotTitle_use <- paste(otherPlotTitle, celNames[iNeg], collapse="\n", sep="\n")
 					
 					probeSetInt <- pIntensity[densityProbes, isNeg[iNeg]]
 					probeSetInt <- data.frame(intensity=(probeSetInt), probeID=names(probeSetInt),
@@ -394,8 +394,8 @@ allData <- lapply(useData, function(inData){
 																			 y=0)
 					
 					
-					bl.Plot1 <- ggplot() + geom_histogram(data=probeSetInt, aes(x=intensity, fill=probeClass), alpha=.5, position="identity") + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3) + ggtitle(plot1Title)
-					bl.Plot2 <- ggplot() + geom_density(data=probeSetInt, aes(x=intensity, colour=probeClass)) + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3) + ggtitle(plot1Title)
+					bl.Plot1 <- ggplot() + geom_histogram(data=probeSetInt, aes(x=intensity, fill=probeClass), alpha=.5, position="identity") + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3) + ggtitle(plot1Title_use)
+					bl.Plot2 <- ggplot() + geom_density(data=probeSetInt, aes(x=intensity, colour=probeClass)) + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3) + ggtitle(plot1Title_use)
 					
 					
 					if (length(otherProbes) > 1){
@@ -406,7 +406,7 @@ allData <- lapply(useData, function(inData){
 						mmInt <- otherInt[investigateProbes[2],]
 						
 					
-						otherPlot <- ggplot(otherInt, aes(x=intensity)) + geom_point(data=mmInt, aes(x=intensity, y=y), size=4, colour="red") + ggtitle(otherPlotTitle)
+						otherPlot <- ggplot(otherInt, aes(x=intensity)) + geom_point(data=mmInt, aes(x=intensity, y=y), size=4, colour="red") + ggtitle(otherPlotTitle_use)
 						if (nrow(otherInt) >= 5){
 							otherPlot <- otherPlot + geom_density()
 						} else {
@@ -426,10 +426,6 @@ allData <- lapply(useData, function(inData){
 																exonIndx=exonHit, plotDat=plotDat)
 			}
 			
-			.sessionInfo <- sessionInfo()
-			.timedate <- Sys.time()
-			outFile <- paste(inData, "_tmpResults.RData", sep="", collapse="")
-			save(.sessionInfo, .timedate, pmDifDat, file=outFile)
 		
 		}	
 	
@@ -437,13 +433,16 @@ allData <- lapply(useData, function(inData){
 	
 	cdf2Det <- grep("cdf", search(), value=T)
 	detach(cdf2Det, character.only=T)
-	
-	return(list(pmDifDat=pmDifDat, allPlot=outPlotAllExp, negDat=outDat))
-	
+	returnDat <- list(pmDifDat=pmDifDat, allPlot=outPlotAllExp, negDat=outDat)
+		
 	} else {
-		return(list(pmDifDat=NA, allPlot=NA, negDat=outDat))
+		returnDat <- list(pmDifDat=NA, allPlot=NA, negDat=outDat)
 	}
-	
+	.sessionInfo <- sessionInfo()
+	.timedate <- Sys.time()
+	outFile <- paste(inData, "_tmpResults.RData", sep="", collapse="")
+	save(.sessionInfo, .timedate, returnDat, file=outFile)
+	returnDat
 })
 
 names(allData) <- useData
@@ -452,6 +451,8 @@ names(allData) <- useData
 save(.sessionInfo, .timedate, allData, file="counts_Plots_etc_allOrgs.RData")
 
 ```
+
+
 
 This gives the **MM** probes that aligned (either exons or anywhere), as well as the associated **PM** probes, and the number of alignments. For each of the organisms, we will load 20 randomly selected **CEL** files and examine both the **PM** intensities compared to **MM** for those that did and did not align to exons, and examine the distribution of intensities of all **MM** probes and locate the aligned uniquely **MM** probes in the distribution.
      
