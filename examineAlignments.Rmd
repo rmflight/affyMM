@@ -94,8 +94,8 @@ So we can basically ignore yeast. However, everything else it looks like we get 
 ## Answer questions above
 
 ```{r examinData}
-useData <- c("dm3", "dr6", "xtropicalis", "rn4", "hg19", "mm9", "mm10", "ce6", "yeast")
-celLoc <- c(hg19="hs", mm9="mm", mm10="mm", rn4="rn", dr6="dr", dm3="dm", ce6="ce", xtropicalis="xt", yeast="yeast")
+useData <- c("dm3", "dr6", "xtropicalis", "rn4", "hg19", "mm9", "mm10", "ce6")
+celLoc <- c(hg19="hs", mm9="mm", mm10="mm", rn4="rn", dr6="dr", dm3="dm", ce6="ce", xtropicalis="xt")
 
 allData <- lapply(useData, function(inData){
 	#inData <- "dm3" #testing purposes
