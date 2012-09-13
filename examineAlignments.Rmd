@@ -353,6 +353,9 @@ allData <- lapply(useData, function(inData){
 			
 			pmDifDat <- vector("list", nPMs)
 			
+			# common elements for the tiled intensity images
+			baseImage <- scale_fill_gradient(low="black", high="white", limits=c(0, 256)) + theme(axis.text.x=element_blank(), axis.ticks=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank())
+			
 			for (iPM in 1:nPMs){
 				probeSetP <- probeSetName(usePMs[iPM])
 				
@@ -371,6 +374,15 @@ allData <- lapply(useData, function(inData){
 				exonHit <- exonOverlaps[exonOverlaps[,1] == mmLoc, 2]
 				otherHit <- exonOverlaps[exonOverlaps[,2] == exonHit, 1]
 				otherProbes <- elementMetadata(probeAlign)$probeNames[otherHit]
+				
+				if (length(otherProbes) > 0){
+					otherLoc <- probeAlign[elementMetadata(probeAlign)$probeNames %in% otherProbes]
+					if (unique(strand(otherLoc)) == "+"){
+						otherLoc <- sort(otherLoc, decreasing=F)
+					} else {
+						otherLoc <- sort(otherLoc, decreasing=T)
+					}
+				}
 				
 				isNeg <- which(useDifs[iPM,] <= difCut)
 				celNames <- colnames(useDifs[,isNeg])
@@ -395,7 +407,7 @@ allData <- lapply(useData, function(inData){
 					
 					
 					bl.Plot1 <- ggplot() + geom_histogram(data=probeSetInt, aes(x=intensity, fill=probeClass), alpha=.5, position="identity") + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3) + ggtitle(plot1Title_use)
-					bl.Plot2 <- ggplot() + geom_density(data=probeSetInt, aes(x=intensity, colour=probeClass)) + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3) + ggtitle(plot1Title_use)
+					bl.Plot2 <- ggplot() + geom_density(data=probeSetInt, aes(x=intensity, colour=probeClass, linetype=probeClass)) + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass, shape=probeClass), size=3) + ggtitle(plot1Title_use) + scale_linetype_manual(values=c(mm=1, pm=3)) + theme_bw()
 					
 					
 					pm.mm.data <- rbind(probeSetInt, investigateInt[,1:3])
@@ -405,30 +417,27 @@ allData <- lapply(useData, function(inData){
 					pm.mm.data$fill <- sqrt(pm.mm.data$intensity)
 					xlim <- 0.5 + c(0, nrow(pm.mm.data)/2)
 					
-					bl.image <- ggplot(pm.mm.data, aes(x=xloc, y=probeClass, fill=fill)) + geom_tile() + scale_fill_gradient(low="black", high="white", limits=c(0, 256)) + coord_equal(ratio=1, xlim=xlim) + theme(axis.text.x=element_blank(), axis.ticks=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank()) + ggtitle(plot1Title_use)
+					bl.image <- ggplot(pm.mm.data, aes(x=xloc, y=probeClass, fill=fill)) + geom_tile() + scale_fill_gradient(low="black", high="white", limits=c(0, 256)) + theme(axis.text.x=element_blank(), axis.ticks=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank()) + coord_equal(ratio=1, xlim=xlim) + ggtitle(plot1Title_use)
  					
 					if (length(otherProbes) > 1){
-					
-						otherInt <- pIntensity[otherProbes, isNeg[iNeg]]
-						otherInt <- data.frame(intensity=otherInt, probeID=names(otherInt), y=0)
+											
+						otherInt <- pIntensity[elementMetadata(otherLoc)$probeNames, isNeg[iNeg]]
+						otherInt <- data.frame(intensity=otherInt, probeID=names(otherInt), probeClass="tm", xloc=seq(1,length(otherInt)))
+						otherInt$fill <- sqrt(otherInt$intensity)
+						xlim <- 0.5 + c(0, nrow(otherInt))
 						
-						mmInt <- otherInt[investigateProbes[2],]
+						tm.image <- ggplot(otherInt, aes(x=xloc, y=probeClass, fill=fill)) + geom_tile() + scale_fill_gradient(low="black", high="white", limits=c(0, 256)) + theme(axis.text.x=element_blank(), axis.ticks=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank()) + coord_equal(ratio=1, xlim=xlim) + ggtitle(otherPlotTitle_use)
 						
-					
-						otherPlot <- ggplot(otherInt, aes(x=intensity)) + geom_point(data=mmInt, aes(x=intensity, y=y), size=4, colour="red") + ggtitle(otherPlotTitle_use)
-						if (nrow(otherInt) >= 5){
-							otherPlot <- otherPlot + geom_density()
-						} else {
-							otherPlot <- otherPlot + geom_histogram()
-						}
+						
 					} else { 
 						otherPlot <- NA
 						otherInt <- NA
 					}
 					
 			
-					plotDat[[iNeg]] <- list(probeSetInt=probeSetInt, investigateInt=investigateInt, otherInt=otherInt,
-																		histPlot=bl.Plot1, denPlot=bl.Plot2, exonPlot=otherPlot)	
+					plotDat[[iNeg]] <- list(probeSetInt=probeSetInt, investigateInt=investigateInt, pm.mm.Int=pm.mm.data,
+																	otherInt=otherInt, histPlot=bl.Plot1, denPlot=bl.Plot2, psImage=bl.image, 
+																	exonImage=tm.image)	
 					
 				}
 				pmDifDat[[iPM]] <- list(invProbes=investigateProbes, denProbes=densityProbes, otherProbes=otherProbes,
