@@ -318,7 +318,7 @@ allData <- lapply(useData, function(inData){
 																																					 rep("pm.exon", length(mm.probeInt))))
 		
 		plotInt <- rbind(allInt, useInt)
-		outPlotAllExp <- ggplot(plotInt, aes(x=probeInt, colour=probeType)) + geom_density() + labs(title=inData)
+		outPlotAllExp <- ggplot(plotInt, aes(x=probeInt, colour=probeType)) + geom_density() + labs(title=inData) + theme_bw()
 		rm(plotInt, useInt, mm.probeInt, pm.probeInt, allInt, allPMInt, allMMInt, nSamp,
 		 	allMM.fromExon, allPM.fromExon)
 		
