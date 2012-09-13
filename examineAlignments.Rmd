@@ -16,6 +16,16 @@ probeSetName <- function(probeID){
 	rmSplit <- -1 * c(1, nSplit-1, nSplit)
 	paste(splitName[rmSplit], sep=".", collapse=".")
 }
+
+sortProbes <- function(probeIDs){
+	splitIDs <- strsplit(probeIDs, ".", fixed=T)
+	endIndx <- sapply(splitIDs, function(x){
+		nEnt <- length(x)
+		as.numeric(x[c(nEnt-1, nEnt)])
+	})
+	endIndx <- t(endIndx)
+	order(endIndx[,1], endIndx[,2])
+}
 ```
 
 # Examine Results
@@ -317,8 +327,13 @@ allData <- lapply(useData, function(inData){
 		useInt <- data.frame(probeInt=c(mm.probeInt, pm.probeInt), probeType=c(rep("mm.exon", length(mm.probeInt)),
 																																					 rep("pm.exon", length(mm.probeInt))))
 		
+		allTitle <- inData
+		if (inData == "xtropicalis"){
+			allTitle <- "xt3"
+		}
+		
 		plotInt <- rbind(allInt, useInt)
-		outPlotAllExp <- ggplot(plotInt, aes(x=probeInt, colour=probeType)) + geom_density() + labs(title=inData) + theme_bw()
+		outPlotAllExp <- ggplot(plotInt, aes(x=probeInt, colour=probeType, linetype=probeType)) + geom_density(size=1.5) + labs(title=allTitle, x="log2 probe intensity") + theme_bw()
 		rm(plotInt, useInt, mm.probeInt, pm.probeInt, allInt, allPMInt, allMMInt, nSamp,
 		 	allMM.fromExon, allPM.fromExon)
 		
@@ -371,6 +386,8 @@ allData <- lapply(useData, function(inData){
 				# set up the data for the probeset, looking at where "our" probes hit
 				investigateProbes <- c(useDat$pmProbe[iPM], useDat$mmProbe[iPM]) # the interesting mm and pm
 				densityProbes <- useProbes[!(useProbes %in% investigateProbes)]  # all the other probes
+				denOrder <- sortProbes(densityProbes) # really critical for zebrafish
+				densityProbes <- densityProbes[denOrder]
 				
 				plot1Title <- paste(investigateProbes, collapse=":")
 				plot1Title <- paste("ProbeSetPlot", plot1Title, collapse="\n", sep="\n")
