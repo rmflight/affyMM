@@ -328,7 +328,12 @@ allData <- lapply(useData, function(inData){
 	# and examine some properties
 	{
 		# do the overlap of exons, because we will use it for every thing later on
-		exonOverlaps <- as.matrix(findOverlaps(probeAlign, exonIntervals, type="any", minoverlap=23))
+		tmpNames <- elementMetadata(probeAlign)$probeNames
+		dupNames <- unique(tmpNames[(duplicated(tmpNames))])
+		singNames <- tmpNames[!(tmpNames %in% dupNames)]
+		singIndx <- which(tmpNames %in% singNames)
+		singAlign <- probeAlign[singIndx] # gives only probes that align in one location
+		exonOverlaps <- as.matrix(findOverlaps(singAlign, exonIntervals, type="any", minoverlap=23, ))
 		
 		exonDat <- allCnts[!(is.na(allCnts$pm.E)),]
 		exonSingleMM <- (exonDat$mm.E == 1) # start with those where the MM aligned to a single exon
@@ -341,21 +346,24 @@ allData <- lapply(useData, function(inData){
 			isNeg <- exonSingleDifs <= difCut
 			nNeg <- apply(isNeg, 1, sum)
 			
-			useDifs <- exonSingleDifs[nNeg > 0,]
+			useDifs <- exonSingleDifs[nNeg > 0, , drop=F]
 			
 			usePMs <- rownames(useDifs)
 			usePMord <- order(usePMs)
 			usePMs <- usePMs[usePMord]
-			useDifs <- useDifs[usePMord,]
-			useDat <- exonDatSingleMM[(exonDatSingleMM$pmProbe %in% usePMs),]
-			useDat <- useDat[(order(useDat$pmProbe)),]
+			useDifs <- useDifs[usePMord, , drop=F]
+			useDat <- exonDatSingleMM[(exonDatSingleMM$pmProbe %in% usePMs), , drop=F]
+			useDat <- useDat[(order(useDat$pmProbe)), , drop=F]
 			nPMs <- nrow(useDifs)
 			
-			pmDifDat <- vector("list", nPMs)
+			pmDifDat <- NULL
+			
+			if (nPMs > 0){
+			
+				pmDifDat <- vector("list", nPMs)
 			
 			# common elements for the tiled intensity images
-			baseImage <- scale_fill_gradient(low="black", high="white", limits=c(0, 256)) + theme(axis.text.x=element_blank(), axis.ticks=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank())
-			
+						
 			for (iPM in 1:nPMs){
 				probeSetP <- probeSetName(usePMs[iPM])
 				
@@ -370,13 +378,13 @@ allData <- lapply(useData, function(inData){
 				otherPlotTitle <- paste("ExonMatchedPlot", investigateProbes[2], collapse="\n", sep="\n")
 				
 				# and the probes for the exon that go with the mm probe
-				mmLoc <- which(elementMetadata(probeAlign)$probeNames %in% investigateProbes[2])
+				mmLoc <- which(elementMetadata(singAlign)$probeNames %in% investigateProbes[2])
 				exonHit <- exonOverlaps[exonOverlaps[,1] == mmLoc, 2]
 				otherHit <- exonOverlaps[exonOverlaps[,2] == exonHit, 1]
-				otherProbes <- elementMetadata(probeAlign)$probeNames[otherHit]
+				otherProbes <- elementMetadata(singAlign)$probeNames[otherHit]
 				
 				if (length(otherProbes) > 0){
-					otherLoc <- probeAlign[elementMetadata(probeAlign)$probeNames %in% otherProbes]
+					otherLoc <- singAlign[elementMetadata(singAlign)$probeNames %in% otherProbes]
 					if (unique(strand(otherLoc)) == "+"){
 						otherLoc <- sort(otherLoc, decreasing=F)
 					} else {
@@ -407,7 +415,7 @@ allData <- lapply(useData, function(inData){
 					
 					
 					bl.Plot1 <- ggplot() + geom_histogram(data=probeSetInt, aes(x=intensity, fill=probeClass), alpha=.5, position="identity") + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass), size=3) + ggtitle(plot1Title_use)
-					bl.Plot2 <- ggplot() + geom_density(data=probeSetInt, aes(x=intensity, colour=probeClass, linetype=probeClass)) + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass, shape=probeClass), size=3) + ggtitle(plot1Title_use) + scale_linetype_manual(values=c(mm=1, pm=3)) + theme_bw()
+					bl.Plot2 <- ggplot() + geom_density(data=probeSetInt, aes(x=intensity, colour=probeClass, linetype=probeClass)) + geom_point(data=investigateInt, aes(x=intensity, y=y, colour=probeClass, shape=probeClass), size=3) + ggtitle(plot1Title_use) + theme_bw()
 					
 					
 					pm.mm.data <- rbind(probeSetInt, investigateInt[,1:3])
@@ -430,7 +438,7 @@ allData <- lapply(useData, function(inData){
 						
 						
 					} else { 
-						otherPlot <- NA
+						tm.image <- NA
 						otherInt <- NA
 					}
 					
@@ -446,8 +454,9 @@ allData <- lapply(useData, function(inData){
 			
 		
 		}	
-	
+	  
 	}
+	} #end group	
 	
 	cdf2Det <- grep("cdf", search(), value=T)
 	detach(cdf2Det, character.only=T)
