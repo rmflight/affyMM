@@ -667,6 +667,42 @@ dev.off()
 CairoSVG(file=file.path("figures/dr6/tmPlot.svg"))
 print(tmpDat$exonImage)
 dev.off()
+
+# what is the gene the probeset is annotated to, and what is the gene the exon belongs to?
+infoDat <- allData$dr6
+mmIndx <- 12
+negIndx <- 2
+
+mmName <- infoDat$exonDat$mmProbe[mmIndx]
+setName <- probeSetName(mmName)
+
+require("zebrafish.db")
+annotRef <- mget(setName, zebrafishACCNUM, ifnotfound=NA)
+annotRef
+
+probeAlign <- readGappedAlignments(file.path("seqData", "mappedSequences_dr6.bam"), use.names=T)
+probeAlign <- as(probeAlign, "GRanges")
+probeNames <- names(probeAlign)
+pClass <- probeClass(probeNames)
+elementMetadata(probeAlign) <- data.frame(probeNames=probeNames, class=pClass) # put probe IDs in here so they don't become mangled
+names(probeAlign) <- NULL
+
+mmAlign <- probeAlign[(elementMetadata(probeAlign)$probeNames %in% mmName)]
+
+mergeExonsTable <- read.table("seqData/dr6_mergeExons.bed.gz", sep="\t")
+mergeExons <- GRanges(seqnames=Rle(mergeExonsTable[,1]), ranges=IRanges(mergeExonsTable[,2], mergeExonsTable[,3]), strand=Rle(mergeExonsTable[,4]))
+orgExonsTable <- read.table("seqData/dr6_exons.bed.gz", sep="\t")
+orgExons <- GRanges(seqnames=Rle(orgExonsTable[,1]), ranges=IRanges(orgExonsTable[,2], orgExonsTable[,3]), strand=Rle(orgExonsTable[,6]))
+elementMetadata(orgExons) <- data.frame(exonID=orgExonsTable[,4])
+splitID <- strsplit((elementMetadata(orgExons)$exonID), "_exon")
+elementMetadata(orgExons)$refID <- sapply(splitID, function(x){x[1]})
+
+rm(mergeExonsTable, orgExonsTable)
+
+probe2Exons <- as.matrix(findOverlaps(mmAlign, mergeExons, minoverlap=23, type="any"))
+useExons <- mergeExons[probe2Exons[,2]]
+ref2merge <- as.matrix(findOverlaps(orgExons, useExons, type="within")) # the original exons should be "within" the merged exons
+mmGenes <- elementMetadata(orgExons[ref2merge[,1]])$refID
 ```
 
 Finally, calculate the correlation of the TM(mm) probe with the other MM probes across experiments, and then calculate 
