@@ -30,7 +30,7 @@ useOrgs <- c("Saccharomyces cerevisiae",
 						 "Caenorhabditis elegans",
 						 "Drosophila melanogaster",
 						 "Arabidopsis Thaliana",
-						 "Xenopus laevis",
+						 "Xenopus tropicalis",
 						 "Anopholes Gambiae",
 						 "Danio rerio")
 
@@ -60,8 +60,8 @@ After looking through the results, come up with either new search strings for th
 defGPL <- list(celegans=c("GPL200", "GPL13993", "GPL13995"), 
 							 drerio="GPL1319",
 							 dmelano=c("GPL1322", "GPL13770"),
-							 scerevisiae=c("GPL90", "GPL13150"),
-							 xlaevis="GPL10756")
+							 scerevisiae=c("GPL13150"),
+							 xtropicalis="GPL10263")
 
 srchGPL <- list(hsapiens=c("'%Affymetrix Human Genome U133 Plus 2.0 Array%'",
 													 "'%Affymetrix GeneChip Human Genome U133 Plus 2.0 Array%'",
@@ -128,5 +128,24 @@ affyData <- lapply(allGPL, function(inGPL){
 	list(nExp=length(unique(qDat$gse.gse)), sampDat=qDat)
 })
 
+useDirs <- c(hsapiens="hs", mmusculus="mm", rnorvegicus="rn", celegans="ce", drerio="dr", dmelano="dm", scerevisiae="yeast")
+
+nFile <- 20
+
+for (orgName in names(useDirs)){
+	allDat <- affyData[[orgName]]$sampDat
+	nCel <- nrow(allDat)
+	if (nCel > nFile){
+		useRow <- sample(nCel, nFile)
+		sampDat <- allDat[useRow,]
+	} else { sampDat <- allDat }
+	
+	sampCel <- sampDat$gsm.supplementary_file
+	fileNames <- basename(sampCel)
+	outFiles <- file.path(getwd(), "randomCels", useDirs[orgName], fileNames)
+	for (iFile in 1:length(outFiles)){
+		download.file(sampCel[iFile], outFiles[iFile])
+	}
+}
 
 ```
