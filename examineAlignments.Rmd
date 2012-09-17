@@ -673,11 +673,11 @@ infoDat <- allData$dr6
 mmIndx <- 12
 negIndx <- 2
 
-mmName <- infoDat$exonDat$mmProbe[mmIndx]
+mmName <- infoDat$pmDifDat[[mmIndx]]$invProbes[2]
 setName <- probeSetName(mmName)
 
 require("zebrafish.db")
-annotRef <- mget(setName, zebrafishACCNUM, ifnotfound=NA)
+annotRef <- mget(setName, zebrafishREFSEQ, ifnotfound=NA)
 annotRef
 
 probeAlign <- readGappedAlignments(file.path("seqData", "mappedSequences_dr6.bam"), use.names=T)
@@ -703,6 +703,14 @@ probe2Exons <- as.matrix(findOverlaps(mmAlign, mergeExons, minoverlap=23, type="
 useExons <- mergeExons[probe2Exons[,2]]
 ref2merge <- as.matrix(findOverlaps(orgExons, useExons, type="within")) # the original exons should be "within" the merged exons
 mmGenes <- elementMetadata(orgExons[ref2merge[,1]])$refID
+
+# there is also one PM probe in the probset that appears to have zero intensity, can we see where it maps?
+
+qDat <- infoDat$pmDifDat[[12]]$plotDat[[2]]$pm.mm.Int
+pmAll <- qDat[qDat$probeClass == "pm",]
+pmLow <- pmAll$probeID[which.min(pmAll$intensity)]
+pmAlign <- probeAlign[(elementMetadata(probeAlign)$probeNames %in% pmLow)]
+length(pmAlign)
 ```
 
 Finally, calculate the correlation of the TM(mm) probe with the other MM probes across experiments, and then calculate 
