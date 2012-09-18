@@ -608,6 +608,10 @@ allPMInt <- sample(allPMInt, nSamp)
 allInt <- data.frame(probeInt=c(allMMInt, allPMInt), probeType=c(rep("mm.all", length(allMMInt)), rep("pm.all", length(allPMInt))) )
 
 yeastPlot <- ggplot(allInt, aes(x=probeInt, colour=probeType, linetype=probeType)) + geom_density(size=1.2) + labs(title=inData, x="log2 probe intensity")
+allData$sc3 <- list(allPlot=yeastPlot)
+.sessionInfo <- sessionInfo()
+.timedate <- Sys.time()
+save(.sessionInfo, .timedate, allData, file="counts_Plots_etc_allOrgs.RData")
 ```
 
 

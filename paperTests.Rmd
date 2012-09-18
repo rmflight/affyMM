@@ -5,7 +5,7 @@ require(ggplot2)
 ```
 
 
-```{r mpgTest, echo=FALSE, fig.cap="mpgTest"}
+```{r mpgTest, echo=FALSE, fig.cap="mpgTest", dev='CairoSVG'}
 ggplot(mtcars, aes(x=hp, y=wt)) + geom_point() + ggtitle("hp v wt") 
 ```
 <a id="mpgTest"></a>

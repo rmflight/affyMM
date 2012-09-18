@@ -14,8 +14,8 @@ require(ggplot2)
 ```
 
 
+
+![mpgTest](figure/mpgTest.svg) 
+
 <a id="mpgTest"></a>
-![mpgTest](figure/mpgTest.png) 
-
-
 [Link to mpgTest](#mpgTest)

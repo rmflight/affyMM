@@ -1,3 +1,20 @@
+```{r knitrSetup, include=FALSE}
+# sets output for inline results nicely
+knit_hooks$set(inline = identity) 
+
+# kills knitr if there is an error, therefore we don't waste time generating error messages
+knit_hooks$set(error = function(x, options) stop(x)) 
+```
+
+```{r figTableTrack, include=FALSE}
+# this function helps us 
+pasteLabel <- function(objType, objName, insLink=TRUE){
+	
+}
+figCount <- c("_"=0)
+tableCount <- c("_"=0)
+```
+
 # Affymetrix(r) Mismatch (MM) Probes: Useful After All
 
 Robert M Flight, Abdallah M Eteleeb, Eric C Rouchka
