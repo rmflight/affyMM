@@ -1,0 +1,11 @@
+# Figure out custom functions needed for paper
+
+```{r setup}
+require(ggplot2)
+```
+
+```{r mpgTest, echo=FALSE, fig.cap="mpgTest"}
+ggplot(mtcars, aes(x=hp, y=wt)) + geom_point() + ggtitle("hp v wt") 
+```
+
+[Link to mpgTest](#mpgTest)
