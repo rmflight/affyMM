@@ -147,5 +147,21 @@ for (orgName in names(useDirs)){
 		download.file(sampCel[iFile], outFiles[iFile])
 	}
 }
+```
 
+Because I was foolish and did not write the list of GSMs out to a file when I had them, here is a function to write them
+all out to a file.
+
+```{r listGSMFiles}
+useDirs <- c(hsapiens="hs", mmusculus="mm", rnorvegicus="rn", celegans="ce", drerio="dr", dmelano="dm", 
+						 scerevisiae="yeast", xtropicalis="xt")
+outFile <- file("gsmFiles.txt", open="w+")
+sapply(useDirs, function(x){
+	allCel <- dir(file.path("randomCels", x))
+	splitCel <- strsplit(allCel, ".CEL.gz")
+	useGSM <- unlist(splitCel)
+	cat(paste("@", x, sep=""), useGSM, sep="\n", file=outFile, append=T)
+	
+})
+close(outFile)
 ```

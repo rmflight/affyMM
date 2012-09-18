@@ -4,8 +4,9 @@
 require(ggplot2)
 ```
 
+
 ```{r mpgTest, echo=FALSE, fig.cap="mpgTest"}
 ggplot(mtcars, aes(x=hp, y=wt)) + geom_point() + ggtitle("hp v wt") 
 ```
-
+<a id="mpgTest"></a>
 [Link to mpgTest](#mpgTest)
