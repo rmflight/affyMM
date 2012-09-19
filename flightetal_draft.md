@@ -4,11 +4,14 @@
 
 
 
+
+
+
 # Affymetrix(r) Mismatch (MM) Probes: Useful After All
 
 Robert M Flight, Abdallah M Eteleeb, Eric C Rouchka
 
-## Abstract 
+## ABSTRACT
 
 Affymetrix® GeneChip® microarray design define probe sets consisting of 11, 16, or 20 distinct 25 base pair (BP) probes
 for determining mRNA expression for a specific gene, which may be covered by one or more probe sets.  Each probe has a
@@ -31,7 +34,7 @@ arrays.
 
 **Keywords**: Bioinformatics, microarray, probe set, custom definition files.
 
-## Introduction
+## INTRODUCTION
 
 Oligonucleotide-based microarray technologies provide a methodology whereby a researcher can indirectly measure the
 expression level of an mRNA molecule being actively transcribed under a set of conditions by labeling a cDNA fragment
@@ -90,7 +93,7 @@ into account in the BrainArray’s custom CDF files which incorporate SNP inform
 individual variation can play in microarray analysis, we looked at the mappings of PM and MM probes within five
 distinct publicly available assemblies of human genomes.
 
-## Methods
+## METHODS
 
 
 
@@ -207,6 +210,9 @@ a single genomic location.  The fact that a number of probes map to multiple loc
 the restrictions placed on probe set design.  However, it is expected that those probes mapping to multiple locations
 would not be from the `_`at class of probes.  
 
+
+
+
 To determine the reliability of these probes with the fluctuation of unknown transcripts, those probes that map with
 100% identity to two or more locations in the genome were considered.  While these probes typically represent less
 than 10% of the total number of probes for a given GeneChip®, their classification could be important in detecting
@@ -217,11 +223,18 @@ multiple locations belonging to the `_`at class.  In addition, a small number of
 To better understand the effects this small set of MM probes might have on gene expression, we further reduced this to
 a smaller subset where the mapping was within exon regions.  For these probes, we analyzed their signal intensities
 from random samples compared to the overall distribution of PM and MM intensities, and the distribution of PM and MM
-intensities within the corresponding exonic sequences (Figure 1).  As these plots indicate, MM probes mapping within
+intensities within the corresponding exonic sequences ([Figure 1](#f.allPlots)).  As these plots indicate, MM probes mapping within
 exonic regions closely follow the expression density of PM probes mapping within exonic regions, and are significantly 
 shifted from the overall expression profiles of MM probes.  These results suggest that while the number of these
 probes is small, they offer significant information that should not be ignored, and furthermore, can confound analyses
 where MM data is incorporated.
+
+<a id="f.allPlots"></a>
+
+![plot of chunk allPlots](figure/allPlots1.png) ![plot of chunk allPlots](figure/allPlots2.png) ![plot of chunk allPlots](figure/allPlots3.png) ![plot of chunk allPlots](figure/allPlots4.png) ![plot of chunk allPlots](figure/allPlots5.png) ![plot of chunk allPlots](figure/allPlots6.png) ![plot of chunk allPlots](figure/allPlots7.png) ![plot of chunk allPlots](figure/allPlots8.png) 
+
+
+**Figure 1. Density profile of probe intensities (log2).**  PM: perfect match, MM: mismatch.  mm.all: background MM intensities; pm.all: background PM intensities; mm.exon: intensities of MM probes in exonic regions; pm.exon: intensities of PM probes in exonic regions.
 
 As some of these MM probes may bind to transcripts, we further considered those MM probes that uniquely mapped to
 exons (irrespective of whether the corresponding PM probe mapped zero, one or multiple times to exons or the full

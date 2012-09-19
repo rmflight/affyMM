@@ -6,3 +6,4 @@ options(rstudio.markdownToHTML =
 		markdownToHTML(inputFile, outputFile, options = htmlOptions)
 	}
 ) 
+
