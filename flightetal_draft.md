@@ -1,3 +1,9 @@
+
+
+
+
+
+
 # Affymetrix(r) Mismatch (MM) Probes: Useful After All
 
 Robert M Flight, Abdallah M Eteleeb, Eric C Rouchka
@@ -86,18 +92,52 @@ distinct publicly available assemblies of human genomes.
 
 ## Methods
 
+
+
+
 ### Mapping of PM and MM Probes
 
 Chromosomal-based genome assemblies were downloaded from the UCSC Goldenpath Genomes ftp server using an anonymous
 login (ftp://hgdownload.cse.ucsc.edu/goldenPath/) [28] for eight commonly studied species, including C. elegans
 (roundworm), D. melanogaster (fruit fly), S. cerevisiae (baker’s yeast), X. tropicalis (western clawed frog), D. rerio
-(zebrafish), M. musculus (house mouse), R. norvegicus (brown Norway rat), and H. sapiens (human) (Table 1).  Genome
+(zebrafish), M. musculus (house mouse), R. norvegicus (brown Norway rat), and H. sapiens (human) ([Table 1](#t.genomeAssemblies)).  Genome
 indices were created using bowtie-build version 0.12.8 [29] with the default parameters.  Perfect match (PM) probe
 sequences for Affymetrix® GeneChips® were obtained from Bioconductor (v 2.10) probe packages, which are constructed
-from data available in NetAffx [30] (Table 2) with each new Bioconductor release. Mismatch (MM) probe sequences were
+from data available in NetAffx ([Table 2](#t.affyGenechips)) with each new Bioconductor release. Mismatch (MM) probe sequences were
 constructed by replacing the 13th base in the supplied PM probe sequence with the complementary base. PM and MM probes
 were aligned to the indexed genomes using bowtie version 0.12.8 [29] with the parameters –v 0 and –a which used
 together will report all valid probes matching with 100% identity.
+
+<a id="t.genomeAssemblies"></a>
+
+**Table 1. Genome assemblies used**
+
+Organism | Reference Assembly | Build Date
+---------|--------------------|-----------
+*Caenorhabditis elegans* | ce6 | May 2008
+*Drosophila melanogaster* | dm3 | Apr. 2006
+*Saccaromyces cerevisiae* | sc3 | Apr. 2011
+*Xenopus tropicalis* | xt3 | Nov. 2009
+*Danio rerio* | dr6 | Dec. 2008
+*Mus musculus* | mm10 | Dec. 2011
+*Rattus norvegicus* | rn4 | Nov. 2004
+*Homo sapiens* | hg19 | Feb. 2009
+
+<a id="t.affyGenechips"></a>
+
+**Table 2. Affymetrix(r) GeneChips(r) used**
+
+Organism | GeneChip(r) Name
+---------|-----------------
+*Caenorhabditis elegans* | *C. elegans* Genome
+*Drosophila melanogaster* | *Drosophila* Genome 2.0
+*Saccaromyces cerevisiae* | Yeast Genome 2.0
+*Xenopus tropicalis* | *Xenopus tropicalis* Genome
+*Danio rerio* | Zebrafish Genome
+*Mus musculus* | Mouse Genome 430 2.0
+*Rattus norvegicus* | Rat Genome 230 2.0
+*Homo sapiens* | Human Genome U133 Plus 2.0
+
 
 ###	Generation of Exons and Overlap
 
@@ -109,27 +149,42 @@ Ranges version 1.8.7 [31].
 
 ###	DNA Microarray Data
 
-For each GeneChip®, CEL files were downloaded from GEO for 20 random samples (with the exception of S. cerevisiae (12)
-and X. tropicalis (4), a the GSMs are listed in [gsmFiles.txt](gsmFiles.txt)). Probe intensities were background
+For each GeneChip®, CEL files were downloaded from GEO for 20 random samples (with the exception of *S. cerevisiae* (12)
+and *X. tropicalis* (4), a the GSMs are listed in [gsmFiles.txt](gsmFiles.txt)). Probe intensities were background
 corrected using the MAS background correction method implemented in Bioconductor. Depending on the application,
 intensities were log (base 2), square root transformed, or used as is. 
 
 ###	Negative PM-MM Set
 
-A PM-MM set of probes was considered to be negative if nine (two for S. cerevisiae and six for X. tropicalis) or more
+A PM-MM set of probes was considered to be negative if nine (two for *S. cerevisiae* and six for *X. tropicalis*) or more
 samples had a negative value for the difference in the PM-MM intensities. For examination of intensity distribution,
 any PM-MM pair with a negative different greater than 1000 in one or more samples was considered and examined. 
 
 ###	Probe Correlations
 
-For each MM probe that uniquely overlapped one merged exon (designated as a true-match MM, (TMmm)), the correlation
+For each MM probe that uniquely overlapped one merged exon (designated as a true-match MM, (TM^(mm))), the correlation
 with all other MM probes in the probe set (mm) and the correlation with all other TM probes that also mapped uniquely
 to the same exon (if there were three or more other probes also mapped to the exon) was calculated (tm). 
 
 ###	Human Variation
+
 To gain an understanding of individual variation and the unique mapping of microarray probes, five whole genome
-assemblies were downloaded for the human genome [32-36] (Table 3).   Probes from the HGU133APlus2.0 Affymetrix®
+assemblies were downloaded for the human genome [32-36] ([Table 3](#t.humanAssemblies)).   Probes from the HGU133APlus2.0 Affymetrix®
 GeneChip® were aligned to each of these genomes using the methods previously described for mapping PM and MM probes.
+
+<a id="t.humanAssemblies"></a>
+
+**Table 3. Whole human genome sequencing projects**
+
+Name | Abbr. | Assembly Identifier | Bioproject | Number | Race
+-----|-------|---------------------|------------|--------|-----
+GRCh37 | Hg19 | 420368 | 31257 | Mixed
+Hs`_`Celera`_`WGSA | Celera | 281338 | 1431 | Mixed^1
+HuRefPrime | JCVI | 281188 | 19621 | Caucasian
+BGIAF | BGI | 165398 | 42201 | African
+HsapALLPATHS1 | HSAP1 | 238948 | 59877 | Caucasian
+
+^(1)Celera assembly consists of one African-American, one Asian-Chinese, one Hispanic-Mexican, and two Caucasians.
 
 ## RESULTS
 
