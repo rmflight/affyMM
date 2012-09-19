@@ -7,9 +7,24 @@ knit_hooks$set(error = function(x, options) stop(x))
 ```
 
 ```{r figTableTrack, include=FALSE}
-# this function helps us 
-pasteLabel <- function(objType, objName, insLink=TRUE){
+# this function helps us insert figure and table text and links
+pasteLabel <- function(preText, inObj, objName, insLink=TRUE){
+	objNum <- inObj[objName]
 	
+	useText <- paste(preText, objNum, sep=" ")
+	if (insLink){
+		useText <- paste("[", useText, "](#", objName, ")", sep="")
+	}
+	useText
+}
+
+# this increments the counter, and gives a name to the number so we can reference it later
+incCount <- function(inObj, useName){
+	nObj <- length(inObj)
+	useNum <- max(inObj) + 1
+	inObj <- c(inObj, useNum)
+	names(inObj)[nObj+1] <- useName
+	inObj
 }
 figCount <- c("_"=0)
 tableCount <- c("_"=0)
