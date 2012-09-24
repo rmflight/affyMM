@@ -235,11 +235,15 @@ would not be from the `_`at class of probes.
 
 
 
+
+
+
+
 To determine the reliability of these probes with the fluctuation of unknown transcripts, those probes that map with
 100% identity to two or more locations in the genome were considered.  While these probes typically represent less
 than 10% of the total number of probes for a given GeneChip®, their classification could be important in detecting
 cross hybridization.  One might expect that the greatest percentage of these would be within the `_`x`_`at and
-`_`s`_`at classes.  However, as Table 5 shows, the larger genomes actually contain the greatest percentage in the
+`_`s`_`at classes.  However, as [Table 5](#t.probeType) shows, the larger genomes actually contain the greatest percentage in the
 `_`at and `_`a`_`at classes, with anywhere from 18% (S. cerevisiae) to 91% (R. norvegicus) of the probes matching
 multiple locations belonging to the `_`at class.  In addition, a small number of MM probes map to the genome as well. 
 To better understand the effects this small set of MM probes might have on gene expression, we further reduced this to
@@ -250,6 +254,22 @@ exonic regions closely follow the expression density of PM probes mapping within
 shifted from the overall expression profiles of MM probes.  These results suggest that while the number of these
 probes is small, they offer significant information that should not be ignored, and furthermore, can confound analyses
 where MM data is incorporated.
+
+<a id="t.probeType"></a>
+
+**Table 5. Probe set classification of probes perfectly matching multiple genomic locations.** 
+
+Organism | _x_at | _s_at | _a_at | _at | other
+--- | --- | --- | --- | --- | ---
+*Ce* | 4064 (31%) | 6552 (50%) | 0 (0%) | 2495 (19%) | 0 (0%)
+*Dm* | 361 (6.1%) | 2742 (47%) | 224 (3.8%) | 2563 (44%) | 0 (0%)
+*Dr* | 1390 (4.7%) | 404 (1.4%) | 1203 (4.1%) | 26329 (90%) | 0 (0%)
+*Hs* | 9402 (23%) | 10634 (26%) | 803 (2%) | 20192 (49%) | 0 (0%)
+*Mm* | 4075 (14%) | 2920 (10%) | 4893 (17%) | 16866 (59%) | 0 (0%)
+*Rn* | 440 (2.5%) | 394 (2.2%) | 805 (4.5%) | 16223 (91%) | 0 (0%)
+*Sc* | 81 (4.5%) | 1137 (64%) | 0 (0%) | 571 (32%) | 0 (0%)
+*Xt* | 14092 (15%) | 12154 (13%) | 34877 (38%) | 31817 (34%) | 0 (0%)
+
 
 <a id="f.allPlots"></a>
 
