@@ -47,38 +47,47 @@ There is only `r sum(classSeq == "mm")` mismatch probe that aligns to the genome
 ## Check all organisms
 
 ```{r countAll}
-allFile <- dir('seqData/')
-bamFile <- grep(".bam", allFile, fixed=T, value=T)
+translationTable <- matrix(ncol=3, byrow=T, data=c("ce6", "Ce", "celegans",
+																									 "dm3", "Dm", "drosophila2",
+																									 "dr6", "Dr", "zebrafish",
+																									 "hg19", "Hs", "hsa",
+																									 "mm10", "Mm", "mus",
+																									 "rn4", "Rn", "rat",
+																									 "sc3", "Sc", "yeast2",
+																									 "xt3", "Xt", "xtropicalis"))
+colnames(translationTable) <- c("short", "Organism", "array")
+bamFile <- file.path("seqData", paste("mappedSequences_", translationTable[,"short"], ".bam", sep=""))
+seqFile <- file.path("seqData", paste(translationTable[,"array"], ".pm.mm.RData", sep=""))
 nFile <- length(bamFile)
-cntDat <- matrix(0, nrow=nFile, ncol=6)
-colnames(cntDat) <- c("nPM", "nMM", "dupPM", "dupMM", "singPM", "singMM")
+cntDat <- matrix(0, nrow=nFile, ncol=8)
+colnames(cntDat) <- c("Organism", "nPair", "map.PM", "map.MM", "dupPM", "dupMM", "singPM", "singMM")
 
 for (iFile in 1:nFile){
-	tmpSeq <- readGappedAlignments(mapFiles[iFile], use.names=T)
+	tmpSeq <- readGappedAlignments(bamFile[iFile], use.names=T)
 	uniqProbes <- unique(names(tmpSeq))
-	probeClass <- sapply(strsplit(uniqProbes, ".", fixed=T), function(y){y[1]})
-	cntDat[iFile, "nPM"] <- sum(probeClass == "pm") # number of PM probes that align
-	cntDat[iFile, "nMM"] <- sum(probeClass == "mm") # number of MM probes that align
+	tmpClass <- probeClass(uniqProbes)
+	cntDat[iFile, "map.PM"] <- sum(tmpClass == "pm") # number of PM probes that align
+	cntDat[iFile, "map.MM"] <- sum(tmpClass == "mm") # number of MM probes that align
 	
 	# remove duplicates first
 	allProbes <- names(tmpSeq)
 	dupProbes <- unique(allProbes[duplicated(allProbes)])
 	
-	dupFile <- paste(strsplit(bamFile[iFile], ".", fixed=T)[[1]][1], "_multMatch.txt", sep="", collapse="")
-	cat(dupProbes, file=file.path("seqData", dupFile), sep="\n")
+	dupFile <- file.path("seqData", paste("multMatch_", translationTable[iFile,"short"], ".txt", sep=""))
+	cat(dupProbes, file=dupFile, sep="\n")
 	
-	dupClass <- sapply(strsplit(dupProbes, ".", fixed=T), function(y){y[1]})
+	dupClass <- probeClass(dupProbes)
 	cntDat[iFile, "dupPM"] <- sum(dupClass == "pm")
 	cntDat[iFile, "dupMM"] <- sum(dupClass == "mm")
 	
 	nonDup <- allProbes[!(allProbes %in% dupProbes)]
-	nonClass <- sapply(strsplit(nonDup, ".", fixed=T), function(y){y[1]})
+	nonClass <- probeClass(nonDup)
 	cntDat[iFile, "singPM"] <- sum(nonClass == "pm")
 	cntDat[iFile, "singMM"] <- sum(nonClass == "mm")
 	
 	cntDat[iFile, "Organism"] <- translationTable[iFile, "Organism"]
 	
-	load(inFiles[iFile])
+	load(seqFile[iFile])
 	cntDat[iFile, "nPair"] <- length(pm.mm.dat$pm)
 	rm(pm.mm.dat, tmpSeq)
 
@@ -88,7 +97,6 @@ for (iFile in 1:nFile){
 }
 
 cntDat <- as.data.frame(cntDat)
-cntDat$alignment <- bamFile
 write.table(cntDat, file="alignmentCounts.txt", sep="\t", row.names=F, quote=F)
 ```
 
