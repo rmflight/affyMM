@@ -128,7 +128,7 @@ allData <- lapply(useData, function(inData){
 	# define functions that will be used later
 	
 	# For each mismatch that aligned, how many times did it and associated
-	getCnts <- function(inData, probeAlign){
+	getCnts <- function(){
 		probeNames <- elementMetadata(probeAlign)$probeNames
 		allClass <- elementMetadata(probeAlign)$class
 		mmAlign <- unique(probeNames[allClass == "mm"])
@@ -178,7 +178,7 @@ allData <- lapply(useData, function(inData){
 		return(list(allCnts=allCnts, exonIntervals=exonIntervals))
 	}
 	
-	getSignalInt <- function(inData){
+	getSignalInt <- function(){
 		useCel <- file.path("randomCels", celLoc[inData])
 		celDat <- ReadAffy(celfile.path=useCel)
 		
@@ -219,7 +219,7 @@ allData <- lapply(useData, function(inData){
 		pIntensity <- pIntensity[n.affyCtrl,]
 		
 		indx2Name <- data.frame(indx=orgName, name=probeNames)
-		return(list(pIntensity=pIntensity, pm.mm.Corr=pm.mm.Corr)
+		return(list(pIntensity=pIntensity, pm.mm.Corr=pm.mm.Corr))
 	}
 	
 	findNegs <- function(){
@@ -347,65 +347,17 @@ allData <- lapply(useData, function(inData){
 	## For each mm probe that had an alignment to the genome, find the associated
 	## pm probe and count for both of them how many alignments they had.
 	
-	# For everything: count the number of alignments to the genome
-	{
-		probeNames <- elementMetadata(probeAlign)$probeNames
-		allClass <- elementMetadata(probeAlign)$class
-		mmAlign <- unique(probeNames[allClass == "mm"])
-		mmAlignIndx <- lapply(mmAlign, function(x){which(probeNames %in% x)})
-		
-		mmAlignSplit <- strsplit(mmAlign, ".", fixed=T)
-		pmAlign <- sapply(mmAlignSplit, function(inMM){
-			nEl <- length(inMM)
-			pmLoc <- as.character(as.integer(inMM[nEl]) - 1)
-			paste("pm", paste(inMM[seq(2, nEl-1)], sep=".", collapse="."), pmLoc, sep=".", collapse=".")
-		})
-		
-		pmAlignIndx <- lapply(pmAlign, function(x){which(probeNames %in% x)})
-		
-		allCnts <- data.frame(pm=(sapply(pmAlignIndx, length)), mm=(sapply(mmAlignIndx, length)),
-													mmProbe=mmAlign, pmProbe=pmAlign)
-		rownames(allCnts) <- NULL
-		
-		rm(allClass, mmAlign, mmAlignIndx, mmAlignSplit, pmAlign, pmAlignIndx)
-	}
+	# For everything: count the number of alignments to the genome, and only those that align to exons
 	
+	tmp2 <- getCnts()
+	allCnts <- tmp2$allCnts
+	exonIntervals <- tmp2$exonIntervals
+	rm(tmp2)
 	# New variables kept: probeAlign, allCnts
 	
 	# restrict to those probes that align to exons
 	# Note that these exons are artificial, created using mergeBED to get essentially transcribed regions inside of known genes
-	{
-		exonFile <- paste(inData, "_mergeExons.bed.gz", sep="", collapse="")
-		useExons <- read.table(file.path("seqData", exonFile), sep="\t")
-		exonIntervals <- GRanges(seqnames=Rle(useExons[,1]), ranges=IRanges(useExons[,2], useExons[,3]),
-											 strand=Rle(useExons[,4]))
-		
-		exonOverlaps <- subsetByOverlaps(query=probeAlign, subject=exonIntervals, minoverlap=23, type="any")
-		
-		hasExonProbes <- elementMetadata(exonOverlaps)$probeNames
-		exonProbeClass <- elementMetadata(exonOverlaps)$class
-		
-		mmExons <- unique(hasExonProbes[exonProbeClass == "mm"])
-		mmIntIndx <- sapply(mmExons, function(x){which(hasExonProbes %in% x)})
-		# figure out the associated PM probes
-		mmSplit <- strsplit(mmExons, ".", fixed=T)
-		pmExons <- sapply(mmSplit, function(inMM){
-			nEl <- length(inMM)
-			pmLoc <- as.character(as.integer(inMM[nEl]) - 1)
-			paste("pm", paste(inMM[seq(2, nEl-1)], sep=".", collapse="."), pmLoc, sep=".", collapse=".")
-		})
-		
-		pmIntIndx <- lapply(pmExons, function(x){which(hasExonProbes %in% x)})
-		
-		exonCnts <- data.frame(pm=(sapply(pmIntIndx, length)), mm=(sapply(mmIntIndx, length)),
-													 mmProbe=mmExons, pmProbe=pmExons)
-		rownames(exonCnts) <- NULL
-		
-		allCnts <- merge(allCnts, exonCnts, by=c("pmProbe", "mmProbe"), all=T, suffixes=c(".A", ".E"))
-		
-		rm(exonFile, useExons, exonOverlaps, hasExonProbes, exonProbeClass,
-			 mmExons, mmIntIndx, mmSplit, pmExons, pmIntIndx, exonCnts)
-	}
+
 	
 	# new variables: probeAlign, allCnts, exonIntervals
 	
@@ -455,6 +407,8 @@ allData <- lapply(useData, function(inData){
 		rm(celDat, n.affyCtrl, probeNames, orgName, pmName, mmName, useP,
 			 lenP, pName, pmIndx, pmXY, mmIndx, mmXY, nameReord)
 	}
+	
+	
 	
 	# new variables: indx2name, pIntensity, pm.mm.Corr, bCel
 	
