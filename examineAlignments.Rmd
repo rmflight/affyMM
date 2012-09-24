@@ -120,12 +120,141 @@ So we can basically ignore yeast. However, everything else it looks like we get 
 ## Answer questions above
 
 ```{r examinData}
-useData <- c("hg19", "dm3", "dr6", "xtropicalis", "rn4", "mm10", "ce6")
+useData <- c("hg19", "dm3", "dr6", "xt3", "rn4", "mm10", "ce6")
 celLoc <- c(hg19="hs", mm9="mm", mm10="mm", rn4="rn", dr6="dr", dm3="dm", ce6="ce", xtropicalis="xt")
 
 allData <- lapply(useData, function(inData){
 	
-	# define a function that will be used later
+	# define functions that will be used later
+	
+	# For each mismatch that aligned, how many times did it and associated
+	getCnts <- function(inData, probeAlign){
+		probeNames <- elementMetadata(probeAlign)$probeNames
+		allClass <- elementMetadata(probeAlign)$class
+		mmAlign <- unique(probeNames[allClass == "mm"])
+		mmAlignIndx <- lapply(mmAlign, function(x){which(probeNames %in% x)})
+		
+		mmAlignSplit <- strsplit(mmAlign, ".", fixed=T)
+		pmAlign <- sapply(mmAlignSplit, function(inMM){
+			nEl <- length(inMM)
+			pmLoc <- as.character(as.integer(inMM[nEl]) - 1)
+			paste("pm", paste(inMM[seq(2, nEl-1)], sep=".", collapse="."), pmLoc, sep=".", collapse=".")
+		})
+		
+		pmAlignIndx <- lapply(pmAlign, function(x){which(probeNames %in% x)})
+		
+		allCnts <- data.frame(pm=(sapply(pmAlignIndx, length)), mm=(sapply(mmAlignIndx, length)),
+													mmProbe=mmAlign, pmProbe=pmAlign)
+		rownames(allCnts) <- NULL
+		
+		exonFile <- paste(inData, "_mergeExons.bed.gz", sep="", collapse="")
+		useExons <- read.table(file.path("seqData", exonFile), sep="\t")
+		exonIntervals <- GRanges(seqnames=Rle(useExons[,1]), ranges=IRanges(useExons[,2], useExons[,3]),
+											 strand=Rle(useExons[,4]))
+		
+		exonOverlaps <- subsetByOverlaps(query=probeAlign, subject=exonIntervals, minoverlap=23, type="any")
+		
+		hasExonProbes <- elementMetadata(exonOverlaps)$probeNames
+		exonProbeClass <- elementMetadata(exonOverlaps)$class
+		
+		mmExons <- unique(hasExonProbes[exonProbeClass == "mm"])
+		mmIntIndx <- sapply(mmExons, function(x){which(hasExonProbes %in% x)})
+		# figure out the associated PM probes
+		mmSplit <- strsplit(mmExons, ".", fixed=T)
+		pmExons <- sapply(mmSplit, function(inMM){
+			nEl <- length(inMM)
+			pmLoc <- as.character(as.integer(inMM[nEl]) - 1)
+			paste("pm", paste(inMM[seq(2, nEl-1)], sep=".", collapse="."), pmLoc, sep=".", collapse=".")
+		})
+		
+		pmIntIndx <- lapply(pmExons, function(x){which(hasExonProbes %in% x)})
+		
+		exonCnts <- data.frame(pm=(sapply(pmIntIndx, length)), mm=(sapply(mmIntIndx, length)),
+													 mmProbe=mmExons, pmProbe=pmExons)
+		rownames(exonCnts) <- NULL
+		
+		allCnts <- merge(allCnts, exonCnts, by=c("pmProbe", "mmProbe"), all=T, suffixes=c(".A", ".E"))
+		
+		return(list(allCnts=allCnts, exonIntervals=exonIntervals))
+	}
+	
+	getSignalInt <- function(inData){
+		useCel <- file.path("randomCels", celLoc[inData])
+		celDat <- ReadAffy(celfile.path=useCel)
+		
+		bCel <- bg.correct.mas(celDat)
+		
+		pmIndx <- indexProbes(bCel, which="pm")
+		mmIndx <- indexProbes(bCel, which="mm")
+		useP <- names(pmIndx)
+		
+		lenP <- sapply(pmIndx, length) # how many probes in each probeset
+		pName <- rep(useP, lenP)
+		pmIndx <- unlist(pmIndx, use.names=F)
+		pmXY <- indices2xy(pmIndx, abatch=bCel)
+		mmIndx <- unlist(mmIndx, use.names=F)
+		mmXY <- indices2xy(mmIndx, abatch=bCel)
+		
+		pmName <- paste("pm", pName, pmXY[,1], pmXY[,2], sep=".")
+		mmName <- paste("mm", pName, mmXY[,1], mmXY[,2], sep=".")
+		
+		probeNames <- c(pmName, mmName)
+		orgName <- c(pmIndx, mmIndx)
+		
+		nameReord <- order(orgName)
+		orgName <- orgName[nameReord]
+		probeNames <- probeNames[nameReord]
+	
+		pIntensity <- rbind(pm(bCel), mm(bCel))
+		pIntensity <- pIntensity[(order(as.integer(rownames(pIntensity)))),]
+	
+		all.equal(as.integer(rownames(pIntensity)), orgName)
+		rownames(pIntensity) <- probeNames
+	
+		pm.mm.Corr <- data.frame(pm=pmName, mm=mmName) # correspondence between them
+		n.affyCtrl <- grep("AFFX", pm.mm.Corr$pm, invert=T)
+		pm.mm.Corr <- pm.mm.Corr[n.affyCtrl,]
+		
+		n.affyCtrl <- grep("AFFX", rownames(pIntensity), invert=T)
+		pIntensity <- pIntensity[n.affyCtrl,]
+		
+		indx2Name <- data.frame(indx=orgName, name=probeNames)
+		return(list(pIntensity=pIntensity, pm.mm.Corr=pm.mm.Corr)
+	}
+	
+	findNegs <- function(){
+		pm.mm.Diff <- pIntensity[pm.mm.Corr$pm,] - pIntensity[pm.mm.Corr$mm,]
+		sumNeg <- apply(pm.mm.Diff, 1, function(x){sum(x < 0)})
+		
+		minSum <- 9
+		if (inData == "xtropicalis"){
+			minSum <- 2
+		} else if (inData == "yeast"){
+			minSum <- 6
+		}
+		
+		isNeg <- sumNeg >= minSum
+		sum(isNeg) / nrow(pm.mm.Corr)
+		pmNeg <- rownames(pm.mm.Diff[isNeg,])
+		# of those that show *some* negatives, how many are in our probe lists based on *MM* alignments?
+		allPM.fromMM <- allCnts$pmProbe
+		nallPM <- length(allPM.fromMM)
+		nallPM.inNeg <- sum(allPM.fromMM %in% pmNeg) 
+		
+		# and just those where the *MM* aligns to an exon?
+		fromExon <- !(is.na(allCnts$pm.E))
+		allPM.fromExon <- allCnts$pmProbe[fromExon]
+		nallPM.Exon <- length(allPM.fromExon)
+		nallPM.Exon.inNeg <- sum(allPM.fromExon %in% pmNeg)
+		
+		allMM.fromExon <- allCnts$mmProbe[fromExon]
+		
+		outDat <- c(nallPM=nallPM, nallPM.inNeg=nallPM.inNeg, nallPM.Exon=nallPM.Exon, nallPm.Exon.inNeg=nallPM.Exon.inNeg)
+		
+		return(list(outDat=outDat, pm.mm.Diff=pm.mm.Diff, allMM.fromExon=allMM.fromExon, allPM.fromExon=allPM.fromExon))
+	}
+	
+	# determine correlations between TMmm and MM, and other TM probes
 	getCorrelations <- function(mmProbes){
 		probeSetID <- sapply(mmProbes, probeSetName)
 		nameInt <- rownames(pIntensity)
