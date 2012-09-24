@@ -7,6 +7,9 @@
 
 
 
+
+
+
 # Affymetrix(r) Mismatch (MM) Probes: Useful After All
 
 Robert M Flight, Abdallah M Eteleeb, Eric C Rouchka
@@ -193,11 +196,30 @@ HsapALLPATHS1 | HSAP1 | 238948 | 59877 | Caucasian
 
 ### Probes Matching Genomic Locations 
 
+
+
+
 Given the PM probe sequences and the inferred MM sequences, individual probes were mapped to the corresponding genome
 assembly as outlined in Methods.  The percentage of perfect match probes mapping to the genome ranged from a low of
-80% (X. tropicalis) to a high of 95% (D. melanogaster), with the exception of S. cerevisiae (Table 4).  It must be
+80% (X. tropicalis) to a high of 95% (D. melanogaster), with the exception of S. cerevisiae ([Table 4](#t.probeMatches)).  It must be
 noted that the lower percentage of S. cerevisiae matches (53%) is expected, as the Yeast Genome 2.0 GeneChip® contains
-probes for two yeast species, S. cerevisiae and S. pombe.  
+probes for two yeast species, S. cerevisiae and S. pombe. 
+
+<a id="t.probeMatches"></a>
+
+**Table 4. GeneChip(r) probes mapping to reference genomes**
+
+Organism | Number of Probe Pairs | PM Mapped to Reference | MM Mapped to Reference | PM Unique | MM Unique
+--- | --- | --- | --- | --- | ---
+*Ce* | 249165 | 226856 |  143 | 213745 |   96
+*Dm* | 265400 | 251602 |   89 | 245712 |   54
+*Dr* | 249752 | 200608 | 1282 | 171282 |  726
+*Hs* | 604258 | 562673 | 1094 | 521642 |  608
+*Mm* | 496468 | 456674 |  557 | 427920 |  394
+*Rn* | 342410 | 304646 |  391 | 286784 |  282
+*Sc* | 120855 |  63731 |    1 |  61942 |    1
+*Xt* | 648548 | 519177 | 1884 | 426237 | 1014
+
 
 Affymetrix® probesets are given suffix definitions depending upon the uniqueness of the exemplar sequence used to
 design a probe set.  A designation of `_`at indicates the probe set perfectly matches a single transcript; `_`a`_`at
@@ -231,7 +253,7 @@ where MM data is incorporated.
 
 <a id="f.allPlots"></a>
 
-![plot of chunk allPlots](figure/allPlots1.png) ![plot of chunk allPlots](figure/allPlots2.png) ![plot of chunk allPlots](figure/allPlots3.png) ![plot of chunk allPlots](figure/allPlots4.png) ![plot of chunk allPlots](figure/allPlots5.png) ![plot of chunk allPlots](figure/allPlots6.png) ![plot of chunk allPlots](figure/allPlots7.png) ![plot of chunk allPlots](figure/allPlots8.png) 
+![plot of chunk allPlots](figure/allPlots1.png) ![plot of chunk allPlots](figure/allPlots2.png) ![plot of chunk allPlots](figure/allPlots3.png) ![plot of chunk allPlots](figure/allPlots4.png) ![plot of chunk allPlots](figure/allPlots5.png) ![plot of chunk allPlots](figure/allPlots6.png) ![plot of chunk allPlots](figure/allPlots7.png) 
 
 
 **Figure 1. Density profile of probe intensities (log2).**  PM: perfect match, MM: mismatch.  mm.all: background MM intensities; pm.all: background PM intensities; mm.exon: intensities of MM probes in exonic regions; pm.exon: intensities of PM probes in exonic regions.

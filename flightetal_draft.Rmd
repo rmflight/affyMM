@@ -30,6 +30,21 @@ figCount <- c("_"=0)
 tableCount <- c("_"=0)
 ```
 
+```{r otherFunctions, include=FALSE}
+tableCat <- function(inFrame){
+	outText <- paste(names(inFrame), collapse=" | ")
+	outText <- c(outText, paste(rep("---", ncol(inFrame)), collapse=" | "))
+	invisible(apply(inFrame, 1, function(inRow){
+		outText <<- c(outText, paste(inRow, collapse=" | "))
+	}))
+	return(outText)
+}
+
+probeClass <- function(probeIDs){
+	sapply(strsplit(probeIDs, ".", fixed=T), function(y){y[1]})
+}
+```
+
 ```{r loadPackages, include=FALSE}
 require(ggplot2)
 
@@ -225,11 +240,29 @@ HsapALLPATHS1 | HSAP1 | 238948 | 59877 | Caucasian
 
 ### Probes Matching Genomic Locations 
 
+```{r probeMatches, echo=FALSE}
+cntTable <- read.table("alignmentCounts.txt", sep="\t", header=T)
+tableCount <- incCount(tableCount, "t.probeMatches")
+cntTable$Organism <- paste("*", cntTable$Organism, "*", sep="")
+cntTable <- cntTable[, c("Organism", "nPair", "map.PM", "map.MM", "singPM", "singMM")]
+names(cntTable) <- c("Organism", "Number of Probe Pairs", "PM Mapped to Reference",
+										 "MM Mapped to Reference", "PM Unique", "MM Unique")
+tableOut <- tableCat(cntTable)
+```
+
 Given the PM probe sequences and the inferred MM sequences, individual probes were mapped to the corresponding genome
 assembly as outlined in Methods.  The percentage of perfect match probes mapping to the genome ranged from a low of
-80% (X. tropicalis) to a high of 95% (D. melanogaster), with the exception of S. cerevisiae (Table 4).  It must be
+80% (X. tropicalis) to a high of 95% (D. melanogaster), with the exception of S. cerevisiae (`r I(pasteLabel("Table", tableCount, "t.probeMatches", T))`).  It must be
 noted that the lower percentage of S. cerevisiae matches (53%) is expected, as the Yeast Genome 2.0 GeneChip® contains
-probes for two yeast species, S. cerevisiae and S. pombe.  
+probes for two yeast species, S. cerevisiae and S. pombe. 
+
+<a id="t.probeMatches"></a>
+
+**`r I(pasteLabel("Table", tableCount, "t.probeMatches", F))`. GeneChip(r) probes mapping to reference genomes**
+
+```{r insertProbeMatches, results='asis', echo=FALSE}
+cat(tableOut, sep="\n")
+```
 
 Affymetrix® probesets are given suffix definitions depending upon the uniqueness of the exemplar sequence used to
 design a probe set.  A designation of `_`at indicates the probe set perfectly matches a single transcript; `_`a`_`at
@@ -244,13 +277,53 @@ would not be from the `_`at class of probes.
 
 ```{r incFigure, include=FALSE}
 figCount <- incCount(figCount, "f.allPlots")
+tableCount <- incCount(tableCount, "t.probeClass")
 ```
+
+```{r probeTypeAnalysis, echo=FALSE}
+translationTable <- matrix(ncol=3, byrow=T, data=c("ce6", "Ce", "celegans",
+																									 "dm3", "Dm", "drosophila2",
+																									 "dr6", "Dr", "zebrafish",
+																									 "hg19", "Hs", "hsa",
+																									 "mm10", "Mm", "mus",
+																									 "rn4", "Rn", "rat",
+																									 "sc3", "Sc", "yeast2",
+																									 "xt3", "Xt", "xtropicalis"))
+colnames(translationTable) <- c("short", "Organism", "array")
+
+multFiles <- file.path("seqData", paste("multMatch_", translationTable[,"short"], ".txt", sep=""))
+nOrg <- nrow(translationTable)
+typeCounts <- matrix(0, nrow=nOrg, ncol=5)
+colnames(typeCounts) <- c("_x_at", "_s_at", "_a_at", "_at", "other")
+rownames(typeCounts) <- translationTable[,"Organism"]
+probeType <- c("_x_at", "_s_at", "_at", "_a_at")
+for (iOrg in 1:nOrg){
+	multProbes <- scan(file=multFiles[iOrg], what=character())
+	pClass <- probeClass(multProbes)
+	multProbes <- multProbes[pClass == "pm"]
+	totMult <- length(multProbes)
+	x_at <- grep("_x_at", multProbes)
+	s_at <- grep("_s_at", multProbes)
+	a_at <- grep("_a_at", multProbes)
+	
+	oProbes <- multProbes[-1*c(x_at, s_at, a_at)]
+	o_at <- grep("_at", oProbes)
+	otherProbes <- length(oProbes[-o_at])
+	typeCounts[iOrg, "_x_at"] <- length(x_at)
+	typeCounts[iOrg, "_s_at"] <- length(s_at)
+	typeCounts[iOrg, "_a_at"] <- length(a_at)
+	typeCounts[iOrg, "_at"] <- length(o_at)
+	typeCounts[iOrg, "other"] <- otherProbes
+}
+# note: Eric gets 29 "other" probes for Ce here, and I think it is because he is counting control probes as other
+```
+
 
 To determine the reliability of these probes with the fluctuation of unknown transcripts, those probes that map with
 100% identity to two or more locations in the genome were considered.  While these probes typically represent less
 than 10% of the total number of probes for a given GeneChip®, their classification could be important in detecting
 cross hybridization.  One might expect that the greatest percentage of these would be within the `_`x`_`at and
-`_`s`_`at classes.  However, as Table 5 shows, the larger genomes actually contain the greatest percentage in the
+`_`s`_`at classes.  However, as `r I(pasteLabel("Table", tableCount, "t.probeClass"))` shows, the larger genomes actually contain the greatest percentage in the
 `_`at and `_`a`_`at classes, with anywhere from 18% (S. cerevisiae) to 91% (R. norvegicus) of the probes matching
 multiple locations belonging to the `_`at class.  In addition, a small number of MM probes map to the genome as well. 
 To better understand the effects this small set of MM probes might have on gene expression, we further reduced this to
