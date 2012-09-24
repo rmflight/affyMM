@@ -54,8 +54,7 @@ cntDat <- matrix(0, nrow=nFile, ncol=6)
 colnames(cntDat) <- c("nPM", "nMM", "dupPM", "dupMM", "singPM", "singMM")
 
 for (iFile in 1:nFile){
-	tmpSeq <- readGappedAlignments(file.path("seqData", bamFile[iFile]), use.names=T)
-	nAlign <- length(names(tmpSeq))
+	tmpSeq <- readGappedAlignments(mapFiles[iFile], use.names=T)
 	uniqProbes <- unique(names(tmpSeq))
 	probeClass <- sapply(strsplit(uniqProbes, ".", fixed=T), function(y){y[1]})
 	cntDat[iFile, "nPM"] <- sum(probeClass == "pm") # number of PM probes that align
@@ -76,6 +75,13 @@ for (iFile in 1:nFile){
 	nonClass <- sapply(strsplit(nonDup, ".", fixed=T), function(y){y[1]})
 	cntDat[iFile, "singPM"] <- sum(nonClass == "pm")
 	cntDat[iFile, "singMM"] <- sum(nonClass == "mm")
+	
+	cntDat[iFile, "Organism"] <- translationTable[iFile, "Organism"]
+	
+	load(inFiles[iFile])
+	cntDat[iFile, "nPair"] <- length(pm.mm.dat$pm)
+	rm(pm.mm.dat, tmpSeq)
+
 # 	tmpCnt <- data.frame()
 # 	rbind(cntDat)
 # 	return(c(nPM=nPM, nMM=nMM, dupPM=dupPM, dupMM=dupMM, nonPM=nonPM, nonMM=nonMM))
