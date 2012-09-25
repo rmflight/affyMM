@@ -121,7 +121,7 @@ So we can basically ignore yeast. However, everything else it looks like we get 
 
 ```{r examinData}
 useData <- c("hg19", "dm3", "dr6", "xt3", "rn4", "mm10", "ce6")
-celLoc <- c(hg19="hs", mm9="mm", mm10="mm", rn4="rn", dr6="dr", dm3="dm", ce6="ce", xtropicalis="xt")
+celLoc <- c(hg19="hs", mm9="mm", mm10="mm", rn4="rn", dr6="dr", dm3="dm", ce6="ce", xt3="xt")
 
 allData <- lapply(useData, function(inData){
 	
