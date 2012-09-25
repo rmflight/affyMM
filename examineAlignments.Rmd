@@ -358,10 +358,11 @@ allData <- lapply(useData, function(inData){
 			if (nPMs > 0){
 			
 				pmDifDat <- vector("list", nPMs)
-			
+				
 			# common elements for the tiled intensity images
 						
 			for (iPM in 1:nPMs){
+				
 				probeSetP <- probeSetName(usePMs[iPM])
 				
 				useProbes <- grep(probeSetP, rownames(pIntensity), value=T)
@@ -392,13 +393,17 @@ allData <- lapply(useData, function(inData){
 				}
 				
 				isNeg <- which(useDifs[iPM,] <= difCut)
-				celNames <- colnames(useDifs[,isNeg])
+				celNames <- colnames(useDifs[,isNeg, drop=F])
 				
 				nNeg <- length(isNeg)
+				
+				probeData <- data.frame(pmProbe=rep(investigateProbes[1], nNeg), 
+																mmProbe=rep(investigateProbes[2], nNeg), gsmID=celNames)
 				
 				plotDat <- vector("list", nNeg)
 				
 				for (iNeg in 1:nNeg){
+					
 					
 					plot1Title_use <- paste(plot1Title, celNames[iNeg], collapse="\n", sep="\n")
 					otherPlotTitle_use <- paste(otherPlotTitle, celNames[iNeg], collapse="\n", sep="\n")
@@ -448,15 +453,17 @@ allData <- lapply(useData, function(inData){
 					
 				}
 				pmDifDat[[iPM]] <- list(invProbes=investigateProbes, denProbes=densityProbes, otherProbes=otherProbes,
-																exonIndx=exonHit, plotDat=plotDat)
+																exonIndx=exonHit, plotDat=plotDat, probeData=probeData)
 			}
 			
 		
 		}	
 	  
 		}
+		
 		return(list(pmDifDat=pmDifDat, mmProbeCor=mmProbeCor, exonDatSingleMM=exonDatSingleMM))
 	}
+	
 	#inData <- "dm3" #testing purposes
 	{# grab the data we need
 	bamFile <- paste("mappedSequences_", inData, ".bam", sep="", collapse="")
