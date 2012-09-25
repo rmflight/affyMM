@@ -332,6 +332,8 @@ allData <- lapply(useData, function(inData){
 		exonDat <- allCnts[!(is.na(allCnts$pm.E)),] # remember, allCnts is simply for each mapping MM, how often does it map an exon, and how often does its corresponding PM map genome or exon. 
 		exonSingleMM <- (exonDat$mm.E == 1) # start with those where the MM aligned to a single exon
 		
+		exonDatSingleMM <- NA
+		
 		if (sum(exonSingleMM) != 0){
 			exonDatSingleMM <- exonDat[exonSingleMM,]
 			
@@ -545,8 +547,8 @@ allData <- lapply(useData, function(inData){
 	
 		cdf2Det <- grep("cdf", search(), value=T)
 		detach(cdf2Det, character.only=T)
-		returnDat <- list(pmDifDat=difData$pmDifDat, allPlot=allPlot, negDat=outDat, mmCor=difDat$mmProbeCor,
-											exonDat=exonDatSingleMM)
+		returnDat <- list(pmDifDat=difData$pmDifDat, allPlot=allPlot, negDat=outDat, mmCor=difData$mmProbeCor,
+											exonDat=difData$exonDatSingleMM)
 		
 	} else {
 		returnDat <- list(pmDifDat=NA, allPlot=NA, negDat=outDat, mmCor=NA)
