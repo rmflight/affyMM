@@ -543,16 +543,14 @@ allData <- lapply(useData, function(inData){
 	if (outDat["nallPm.Exon.inNeg"] != 0){
 	
 		difData <- indPlotData()
-		
-	
-		cdf2Det <- grep("cdf", search(), value=T)
-		detach(cdf2Det, character.only=T)
 		returnDat <- list(pmDifDat=difData$pmDifDat, allPlot=allPlot, negDat=outDat, mmCor=difData$mmProbeCor,
 											exonDat=difData$exonDatSingleMM)
 		
 	} else {
 		returnDat <- list(pmDifDat=NA, allPlot=NA, negDat=outDat, mmCor=NA)
 	}
+	cdf2Det <- grep("cdf", search(), value=T)
+	detach(cdf2Det, character.only=T)
 	.sessionInfo <- sessionInfo()
 	.timedate <- Sys.time()
 	outFile <- paste(inData, "_tmpResults.RData", sep="", collapse="")
