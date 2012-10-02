@@ -152,15 +152,10 @@ allData <- lapply(useData, function(inData){
 		exonIntervals <- GRanges(seqnames=Rle(useExons[,1]), ranges=IRanges(useExons[,2], useExons[,3]),
 											 strand=Rle(useExons[,4]))
 		
-		geneExonFile <- paste(inData, "_exons.bed.gz", sep="", collapse="")
-		geneExons <- read.table(file.path("seqData", geneExonFile), sep="\t")
-		geneExonIntervals <- GRanges(seqnames=Rle(geneExons[,1]), ranges=IRanges(geneExons[,2], geneExons[,3]),
-											 strand=Rle(geneExons[,6]), exonID=geneExons[,4])
-		splitID <- strsplit(as.character((elementMetadata(geneExonIntervals)$exonID)), "_exon")
-		elementMetadata(geneExonIntervals)$refID <- sapply(splitID, function(x){x[1]})
-		
+			
 		useExons <- subsetByOverlaps(query=exonIntervals, subject=probeAlign, minoverlap=23, type="any")
 		exonOverlaps <- subsetByOverlaps(query=probeAlign, subject=exonIntervals, minoverlap=23, type="any")
+		
 		
 		hasExonProbes <- elementMetadata(exonOverlaps)$probeNames
 		exonProbeClass <- elementMetadata(exonOverlaps)$class
@@ -335,7 +330,7 @@ allData <- lapply(useData, function(inData){
 		singNames <- tmpNames[!(tmpNames %in% dupNames)]
 		singIndx <- which(tmpNames %in% singNames)
 		singAlign <- probeAlign[singIndx] # gives only probes that align in one location
-		exonOverlaps <- as.matrix(findOverlaps(singAlign, exonIntervals, type="any", minoverlap=23, ))
+		exonOverlaps <- as.matrix(findOverlaps(singAlign, exonIntervals, type="any", minoverlap=23))
 		
 		exonDat <- allCnts[!(is.na(allCnts$pm.E)),] # remember, allCnts is simply for each mapping MM, how often does it map an exon, and how often does its corresponding PM map genome or exon. 
 		exonSingleMM <- (exonDat$mm.E == 1) # start with those where the MM aligned to a single exon
@@ -471,7 +466,7 @@ allData <- lapply(useData, function(inData){
 	  
 		}
 		
-		return(list(pmDifDat=pmDifDat, mmProbeCor=mmProbeCor, exonDatSingleMM=exonDatSingleMM))
+		return(list(pmDifDat=pmDifDat, mmProbeCor=mmProbeCor, exonDatSingleMM=exonDatSingleMM, probeAlign=singAlign))
 	}
 	
 	#inData <- "dm3" #testing purposes
@@ -549,8 +544,24 @@ allData <- lapply(useData, function(inData){
 	allPlot <- genAllPlots()
 	
 	difData <- indPlotData()
+	
+	probeAlign <- difData$probeAlign
+	difData$probeAlign <- NULL
+	
+	probe2Exon <- as.matrix(findOverlaps(probeAlign, exonIntervals, minoverlap=23, type="any"))
+	probeAlign <- probeAlign[unique(probe2Exon[,"queryHits"])]
+	exonIntervals <- exonIntervals[unique(probe2Exon[,"subjectHits"])]
+	
+	geneExonFile <- paste(inData, "_exons.bed.gz", sep="", collapse="")
+	geneExons <- read.table(file.path("seqData", geneExonFile), sep="\t")
+	geneExonIntervals <- GRanges(seqnames=Rle(geneExons[,1]), ranges=IRanges(geneExons[,2], geneExons[,3]),
+											 strand=Rle(geneExons[,6]), exonID=geneExons[,4])
+	splitID <- strsplit(as.character((elementMetadata(geneExonIntervals)$exonID)), "_exon")
+	elementMetadata(geneExonIntervals)$refID <- sapply(splitID, function(x){x[1]})
+	geneExonOverlaps <- subsetByOverlaps(geneExonIntervals, exonIntervals, type="within")
+	
 	returnDat <- list(pmDifDat=difData$pmDifDat, allPlot=allPlot, negDat=outDat, mmCor=difData$mmProbeCor,
-										exonDat=difData$exonDatSingleMM)
+										exonDat=difData$exonDatSingleMM, probeAlign=probeAlign, exonIntervals=exonIntervals, geneExons=geneExonOverlaps)
 		
 	cdf2Det <- grep("cdf", search(), value=T)
 	detach(cdf2Det, character.only=T)
