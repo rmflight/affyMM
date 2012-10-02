@@ -152,6 +152,14 @@ allData <- lapply(useData, function(inData){
 		exonIntervals <- GRanges(seqnames=Rle(useExons[,1]), ranges=IRanges(useExons[,2], useExons[,3]),
 											 strand=Rle(useExons[,4]))
 		
+		geneExonFile <- paste(inData, "_exons.bed.gz", sep="", collapse="")
+		geneExons <- read.table(file.path("seqData", geneExonFile), sep="\t")
+		geneExonIntervals <- GRanges(seqnames=Rle(geneExons[,1]), ranges=IRanges(geneExons[,2], geneExons[,3]),
+											 strand=Rle(geneExons[,6]), exonID=geneExons[,4])
+		splitID <- strsplit(as.character((elementMetadata(geneExonIntervals)$exonID)), "_exon")
+		elementMetadata(geneExonIntervals)$refID <- sapply(splitID, function(x){x[1]})
+		
+		useExons <- subsetByOverlaps(query=exonIntervals, subject=probeAlign, minoverlap=23, type="any")
 		exonOverlaps <- subsetByOverlaps(query=probeAlign, subject=exonIntervals, minoverlap=23, type="any")
 		
 		hasExonProbes <- elementMetadata(exonOverlaps)$probeNames
@@ -540,15 +548,10 @@ allData <- lapply(useData, function(inData){
 	
 	allPlot <- genAllPlots()
 	
-	if (outDat["nallPm.Exon.inNeg"] != 0){
-	
-		difData <- indPlotData()
-		returnDat <- list(pmDifDat=difData$pmDifDat, allPlot=allPlot, negDat=outDat, mmCor=difData$mmProbeCor,
-											exonDat=difData$exonDatSingleMM)
+	difData <- indPlotData()
+	returnDat <- list(pmDifDat=difData$pmDifDat, allPlot=allPlot, negDat=outDat, mmCor=difData$mmProbeCor,
+										exonDat=difData$exonDatSingleMM)
 		
-	} else {
-		returnDat <- list(pmDifDat=NA, allPlot=NA, negDat=outDat, mmCor=NA)
-	}
 	cdf2Det <- grep("cdf", search(), value=T)
 	detach(cdf2Det, character.only=T)
 	.sessionInfo <- sessionInfo()
