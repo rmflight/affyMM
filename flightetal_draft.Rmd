@@ -1,6 +1,6 @@
 ```{r knitrSetup, include=FALSE}
 # sets output for inline results nicely
-knit_hooks$set(inline = identity) 
+#knit_hooks$set(inline = identity) 
 
 # kills knitr if there is an error, therefore we don't waste time generating error messages
 knit_hooks$set(error = function(x, options) stop(x)) 
@@ -69,7 +69,7 @@ different human genome projects, resulting in approximately a 70% overlap of uni
 51 uniquely mapping MM probes commonly found in all five projects, 24 of which are found within annotated exonic regions. 
 These results suggest that individual variation in transcriptome regions provides an additional complexity to microarray
 data analysis. Given these results, we conclude that the development of custom chip definition files (CDFs) should
-include MM probe sequences to provide the most effective means of transcriptome analysis of Affymetrix® GeneChip® 
+include MM probe sequences to provide the most effective means of transcriptome analysis of Affymetrix(r) GeneChip(r) 
 arrays.
 
 **Categories and Subject Descriptors**: J.3 [Life and Medical Sciences]: Biology and Genetics
@@ -88,16 +88,16 @@ transcriptional changes under differing conditions.  While RNA-Seq [2] may event
 method of choice, a large number of microarray experiments exist that have been deposited into publicly available
 repositories such as NCBI’s Gene Expression Omnibus (GEO) [3] and EBI’s ArrayExpress [4].  As a case in point, GEO
 contains 32,471 series as of 9/6/2012.  The majority of the entries in GEO were performed on arrays designed by
-companies such as Affymetrix®, Inc. (Santa Clara, CA), Agilent Technologies, Inc. (Santa Clara, CA), Illumina®, Inc.
+companies such as Affymetrix(r), Inc. (Santa Clara, CA), Agilent Technologies, Inc. (Santa Clara, CA), Illumina(r), Inc.
 (San Diego, CA), and GE Healthcare Lifesciences (Piscataway, NJ), with nearly half of the series (16,181) being
 performed on various Affymetrix® arrays. 
 
-The design of Affymetrix® GeneChip® arrays in particular provides for probe sets consisting of 11, 16, or 20 distinct
+The design of Affymetrix® GeneChip(r) arrays in particular provides for probe sets consisting of 11, 16, or 20 distinct
 25 base pair (BP) probes, with each probe having a corresponding perfect match (PM) and mismatch (MM) probe.  The PM
 and MM differ by the exchange of the complementary base at the 13th position in the probe.  While MM probes were
 originally designed to account for signal in the PM resulting from non-specific cross-hybridization, they are often
 underutilized or completely ignored. Mismatch probes have been explored for use in long oligonucleotide arrays as well
-[5], but their utilization is limited to the Affymetrix® platform. 
+[5], but their utilization is limited to the Affymetrix(r) platform. 
 
 Affymetrix® provides a default GeneChip® analysis package known as the Micro Array Suite 5.0 (MAS 5.0) [6] that measures the signal intensity for a particular probe pair as: 
 
@@ -107,7 +107,7 @@ Where MM`*` is a modified version of MM that is never bigger than the intensity 
 the modified mismatch intensity MM* is to report all probe-level intensities as positive values, and to remove the
 influence of the minority of probes where the MM intensity value is significantly higher than the corresponding PM
 intensity.  In addition to the intensity signal, MAS 5.0 also produces a detection p-value which flags a transcript as
-“P” (present), “M” (marginal), or “A” (absent) based on the reliability of the probe set based on differences between
+"P"" (present), "M"" (marginal), or "A"" (absent) based on the reliability of the probe set based on differences between
 PM and MM intensities.
 
 Known issues in the use of PM and MM probe intensities to generate a single probe set intensity values led to the
@@ -116,16 +116,20 @@ development of other approaches, including RMA [7] and GCRMA [8]  which complete
 With the availability of individual probe and reference genome sequences, it is possible to re-map probes based on new
 sources of genome annotations. This allows custom Chip Description Files (CDFs) wherein probes are grouped into novel
 probe sets based on exon, transcript, and gene level annotation [9-22]. Most notable is the effort of the BrainArray
-group [10] which updates custom CDFs for a large number of Affymetrix® GeneChips® by creating probe sets based on
+group [10] which updates custom CDFs for a large number of Affymetrix(r) GeneChips(r) by creating probe sets based on
 annotated features such as Entrez Gene [23], Ensembl transcript, Ensembl gene, and RefSeq Gene [24].  Using custom CDFs
 has been shown to impact the reliability of expression analysis [10, 20-22, 25]. However, to the authors’ knowledge,
 only the PM probe sequences are used when generating custom CDFs.
 
+```{r incTable1, include=FALSE}
+tableCount <- incCount(tableCount, "t.genomeAssemblies")
+```
+
 Based on the observation that a small, yet significant number of PM-MM probe pairs exist where the MM intensity is
 significantly increased over the PM intensity, our initial inclination was that these differences in intensities were
-not due to cross-hybridization or rogue probes alone.  Therefore, keeping in mind that Affymetrix® probes have been
+not due to cross-hybridization or rogue probes alone.  Therefore, keeping in mind that Affymetrix(r) probes have been
 designed according to continually evolving genome assemblies, we proceeded to analyze PM and MM probes across eight
-commonly studied species (Table 1) by looking at PM and MM probes that uniquely map to the respective genome.
+commonly studied species (`r I(pasteLabel("Table", tableCount, "t.genomeAssemblies"))`) by looking at PM and MM probes that uniquely map to the respective genome.
 
 In addition to changing functional annotations, one potential problem area for microarray probe design is the presence
 of single nucleotide polymorphisms (SNPs) within a population.  As the probes are designed using a reference genome or
@@ -139,8 +143,7 @@ distinct publicly available assemblies of human genomes.
 
 ## METHODS
 
-```{r addTable1, include=FALSE}
-tableCount <- incCount(tableCount, "t.genomeAssemblies")
+```{r addTable2, include=FALSE}
 tableCount <- incCount(tableCount, "t.affyGenechips")
 tableCount <- incCount(tableCount, "t.humanAssemblies")
 ```
@@ -148,14 +151,14 @@ tableCount <- incCount(tableCount, "t.humanAssemblies")
 ### Mapping of PM and MM Probes
 
 Chromosomal-based genome assemblies were downloaded from the UCSC Goldenpath Genomes ftp server using an anonymous
-login (ftp://hgdownload.cse.ucsc.edu/goldenPath/) [28] for eight commonly studied species, including C. elegans
-(roundworm), D. melanogaster (fruit fly), S. cerevisiae (baker’s yeast), X. tropicalis (western clawed frog), D. rerio
-(zebrafish), M. musculus (house mouse), R. norvegicus (brown Norway rat), and H. sapiens (human) (`r I(pasteLabel("Table", tableCount, "t.genomeAssemblies"))`).  Genome
-indices were created using bowtie-build version 0.12.8 [29] with the default parameters.  Perfect match (PM) probe
-sequences for Affymetrix® GeneChips® were obtained from Bioconductor (v 2.10) probe packages, which are constructed
+login (ftp://hgdownload.cse.ucsc.edu/goldenPath/) [28] for eight commonly studied species, including *C. elegans*
+(roundworm), *D. melanogaster* (fruit fly), *S. cerevisiae* (baker’s yeast), *X. tropicalis* (western clawed frog), *D. rerio*
+(zebrafish), *M. musculus* (house mouse), *R. norvegicus* (brown Norway rat), and *H. sapiens* (human) (`r I(pasteLabel("Table", tableCount, "t.genomeAssemblies"))`).  Genome
+indices were created using `bowtie-build` version 0.12.8 [29] with the default parameters.  Perfect match (PM) probe
+sequences for Affymetrix(r) GeneChips(r) were obtained from Bioconductor (v 2.10) probe packages, which are constructed
 from data available in NetAffx (`r I(pasteLabel("Table", tableCount, "t.affyGenechips"))`) with each new Bioconductor release. Mismatch (MM) probe sequences were
 constructed by replacing the 13th base in the supplied PM probe sequence with the complementary base. PM and MM probes
-were aligned to the indexed genomes using bowtie version 0.12.8 [29] with the parameters –v 0 and –a which used
+were aligned to the indexed genomes using `bowtie` version 0.12.8 [29] with the parameters –v 0 and –a which used
 together will report all valid probes matching with 100% identity.
 
 <a id="t.genomeAssemblies"></a>
@@ -191,16 +194,15 @@ Organism | GeneChip(r) Name
 
 ###	Generation of Exons and Overlap
 
-Exon regions were obtained from the UCSC genome browser as BED files with an entry for each exon. mergeBed from the
-bedTools suite was used to merge overlapping exons from multiple transcripts into single contiguous exons. These
+Exon regions were obtained from the UCSC genome browser as `BED` files with an entry for each exon. `mergeBed` from the
+`bedTools` suite was used to merge overlapping exons from multiple transcripts into single contiguous exons. These
 merged exons were used when defining overlaps of probe alignments with an exon. Probe and exon overlaps were defined
-as any type of overlap with at least 23 bases overlapping on the same strand. Overlaps were determined using Genomic
-Ranges version 1.8.7 [31].
+as any type of overlap with at least 23 bases overlapping on the same strand. Overlaps were determined using `Genomic Ranges` version 1.8.7 [31].
 
 ###	DNA Microarray Data
 
 For each GeneChip®, CEL files were downloaded from GEO for 20 random samples (with the exception of *S. cerevisiae* (12)
-and *X. tropicalis* (4), a the GSMs are listed in [gsmFiles.txt](gsmFiles.txt)). Probe intensities were background
+and *X. tropicalis* (4), the GSMs are listed in [gsmFiles.txt](gsmFiles.txt)). Probe intensities were background
 corrected using the MAS background correction method implemented in Bioconductor. Depending on the application,
 intensities were log (base 2), square root transformed, or used as is. 
 
@@ -252,9 +254,9 @@ tableOut <- tableCat(cntTable)
 
 Given the PM probe sequences and the inferred MM sequences, individual probes were mapped to the corresponding genome
 assembly as outlined in Methods.  The percentage of perfect match probes mapping to the genome ranged from a low of
-80% (X. tropicalis) to a high of 95% (D. melanogaster), with the exception of S. cerevisiae (`r I(pasteLabel("Table", tableCount, "t.probeMatches", T))`).  It must be
-noted that the lower percentage of S. cerevisiae matches (53%) is expected, as the Yeast Genome 2.0 GeneChip® contains
-probes for two yeast species, S. cerevisiae and S. pombe. 
+80% (*X. tropicalis*) to a high of 95% (*D. melanogaster*), with the exception of *S. cerevisiae* (`r I(pasteLabel("Table", tableCount, "t.probeMatches", T))`).  It must be
+noted that the lower percentage of *S. cerevisiae* matches (53%) is expected, as the Yeast Genome 2.0 GeneChip(r) contains
+probes for two yeast species, *S. cerevisiae* and *S. pombe*. 
 
 <a id="t.probeMatches"></a>
 
@@ -264,13 +266,13 @@ probes for two yeast species, S. cerevisiae and S. pombe.
 cat(tableOut, sep="\n")
 ```
 
-Affymetrix® probesets are given suffix definitions depending upon the uniqueness of the exemplar sequence used to
+Affymetrix(r) probesets are given suffix definitions depending upon the uniqueness of the exemplar sequence used to
 design a probe set.  A designation of `_`at indicates the probe set perfectly matches a single transcript; `_`a`_`at
-probe sets only perfectly match transcripts of the same gene; _s_at perfectly match multiple transcripts for the same
+probe sets only perfectly match transcripts of the same gene; `_`s`_`at perfectly match multiple transcripts for the same
 gene family; and `_`x`_`at indicates the probe set is identical or highly similar to other genes.  One of the
 difficulties with these designations is that it relies upon a set of annotations at a particular point in time.  
 
-Analysis of the probes that map to the genome (Table 4) indicates that 82% to 98% of the mapped probes map uniquely to
+Analysis of the probes that map to the genome (`r I(pasteLabel("Table", tableCount, "t.probeMatches"))`) indicates that 82% to 98% of the mapped probes map uniquely to
 a single genomic location.  The fact that a number of probes map to multiple locations is not to be unexpected due to
 the restrictions placed on probe set design.  However, it is expected that those probes mapping to multiple locations
 would not be from the `_`at class of probes.  
@@ -377,35 +379,83 @@ for (iPlot in 1:nPlot){
 
 **`r I(pasteLabel("Figure", figCount, "f.allPlots", F))`. Density profile of probe intensities (log2).**  PM: perfect match, MM: mismatch.  mm.all: background MM intensities; pm.all: background PM intensities; mm.exon: intensities of MM probes in exonic regions; pm.exon: intensities of PM probes in exonic regions.
 
+```{r setPMMMFigs, include=FALSE}
+figCount <- incCount(figCount, "f.pmmmDensityPlot")
+figCount <- incCount(figCount, "f.pmmmIntensityPlot")
+figCount <- incCount(figCount, "f.tmIntensityPlot")
+figCount <- incCount(figCount, "f.correlationBox")
+```
+
 As some of these MM probes may bind to transcripts, we further considered those MM probes that uniquely mapped to
 exons (irrespective of whether the corresponding PM probe mapped zero, one or multiple times to exons or the full
 genome), examining the differences in signal intensity between the MM and its associated PM.  In many cases there is a
-significant negative difference in the expression level of the PM-MM pair (an example is shown in Figure 2). 
+significant negative difference in the expression level of the PM-MM pair (an example is shown in Figures `r I(pasteLabel("", figCount, "f.pmmmDensityPlot", T))` and `r I(pasteLabel("", figCount, "f.pmmmIntensityPlot", T))`). 
+
+<a id="f.pmmmDensityPlot"></a>
+
+```{r pmmmDensity, echo=FALSE}
+# need to get the experiment and probe set ID used for this figure and set it as a variable we can use!
+```
+
+**`r I(pasteLabel("Figure", figCount, "f.pmmmDensityPlot", F))`. Density of MM and PM probe set intensities not including the PM-MM pair that had a large negative difference.**
+
+<a id="f.pmmmIntensityPlot"></a>
+
+```{r pmmmIntensity, echo=FALSE}
+
+```
+
+**`r I(pasteLabel("Figure", figCount, "f.pmmmIntensityPlot", F))`. Square root transformed intensities for each PM-MM pair.** The negative difference pair is at the extreme right end of the figure. 
 
 If these MM probes are grouped instead with the other probes within the transcriptional region for which they uniquely
 match  (we have renamed these probes as “true match” (TM) probes since they truly match the region in the genome),
-there is a much better association between the probe intensities, as shown in Figure 3.
+there is a much better association between the probe intensities, as shown in `r I(pasteLabel("Figure", figCount, "f.tmIntensityPlot"))`.
+
+<a id="f.tmIntensity"></a>
+
+```{r tmIntensity, echo=FALSE}
+
+```
+
+**`r I(pasteLabel("Figure", figCount, "f.tmIntensityPlot", F))`. Plot of probe set intensities for zebrafish where the TM probes overlap with the same TMmm probe in `r I(pasteLabel("Figure", figCount, "f.pmmmIntensityPlot", T))`**
 
 Further analysis was performed to test the correlation of the TM probes with the expression levels of both the
-annotated probe group MM probes and with the TM-mapped transcript probes (Figure 4).  The box plot in Figure 4 clearly
+annotated probe group MM probes and with the TM-mapped transcript probes (`r I(pasteLabel("Figure", figCount, "f.correlationBox"))`).  The box plot in `r I(pasteLabel("Figure", figCount, "f.correlationBox"))` clearly
 indicates that the TM intensities more closely correlate with those from the group based on mapping to the same exon.
 
-To determine if the observed difference in the correlations from Figure 4 is due to measurement of different mRNA
+<a id="f.correlationBox"></a>
+
+```{r correlationBoxPlot, echo=FALSE}
+
+```
+
+**`r I(pasteLabel("Figure", figCount, "f.correlationBox", F))`. Box plot of correlations of the TMmm with MM intensities of annotated probe set (red, MM) and TM intensities of custom probe sets based on shared mapping to exons (blue, TM)**
+
+```{r incCorrTable}
+tableCount <- incCount(tableCount, "t.corrTable")
+tableCount <- incCount(tableCount, "t.humanMapping")
+```
+
+To determine if the observed difference in the correlations from `r I(pasteLabel("Figure", figCount, "f.correlationBox"))` is due to measurement of different mRNA
 entities, we considered the MM probe both within its annotated location as well as within the new mapped location
 (TMmm). The intensity of the MM probe was compared with the intensity of its corresponding neighbor probes (MM probes
 for the annotated location; PM probes for the new mapped location).  An average correlation value between intensities
-was calculated on a per-exon probe basis.  The resulting correlations are summarized in Table 8.
+was calculated on a per-exon probe basis.  The resulting correlations are summarized in `r I(pasteLabel("Table", tableCount, "t.corrTable"))`.
+
+```{r addCorrTable}
+
+```
 
 What is interesting is that with few exceptions, the transcripts and genes being measured by the probe sets are the
 same, implying that the TMmm probe aligns to the same gene as its complimentary PM probe. Upon further examination it
-appears that many of the PM complements of the TMmm do not align to the genome at all (data not shown). One possibili
-ty is that these probes are in regions that have seen changes in the reference sequence over the years, or that the
+appears that many of the PM complements of the TMmm do not align to the genome at all (data not shown). One possibility
+is that these probes are in regions that have seen changes in the reference sequence over the years, or that the
 original sequencing of the ESTs used to design the probe sets was of poor quality. 
 
 ###	Effects of Individual Variation 
 
 To gain an understanding of the effect of individual variation, the unique mapping of PM and MM probes to five
-distinct human genome assemblies was analyzed (Table 6).  Four of the five projects have roughly the same number of
+distinct human genome assemblies was analyzed (`r I(pasteLabel("Table", tableCount, "t.humanMapping"))`).  Four of the five projects have roughly the same number of
 uniquely mapped PM probes (within 2% variation).  The fifth project (BGI) provides an exception to this trend.  While
 there are a number of potential explanations for this (including sequence and assembly quality and coverage of the
 sequencing), one potential feature to be considered is the fact that this sequencing project involves the sequencing
