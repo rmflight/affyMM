@@ -556,7 +556,7 @@ allData <- lapply(useData, function(inData){
 	geneExons <- read.table(file.path("seqData", geneExonFile), sep="\t")
 	geneExonIntervals <- GRanges(seqnames=Rle(geneExons[,1]), ranges=IRanges(geneExons[,2], geneExons[,3]),
 											 strand=Rle(geneExons[,6]), exonID=geneExons[,4])
-	splitID <- strsplit(as.character((elementMetadata(geneExonIntervals)$exonID)), "_exon")
+	splitID <- strsplit((elementMetadata(geneExonIntervals)$exonID), "_exon")
 	elementMetadata(geneExonIntervals)$refID <- sapply(splitID, function(x){x[1]})
 	geneExonOverlaps <- subsetByOverlaps(geneExonIntervals, exonIntervals, type="within")
 	
