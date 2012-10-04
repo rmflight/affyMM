@@ -757,9 +757,10 @@ Finally, calculate the correlation of the TM(mm) probe with the other MM probes 
 the correlation of the TM(mm) with the other TM probes that match its exon. See how these look for all the exon matching TM(mm) probes for an organism, and see if we can do a full summary for each organism.
 
 ```{r allCor}
-allData <- allData[!(names(allData) %in% "mm9")]
+allData <- allData[!(names(allData) %in% c("mm9", "sc3"))]
 useName <- names(allData)
-corDat <- lapply(useName, function(inN){
+
+calcCor <- function(inN){
 	useCor <- allData[[inN]]$mmCor
 	mmProbes <- names(useCor)
 
@@ -787,7 +788,8 @@ corDat <- lapply(useName, function(inN){
 	hasSame <- unique(mmCor$x[(mmCor$x %in% tmCor$x)])
 	allCorSame <- allCor[(allCor$x %in% hasSame),]
 	return(list(allCor=allCor, allCorSame=allCorSame))
-})
+}
+corDat <- lapply(useName, calcCor)
 names(corDat) <- useName
 
 initCor <- corDat[[1]]$allCorSame

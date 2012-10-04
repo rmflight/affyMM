@@ -201,7 +201,7 @@ as any type of overlap with at least 23 bases overlapping on the same strand. Ov
 
 ###	DNA Microarray Data
 
-For each GeneChip®, CEL files were downloaded from GEO for 20 random samples (with the exception of *S. cerevisiae* (12)
+For each GeneChip(r), CEL files were downloaded from GEO for 20 random samples (with the exception of *S. cerevisiae* (12)
 and *X. tropicalis* (4), the GSMs are listed in [gsmFiles.txt](gsmFiles.txt)). Probe intensities were background
 corrected using the MAS background correction method implemented in Bioconductor. Depending on the application,
 intensities were log (base 2), square root transformed, or used as is. 
@@ -425,8 +425,52 @@ indicates that the TM intensities more closely correlate with those from the gro
 
 <a id="f.correlationBox"></a>
 
-```{r correlationBoxPlot, echo=FALSE}
+```{r correlationBoxPlot, echo=FALSE, warning=FALSE}
+allData <- allData[!(names(allData) %in% c("mm9", "sc3"))]
+useName <- names(allData)
 
+calcCor <- function(inN){
+	useCor <- allData[[inN]]$mmCor
+	mmProbes <- names(useCor)
+
+	nCor <- length(useCor)
+	
+	mmCor <- data.frame(x=0, y=0, class="", orgName=inN, mmName="")
+	tmCor <- data.frame(x=0, y=0, class="", orgName=inN, mmName="")
+	
+	for (iCor in 1:nCor){
+		mmT <- as.vector(useCor[[iCor]]$mmCor)
+		mmT <- data.frame(x=as.character(iCor), y=mmT, class="mm", orgName=inN, mmName=mmProbes[iCor])
+		mmCor <- rbind(mmCor, mmT)
+		
+		tmT <- as.vector(useCor[[iCor]]$tmCor)
+		if (!(is.na(tmT))){
+			tmT <- data.frame(x=as.character(iCor), y=tmT, class="tm", orgName=inN, mmName=mmProbes[iCor])
+			tmCor <- rbind(tmCor, tmT)
+		}
+	}
+	
+	mmCor <- mmCor[seq(2, nrow(mmCor)),]
+	tmCor <- tmCor[seq(2, nrow(tmCor)),]
+	
+	allCor <- rbind(mmCor, tmCor)
+	hasSame <- unique(mmCor$x[(mmCor$x %in% tmCor$x)])
+	allCorSame <- allCor[(allCor$x %in% hasSame),]
+	return(list(allCor=allCor, allCorSame=allCorSame))
+}
+corDat <- lapply(useName, calcCor)
+names(corDat) <- useName
+
+initCor <- corDat[[1]]$allCorSame
+invisible(sapply(corDat[2:length(corDat)], function(x){
+	initCor <<- rbind(initCor, x$allCorSame)
+}))
+
+initCor$orgName <- as.character(initCor$orgName)
+initCor$orgName[(initCor$orgName == "xtropicalis")] <- "xt3"
+initCor$class.orgName <- paste(initCor$orgName, initCor$class, sep=":")
+
+ggplot(initCor, aes(x=orgName, y=y, colour=class)) + geom_boxplot() + theme_bw() + labs(x="organism", y="correlation")
 ```
 
 **`r I(pasteLabel("Figure", figCount, "f.correlationBox", F))`. Box plot of correlations of the TMmm with MM intensities of annotated probe set (red, MM) and TM intensities of custom probe sets based on shared mapping to exons (blue, TM)**
