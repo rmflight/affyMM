@@ -290,17 +290,18 @@ significant negative difference in the expression level of the PM-MM pair (an ex
 
 <a id="f.pmmmDensityPlot"></a>
 
+![plot of chunk pmmmDensity](figure/pmmmDensity.png) 
 
 
-
-**Figure 2. Density of MM and PM probe set intensities not including the PM-MM pair that had a large negative difference.**
+**Figure 2. Density of MM and PM probe set intensities not including the PM-MM pair that had a large negative difference.** Intensities from zebrafish probeset Dr.5545.1.S1_at, in GEO sample
+GSM604808.CEL.gz.
 
 <a id="f.pmmmIntensityPlot"></a>
 
+![plot of chunk pmmmIntensity](figure/pmmmIntensity.png) 
 
 
-
-**Figure 3. Square root transformed intensities for each PM-MM pair.** The negative difference pair is at the extreme right end of the figure. 
+**Figure 3. Square root transformed intensities for each PM-MM pair.** The negative difference pair is at the extreme right end of the figure. Intensities from zebrafish probeset Dr.5545.1.S1_at, in GEO sample GSM604808.CEL.gz.
 
 If these MM probes are grouped instead with the other probes within the transcriptional region for which they uniquely
 match  (we have renamed these probes as “true match” (TM) probes since they truly match the region in the genome),
@@ -308,10 +309,10 @@ there is a much better association between the probe intensities, as shown in [F
 
 <a id="f.tmIntensity"></a>
 
+![plot of chunk tmIntensity](figure/tmIntensity.png) 
 
 
-
-**Figure 4. Plot of probe set intensities for zebrafish where the TM probes overlap with the same TMmm probe in [Figure 3](#f.pmmmIntensityPlot)**
+**Figure 4. Plot of probe set intensities for zebrafish where the TM probes overlap with the same TMmm probe in [Figure 3](#f.pmmmIntensityPlot)** Intensities from zebrafish probeset Dr.5545.1.S1_at, in GEO sample GSM604808.CEL.gz.
 
 Further analysis was performed to test the correlation of the TM probes with the expression levels of both the
 annotated probe group MM probes and with the TM-mapped transcript probes ([Figure 5](#f.correlationBox)).  The box plot in [Figure 5](#f.correlationBox) clearly
@@ -325,10 +326,6 @@ indicates that the TM intensities more closely correlate with those from the gro
 **Figure 5. Box plot of correlations of the TMmm with MM intensities of annotated probe set (red, MM) and TM intensities of custom probe sets based on shared mapping to exons (blue, TM)**
 
 
-```r
-tableCount <- incCount(tableCount, "t.corrTable")
-tableCount <- incCount(tableCount, "t.humanMapping")
-```
 
 
 To determine if the observed difference in the correlations from [Figure 5](#f.correlationBox) is due to measurement of different mRNA

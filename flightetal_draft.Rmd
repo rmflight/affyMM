@@ -43,6 +43,24 @@ tableCat <- function(inFrame){
 probeClass <- function(probeIDs){
 	sapply(strsplit(probeIDs, ".", fixed=T), function(y){y[1]})
 }
+
+probeSetName <- function(probeID){
+	splitName <- strsplit(probeID, ".", fixed=T)[[1]]
+	nSplit <- length(splitName)
+	rmSplit <- -1 * c(1, nSplit-1, nSplit)
+	paste(splitName[rmSplit], sep=".", collapse=".")
+}
+
+sortProbes <- function(probeIDs){
+	splitIDs <- strsplit(probeIDs, ".", fixed=T)
+	endIndx <- sapply(splitIDs, function(x){
+		nEnt <- length(x)
+		as.numeric(x[c(nEnt-1, nEnt)])
+	})
+	endIndx <- t(endIndx)
+	order(endIndx[,1], endIndx[,2])
+}
+
 ```
 
 ```{r loadPackages, include=FALSE}
@@ -395,17 +413,32 @@ significant negative difference in the expression level of the PM-MM pair (an ex
 
 ```{r pmmmDensity, echo=FALSE}
 # need to get the experiment and probe set ID used for this figure and set it as a variable we can use!
+mmIndx <- 12
+negIndx <- 2
+
+tmpDat <- allData$dr6$pmDifDat[[mmIndx]]
+mmName <- tmpDat$invProbes[negIndx]
+setName <- probeSetName(mmName)
+expName <- tmpDat$probeData$gsmID[negIndx]
+
+denPlot <- tmpDat$plotDat[[negIndx]]$denPlot
+
+denPlot <- denPlot + ggtitle("")
+print(denPlot)
 ```
 
-**`r I(pasteLabel("Figure", figCount, "f.pmmmDensityPlot", F))`. Density of MM and PM probe set intensities not including the PM-MM pair that had a large negative difference.**
+**`r I(pasteLabel("Figure", figCount, "f.pmmmDensityPlot", F))`. Density of MM and PM probe set intensities not including the PM-MM pair that had a large negative difference.** Intensities from zebrafish probeset `r I(setName)`, in GEO sample
+`r I(expName)`.
 
 <a id="f.pmmmIntensityPlot"></a>
 
 ```{r pmmmIntensity, echo=FALSE}
-
+probeSetPlot <- tmpDat$plotDat[[negIndx]]$psImage
+probeSetPlot <- probeSetPlot + ggtitle("") + theme_grey()
+print(probeSetPlot)
 ```
 
-**`r I(pasteLabel("Figure", figCount, "f.pmmmIntensityPlot", F))`. Square root transformed intensities for each PM-MM pair.** The negative difference pair is at the extreme right end of the figure. 
+**`r I(pasteLabel("Figure", figCount, "f.pmmmIntensityPlot", F))`. Square root transformed intensities for each PM-MM pair.** The negative difference pair is at the extreme right end of the figure. Intensities from zebrafish probeset `r I(setName)`, in GEO sample `r I(expName)`.
 
 If these MM probes are grouped instead with the other probes within the transcriptional region for which they uniquely
 match  (we have renamed these probes as “true match” (TM) probes since they truly match the region in the genome),
@@ -414,10 +447,12 @@ there is a much better association between the probe intensities, as shown in `r
 <a id="f.tmIntensity"></a>
 
 ```{r tmIntensity, echo=FALSE}
-
+intenPlot <- tmpDat$plotDat[[negIndx]]$exonImage
+intenPlot <- intenPlot + ggtitle("")
+print(intenPlot)
 ```
 
-**`r I(pasteLabel("Figure", figCount, "f.tmIntensityPlot", F))`. Plot of probe set intensities for zebrafish where the TM probes overlap with the same TMmm probe in `r I(pasteLabel("Figure", figCount, "f.pmmmIntensityPlot", T))`**
+**`r I(pasteLabel("Figure", figCount, "f.tmIntensityPlot", F))`. Plot of probe set intensities for zebrafish where the TM probes overlap with the same TMmm probe in `r I(pasteLabel("Figure", figCount, "f.pmmmIntensityPlot", T))`** Intensities from zebrafish probeset `r I(setName)`, in GEO sample `r I(expName)`.
 
 Further analysis was performed to test the correlation of the TM probes with the expression levels of both the
 annotated probe group MM probes and with the TM-mapped transcript probes (`r I(pasteLabel("Figure", figCount, "f.correlationBox"))`).  The box plot in `r I(pasteLabel("Figure", figCount, "f.correlationBox"))` clearly
@@ -475,7 +510,7 @@ ggplot(initCor, aes(x=orgName, y=y, colour=class)) + geom_boxplot() + theme_bw()
 
 **`r I(pasteLabel("Figure", figCount, "f.correlationBox", F))`. Box plot of correlations of the TMmm with MM intensities of annotated probe set (red, MM) and TM intensities of custom probe sets based on shared mapping to exons (blue, TM)**
 
-```{r incCorrTable}
+```{r incCorrTable, echo=FALSE}
 tableCount <- incCount(tableCount, "t.corrTable")
 tableCount <- incCount(tableCount, "t.humanMapping")
 ```
