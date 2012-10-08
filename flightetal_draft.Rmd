@@ -850,3 +850,16 @@ Medical Sciences.
 [35] Levy, S., Sutton, G., Ng, P. C., Feuk, L., Halpern, A. L., Walenz, B. P., Axelrod, N., Huang, J., Kirkness, E. F., Denisov, G., Lin, Y., MacDonald, J. R., Pang, A. W., Shago, M., Stockwell, T. B., Tsiamouri, A., Bafna, V., Bansal, V., Kravitz, S. A., Busam, D. A., Beeson, K. Y., McIntosh, T. C., Remington, K. A., Abril, J. F., Gill, J., Borman, J., Rogers, Y. H., Frazier, M. E., Scherer, S. W., Strausberg, R. L. and Venter, J. C. The diploid genome sequence of an individual human. PLoS biology, 5, 10 (Sep 4 2007), e254.
 
 [36] Li, R., Li, Y., Zheng, H., Luo, R., Zhu, H., Li, Q., Qian, W., Ren, Y., Tian, G., Li, J., Zhou, G., Zhu, X., Wu, H., Qin, J., Jin, X., Li, D., Cao, H., Hu, X., Blanche, H., Cann, H., Zhang, X., Li, S., Bolund, L., Kristiansen, K., Yang, H. and Wang, J. Building the sequence map of the human pan-genome. Nature biotechnology, 28, 1 (Jan 2010), 57-63.
+
+## RECREATION OF RESULTS
+
+All of the necessary code to regenerate this work is hosted at https://github.com/rmflight/affymm. To recreate this html document, you need to run:
+
+`knit2html("flightetal_draft.Rmd", "flightetal_draft.html")`
+
+Alternatively use the `Knit HTML` button in `RStudio v0.97` or newer. This document was
+generated using `r R.version.string`. The following information about packages used is also supplied:
+
+```{r writeSessionInfo, comment=""}
+sessionInfo()
+```

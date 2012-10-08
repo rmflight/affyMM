@@ -444,7 +444,7 @@ In addition, current custom CDF generation workflows ignore the MM probes during
 that some MM probes align to reference genomes, they should be considered for inclusion when creating custom CDFs. The
 utility of the probes may be limited due to variation among individuals. 
 
-## Acknowledgements
+## ACKNOWLEDGEMENTS
 
 This work was partially funded by National Institutes of Health (NIH) grant 8P20GM103436-12.  Its contents are solely
 the responsibility of the authors and do not represent the official views of NIH or the National Institute of General
@@ -523,3 +523,51 @@ Medical Sciences.
 [35] Levy, S., Sutton, G., Ng, P. C., Feuk, L., Halpern, A. L., Walenz, B. P., Axelrod, N., Huang, J., Kirkness, E. F., Denisov, G., Lin, Y., MacDonald, J. R., Pang, A. W., Shago, M., Stockwell, T. B., Tsiamouri, A., Bafna, V., Bansal, V., Kravitz, S. A., Busam, D. A., Beeson, K. Y., McIntosh, T. C., Remington, K. A., Abril, J. F., Gill, J., Borman, J., Rogers, Y. H., Frazier, M. E., Scherer, S. W., Strausberg, R. L. and Venter, J. C. The diploid genome sequence of an individual human. PLoS biology, 5, 10 (Sep 4 2007), e254.
 
 [36] Li, R., Li, Y., Zheng, H., Luo, R., Zhu, H., Li, Q., Qian, W., Ren, Y., Tian, G., Li, J., Zhou, G., Zhu, X., Wu, H., Qin, J., Jin, X., Li, D., Cao, H., Hu, X., Blanche, H., Cann, H., Zhang, X., Li, S., Bolund, L., Kristiansen, K., Yang, H. and Wang, J. Building the sequence map of the human pan-genome. Nature biotechnology, 28, 1 (Jan 2010), 57-63.
+
+## RECREATION OF RESULTS
+
+All of the necessary code to regenerate this work is hosted at https://github.com/rmflight/affymm. To recreate this html document, you need to run:
+
+`knit2html("flightetal_draft.Rmd", "flightetal_draft.html")`
+
+Alternatively use the `Knit HTML` button in `RStudio v0.97` or newer. This document was
+generated using R version 2.15.0 (2012-03-30). The following information about packages used is also supplied:
+
+
+```r
+sessionInfo()
+```
+
+```
+R version 2.15.0 (2012-03-30)
+Platform: x86_64-pc-mingw32/x64 (64-bit)
+
+locale:
+[1] LC_COLLATE=English_United States.1252 
+[2] LC_CTYPE=English_United States.1252   
+[3] LC_MONETARY=English_United States.1252
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.1252    
+
+attached base packages:
+[1] grid      stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] GenomicRanges_1.8.13    IRanges_1.14.4         
+ [3] hgu133plus2probe_2.10.0 hgu133plus2.db_2.7.1   
+ [5] org.Hs.eg.db_2.7.1      RSQLite_0.11.2         
+ [7] DBI_0.2-5               AnnotationDbi_1.18.3   
+ [9] Biobase_2.16.0          BiocGenerics_0.2.0     
+[11] VennDiagram_1.5.1       plyr_1.7.1             
+[13] ggplot2_0.9.2.1         knitr_0.8.1            
+
+loaded via a namespace (and not attached):
+ [1] colorspace_1.1-1   dichromat_1.2-4    digest_0.5.2      
+ [4] evaluate_0.4.2     formatR_0.6        gtable_0.1.1      
+ [7] labeling_0.1       MASS_7.3-21        memoise_0.1       
+[10] munsell_0.4        proto_0.3-9.2      RColorBrewer_1.0-5
+[13] reshape2_1.2.1     scales_0.2.2       stats4_2.15.0     
+[16] stringr_0.6.1      tools_2.15.0      
+```
+

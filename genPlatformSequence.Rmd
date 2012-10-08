@@ -153,4 +153,10 @@ save(pm.mm.dat, probeDat, .sessionInfo, .datetime, file="seqData/yeast2.pm.mm.RD
 rm(list=c("yeast2probe", "cdfDat", "probeDat", "pm.mm.dat"))
 ```
 
-"bowtie -p 5 -f -v 0 --all --sam index/xt3 /home/robert/mismatchSequencing/xlaevis2_pm.mm.fa /home/robert/mismatchSequencing/alignments/XenTrop/xt3.sam"
+Example bowtie command:
+
+`bowtie -p 5 -f -v 0 --all --sam index/xt3 /home/robert/mismatchSequencing/xlaevis2_pm.mm.fa /home/robert/mismatchSequencing/alignments/XenTrop/xt3.sam`
+
+```{r sessionInfo}
+sessionInfo()
+```
