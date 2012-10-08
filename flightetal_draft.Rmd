@@ -771,7 +771,7 @@ In addition, current custom CDF generation workflows ignore the MM probes during
 that some MM probes align to reference genomes, they should be considered for inclusion when creating custom CDFs. The
 utility of the probes may be limited due to variation among individuals. 
 
-## Acknowledgements
+## ACKNOWLEDGEMENTS
 
 This work was partially funded by National Institutes of Health (NIH) grant 8P20GM103436-12.  Its contents are solely
 the responsibility of the authors and do not represent the official views of NIH or the National Institute of General

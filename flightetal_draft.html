@@ -1,8 +1,9 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!-- saved from url=(0014)about:internet -->
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 <title>Affymetrix&reg; Mismatch (MM) Probes: Useful After All</title>
 
@@ -132,7 +133,6 @@ hr {
       page-break-after: avoid; 
    }
 }
-
 </style>
 
 
@@ -148,19 +148,19 @@ hr {
 
 <h2>ABSTRACT</h2>
 
-<p>Affymetrix&reg; GeneChip&reg; microarray design define probe sets consisting of 11, 16, or 20 distinct 25 base pair (BP) probes<br/>
-for determining mRNA expression for a specific gene, which may be covered by one or more probe sets.  Each probe has a<br/>
-corresponding perfect match (PM) and mismatch (MM) set.  Traditional analytical techniques have either used the MM probes<br/>
-to determine the level of cross-hybridization or reliability of the PM probe, or have been completely ignored.  Given the<br/>
-availability of reference genome sequences, we have reanalyzed the mapping of both PM and MM probes to reference genomes<br/>
-in transcript regions.  Our results suggest that depending of the species of interest, 66%-93% of the PM probes can be <br/>
-used reliably in terms of single unique matches to the genome, while a small number of the MM probes (typically less <br/>
-than 1%) could be incorporated into the analysis.  In addition, we have examined the mapping of PM and MM probes to five<br/>
-different human genome projects, resulting in approximately a 70% overlap of uniquely mapping PM probes, and a subset of<br/>
-51 uniquely mapping MM probes commonly found in all five projects, 24 of which are found within annotated exonic regions. <br/>
-These results suggest that individual variation in transcriptome regions provides an additional complexity to microarray<br/>
-data analysis. Given these results, we conclude that the development of custom chip definition files (CDFs) should<br/>
-include MM probe sequences to provide the most effective means of transcriptome analysis of Affymetrix&reg; GeneChip&reg; <br/>
+<p>Affymetrix&reg; GeneChip&reg; microarray design define probe sets consisting of 11, 16, or 20 distinct 25 base pair (BP) probes
+for determining mRNA expression for a specific gene, which may be covered by one or more probe sets.  Each probe has a
+corresponding perfect match (PM) and mismatch (MM) set.  Traditional analytical techniques have either used the MM probes
+to determine the level of cross-hybridization or reliability of the PM probe, or have been completely ignored.  Given the
+availability of reference genome sequences, we have reanalyzed the mapping of both PM and MM probes to reference genomes
+in transcript regions.  Our results suggest that depending of the species of interest, 66%-93% of the PM probes can be 
+used reliably in terms of single unique matches to the genome, while a small number of the MM probes (typically less 
+than 1%) could be incorporated into the analysis.  In addition, we have examined the mapping of PM and MM probes to five
+different human genome projects, resulting in approximately a 70% overlap of uniquely mapping PM probes, and a subset of
+51 uniquely mapping MM probes commonly found in all five projects, 24 of which are found within annotated exonic regions. 
+These results suggest that individual variation in transcriptome regions provides an additional complexity to microarray
+data analysis. Given these results, we conclude that the development of custom chip definition files (CDFs) should
+include MM probe sequences to provide the most effective means of transcriptome analysis of Affymetrix&reg; GeneChip&reg; 
 arrays.</p>
 
 <p><strong>Categories and Subject Descriptors</strong>: J.3 [Life and Medical Sciences]: Biology and Genetics</p>
@@ -171,76 +171,76 @@ arrays.</p>
 
 <h2>INTRODUCTION</h2>
 
-<p>Oligonucleotide-based microarray technologies provide a methodology whereby a researcher can indirectly measure the<br/>
-expression level of an mRNA molecule being actively transcribed under a set of conditions by labeling a cDNA fragment<br/>
-that hybridizes to a complementary probe sequence specific to a particular transcript.  Since their first use on<br/>
-customized cDNA arrays [1] in the mid-1990s, they have been used as the de-facto standard for measuring global <br/>
-transcriptional changes under differing conditions.  While RNA-Seq [2] may eventually supplant microarrays as the <br/>
-method of choice, a large number of microarray experiments exist that have been deposited into publicly available<br/>
-repositories such as NCBI’s Gene Expression Omnibus (GEO) [3] and EBI’s ArrayExpress [4].  As a case in point, GEO<br/>
-contains 32,471 series as of 9/6/2012.  The majority of the entries in GEO were performed on arrays designed by<br/>
-companies such as Affymetrix&reg;, Inc. (Santa Clara, CA), Agilent Technologies, Inc. (Santa Clara, CA), Illumina&reg;, Inc.<br/>
-(San Diego, CA), and GE Healthcare Lifesciences (Piscataway, NJ), with nearly half of the series (16,181) being<br/>
+<p>Oligonucleotide-based microarray technologies provide a methodology whereby a researcher can indirectly measure the
+expression level of an mRNA molecule being actively transcribed under a set of conditions by labeling a cDNA fragment
+that hybridizes to a complementary probe sequence specific to a particular transcript.  Since their first use on
+customized cDNA arrays [1] in the mid-1990s, they have been used as the de-facto standard for measuring global 
+transcriptional changes under differing conditions.  While RNA-Seq [2] may eventually supplant microarrays as the 
+method of choice, a large number of microarray experiments exist that have been deposited into publicly available
+repositories such as NCBI’s Gene Expression Omnibus (GEO) [3] and EBI’s ArrayExpress [4].  As a case in point, GEO
+contains 32,471 series as of 9/6/2012.  The majority of the entries in GEO were performed on arrays designed by
+companies such as Affymetrix&reg;, Inc. (Santa Clara, CA), Agilent Technologies, Inc. (Santa Clara, CA), Illumina&reg;, Inc.
+(San Diego, CA), and GE Healthcare Lifesciences (Piscataway, NJ), with nearly half of the series (16,181) being
 performed on various Affymetrix® arrays. </p>
 
-<p>The design of Affymetrix® GeneChip&reg; arrays in particular provides for probe sets consisting of 11, 16, or 20 distinct<br/>
-25 base pair (BP) probes, with each probe having a corresponding perfect match (PM) and mismatch (MM) probe.  The PM<br/>
-and MM differ by the exchange of the complementary base at the 13th position in the probe.  While MM probes were<br/>
-originally designed to account for signal in the PM resulting from non-specific cross-hybridization, they are often<br/>
-underutilized or completely ignored. Mismatch probes have been explored for use in long oligonucleotide arrays as well<br/>
+<p>The design of Affymetrix® GeneChip&reg; arrays in particular provides for probe sets consisting of 11, 16, or 20 distinct
+25 base pair (BP) probes, with each probe having a corresponding perfect match (PM) and mismatch (MM) probe.  The PM
+and MM differ by the exchange of the complementary base at the 13th position in the probe.  While MM probes were
+originally designed to account for signal in the PM resulting from non-specific cross-hybridization, they are often
+underutilized or completely ignored. Mismatch probes have been explored for use in long oligonucleotide arrays as well
 [5], but their utilization is limited to the Affymetrix&reg; platform. </p>
 
 <p>Affymetrix® provides a default GeneChip® analysis package known as the Micro Array Suite 5.0 (MAS 5.0) [6] that measures the signal intensity for a particular probe pair as: </p>
 
 <p>signal = TukeyBiweight{log(PMj - MM*j)} (1)</p>
 
-<p>Where MM<code>*</code> is a modified version of MM that is never bigger than the intensity value of the PM.  The motivation behind<br/>
-the modified mismatch intensity MM* is to report all probe-level intensities as positive values, and to remove the<br/>
-influence of the minority of probes where the MM intensity value is significantly higher than the corresponding PM<br/>
-intensity.  In addition to the intensity signal, MAS 5.0 also produces a detection p-value which flags a transcript as<br/>
-&ldquo;P&rdquo;&ldquo; (present), &quot;M&rdquo;&ldquo; (marginal), or &quot;A&rdquo;&ldquo; (absent) based on the reliability of the probe set based on differences between<br/>
+<p>Where MM<code>*</code> is a modified version of MM that is never bigger than the intensity value of the PM.  The motivation behind
+the modified mismatch intensity MM* is to report all probe-level intensities as positive values, and to remove the
+influence of the minority of probes where the MM intensity value is significantly higher than the corresponding PM
+intensity.  In addition to the intensity signal, MAS 5.0 also produces a detection p-value which flags a transcript as
+&ldquo;P&rdquo;&ldquo; (present), &quot;M&rdquo;&ldquo; (marginal), or &quot;A&rdquo;&ldquo; (absent) based on the reliability of the probe set based on differences between
 PM and MM intensities.</p>
 
-<p>Known issues in the use of PM and MM probe intensities to generate a single probe set intensity values led to the<br/>
+<p>Known issues in the use of PM and MM probe intensities to generate a single probe set intensity values led to the
 development of other approaches, including RMA [7] and GCRMA [8]  which completely ignore the MM probes. </p>
 
-<p>With the availability of individual probe and reference genome sequences, it is possible to re-map probes based on new<br/>
-sources of genome annotations. This allows custom Chip Description Files (CDFs) wherein probes are grouped into novel<br/>
-probe sets based on exon, transcript, and gene level annotation [9-22]. Most notable is the effort of the BrainArray<br/>
-group [10] which updates custom CDFs for a large number of Affymetrix&reg; GeneChips&reg; by creating probe sets based on<br/>
-annotated features such as Entrez Gene [23], Ensembl transcript, Ensembl gene, and RefSeq Gene [24].  Using custom CDFs<br/>
-has been shown to impact the reliability of expression analysis [10, 20-22, 25]. However, to the authors’ knowledge,<br/>
+<p>With the availability of individual probe and reference genome sequences, it is possible to re-map probes based on new
+sources of genome annotations. This allows custom Chip Description Files (CDFs) wherein probes are grouped into novel
+probe sets based on exon, transcript, and gene level annotation [9-22]. Most notable is the effort of the BrainArray
+group [10] which updates custom CDFs for a large number of Affymetrix&reg; GeneChips&reg; by creating probe sets based on
+annotated features such as Entrez Gene [23], Ensembl transcript, Ensembl gene, and RefSeq Gene [24].  Using custom CDFs
+has been shown to impact the reliability of expression analysis [10, 20-22, 25]. However, to the authors’ knowledge,
 only the PM probe sequences are used when generating custom CDFs.</p>
 
-<p>Based on the observation that a small, yet significant number of PM-MM probe pairs exist where the MM intensity is<br/>
-significantly increased over the PM intensity, our initial inclination was that these differences in intensities were<br/>
-not due to cross-hybridization or rogue probes alone.  Therefore, keeping in mind that Affymetrix&reg; probes have been<br/>
-designed according to continually evolving genome assemblies, we proceeded to analyze PM and MM probes across eight<br/>
+<p>Based on the observation that a small, yet significant number of PM-MM probe pairs exist where the MM intensity is
+significantly increased over the PM intensity, our initial inclination was that these differences in intensities were
+not due to cross-hybridization or rogue probes alone.  Therefore, keeping in mind that Affymetrix&reg; probes have been
+designed according to continually evolving genome assemblies, we proceeded to analyze PM and MM probes across eight
 commonly studied species (<a href="#t.genomeAssemblies">Table 1</a>) by looking at PM and MM probes that uniquely map to the respective genome.</p>
 
-<p>In addition to changing functional annotations, one potential problem area for microarray probe design is the presence<br/>
-of single nucleotide polymorphisms (SNPs) within a population.  As the probes are designed using a reference genome or<br/>
-transcriptome, a “one-size fits all” approach has been taken for the probes on a particular array.  However, SNPs are<br/>
-known to occur relatively frequently throughout the genome, with build 137 of dbSNP [26] containing over 53.5 million<br/>
-reference SNPs for the human genome. We have previously studied the effects of SNPs on Affymetrix® GeneChips® [27]<br/>
-showing that a large number of SNPs lie in the areas where microarray probes have been designed.  This has been taken<br/>
-into account in the BrainArray’s custom CDF files which incorporate SNP information.  To study the effects that<br/>
-individual variation can play in microarray analysis, we looked at the mappings of PM and MM probes within five<br/>
+<p>In addition to changing functional annotations, one potential problem area for microarray probe design is the presence
+of single nucleotide polymorphisms (SNPs) within a population.  As the probes are designed using a reference genome or
+transcriptome, a “one-size fits all” approach has been taken for the probes on a particular array.  However, SNPs are
+known to occur relatively frequently throughout the genome, with build 137 of dbSNP [26] containing over 53.5 million
+reference SNPs for the human genome. We have previously studied the effects of SNPs on Affymetrix&reg; GeneChips&reg; [27]
+showing that a large number of SNPs lie in the areas where microarray probes have been designed.  This has been taken
+into account in the BrainArray’s custom CDF files which incorporate SNP information.  To study the effects that
+individual variation can play in microarray analysis, we looked at the mappings of PM and MM probes within five
 distinct publicly available assemblies of human genomes.</p>
 
 <h2>METHODS</h2>
 
 <h3>Mapping of PM and MM Probes</h3>
 
-<p>Chromosomal-based genome assemblies were downloaded from the UCSC Goldenpath Genomes ftp server using an anonymous<br/>
-login (<a href="ftp://hgdownload.cse.ucsc.edu/goldenPath/">ftp://hgdownload.cse.ucsc.edu/goldenPath/</a>) [28] for eight commonly studied species, including <em>C. elegans</em><br/>
-(roundworm), <em>D. melanogaster</em> (fruit fly), <em>S. cerevisiae</em> (baker’s yeast), <em>X. tropicalis</em> (western clawed frog), <em>D. rerio</em><br/>
-(zebrafish), <em>M. musculus</em> (house mouse), <em>R. norvegicus</em> (brown Norway rat), and <em>H. sapiens</em> (human) (<a href="#t.genomeAssemblies">Table 1</a>).  Genome<br/>
-indices were created using <code>bowtie-build</code> version 0.12.8 [29] with the default parameters.  Perfect match (PM) probe<br/>
-sequences for Affymetrix&reg; GeneChips&reg; were obtained from Bioconductor (v 2.10) probe packages, which are constructed<br/>
-from data available in NetAffx (<a href="#t.affyGenechips">Table 2</a>) with each new Bioconductor release. Mismatch (MM) probe sequences were<br/>
-constructed by replacing the 13th base in the supplied PM probe sequence with the complementary base. PM and MM probes<br/>
-were aligned to the indexed genomes using <code>bowtie</code> version 0.12.8 [29] with the parameters –v 0 and –a which used<br/>
+<p>Chromosomal-based genome assemblies were downloaded from the UCSC Goldenpath Genomes ftp server using an anonymous
+login (<a href="ftp://hgdownload.cse.ucsc.edu/goldenPath/">ftp://hgdownload.cse.ucsc.edu/goldenPath/</a>) [28] for eight commonly studied species, including <em>C. elegans</em>
+(roundworm), <em>D. melanogaster</em> (fruit fly), <em>S. cerevisiae</em> (baker’s yeast), <em>X. tropicalis</em> (western clawed frog), <em>D. rerio</em>
+(zebrafish), <em>M. musculus</em> (house mouse), <em>R. norvegicus</em> (brown Norway rat), and <em>H. sapiens</em> (human) (<a href="#t.genomeAssemblies">Table 1</a>).  Genome
+indices were created using <code>bowtie-build</code> version 0.12.8 [29] with the default parameters.  Perfect match (PM) probe
+sequences for Affymetrix&reg; GeneChips&reg; were obtained from Bioconductor (v 2.10) probe packages, which are constructed
+from data available in NetAffx (<a href="#t.affyGenechips">Table 2</a>) with each new Bioconductor release. Mismatch (MM) probe sequences were
+constructed by replacing the 13th base in the supplied PM probe sequence with the complementary base. PM and MM probes
+were aligned to the indexed genomes using <code>bowtie</code> version 0.12.8 [29] with the parameters –v 0 and –a which used
 together will report all valid probes matching with 100% identity.</p>
 
 <p><a id="t.genomeAssemblies"></a></p>
@@ -342,34 +342,34 @@ together will report all valid probes matching with 100% identity.</p>
 
 <h3>Generation of Exons and Overlap</h3>
 
-<p>Exon regions were obtained from the UCSC genome browser as <code>BED</code> files with an entry for each exon. <code>mergeBed</code> from the<br/>
-<code>bedTools</code> suite was used to merge overlapping exons from multiple transcripts into single contiguous exons. These<br/>
-merged exons were used when defining overlaps of probe alignments with an exon. Probe and exon overlaps were defined<br/>
+<p>Exon regions were obtained from the UCSC genome browser as <code>BED</code> files with an entry for each exon. <code>mergeBed</code> from the
+<code>bedTools</code> suite was used to merge overlapping exons from multiple transcripts into single contiguous exons. These
+merged exons were used when defining overlaps of probe alignments with an exon. Probe and exon overlaps were defined
 as any type of overlap with at least 23 bases overlapping on the same strand. Overlaps were determined using <code>Genomic Ranges</code> version 1.8.7 [31].</p>
 
 <h3>DNA Microarray Data</h3>
 
-<p>For each GeneChip&reg;, CEL files were downloaded from GEO for 20 random samples (with the exception of <em>S. cerevisiae</em> (12)<br/>
-and <em>X. tropicalis</em> (4), the GSMs are listed in <a href="gsmFiles.txt">gsmFiles.txt</a>). Probe intensities were background<br/>
-corrected using the MAS background correction method implemented in Bioconductor. Depending on the application,<br/>
+<p>For each GeneChip&reg;, CEL files were downloaded from GEO for 20 random samples (with the exception of <em>S. cerevisiae</em> (12)
+and <em>X. tropicalis</em> (4), the GSMs are listed in <a href="gsmFiles.txt">gsmFiles.txt</a>). Probe intensities were background
+corrected using the MAS background correction method implemented in Bioconductor. Depending on the application,
 intensities were log (base 2), square root transformed, or used as is. </p>
 
 <h3>Negative PM-MM Set</h3>
 
-<p>A PM-MM set of probes was considered to be negative if nine (two for <em>S. cerevisiae</em> and six for <em>X. tropicalis</em>) or more<br/>
-samples had a negative value for the difference in the PM-MM intensities. For examination of intensity distribution,<br/>
+<p>A PM-MM set of probes was considered to be negative if nine (two for <em>S. cerevisiae</em> and six for <em>X. tropicalis</em>) or more
+samples had a negative value for the difference in the PM-MM intensities. For examination of intensity distribution,
 any PM-MM pair with a negative different greater than 1000 in one or more samples was considered and examined. </p>
 
 <h3>Probe Correlations</h3>
 
-<p>For each MM probe that uniquely overlapped one merged exon (designated as a true-match MM, (TM<sup>mm</sup>)), the correlation<br/>
-with all other MM probes in the probe set (mm) and the correlation with all other TM probes that also mapped uniquely<br/>
+<p>For each MM probe that uniquely overlapped one merged exon (designated as a true-match MM, (TM<sup>mm</sup>)), the correlation
+with all other MM probes in the probe set (mm) and the correlation with all other TM probes that also mapped uniquely
 to the same exon (if there were three or more other probes also mapped to the exon) was calculated &trade;. </p>
 
 <h3>Human Variation</h3>
 
-<p>To gain an understanding of individual variation and the unique mapping of microarray probes, five whole genome<br/>
-assemblies were downloaded for the human genome <a href="%5BTable%203%5D(#t.humanAssemblies">32-36</a>).   Probes from the HGU133APlus2.0 Affymetrix®<br/>
+<p>To gain an understanding of individual variation and the unique mapping of microarray probes, five whole genome
+assemblies were downloaded for the human genome <a href="%5BTable%203%5D(#t.humanAssemblies">32-36</a>).   Probes from the HGU133APlus2.0 Affymetrix®
 GeneChip® were aligned to each of these genomes using the methods previously described for mapping PM and MM probes.</p>
 
 <p><a id="t.humanAssemblies"></a></p>
@@ -434,10 +434,10 @@ GeneChip® were aligned to each of these genomes using the methods previously de
 
 <h3>Probes Matching Genomic Locations</h3>
 
-<p>Given the PM probe sequences and the inferred MM sequences, individual probes were mapped to the corresponding genome<br/>
-assembly as outlined in Methods.  The percentage of perfect match probes mapping to the genome ranged from a low of<br/>
-80% (<em>X. tropicalis</em>) to a high of 95% (<em>D. melanogaster</em>), with the exception of <em>S. cerevisiae</em> (<a href="#t.probeMatches">Table 4</a>).  It must be<br/>
-noted that the lower percentage of <em>S. cerevisiae</em> matches (53%) is expected, as the Yeast Genome 2.0 GeneChip&reg; contains<br/>
+<p>Given the PM probe sequences and the inferred MM sequences, individual probes were mapped to the corresponding genome
+assembly as outlined in Methods.  The percentage of perfect match probes mapping to the genome ranged from a low of
+80% (<em>X. tropicalis</em>) to a high of 95% (<em>D. melanogaster</em>), with the exception of <em>S. cerevisiae</em> (<a href="#t.probeMatches">Table 4</a>).  It must be
+noted that the lower percentage of <em>S. cerevisiae</em> matches (53%) is expected, as the Yeast Genome 2.0 GeneChip&reg; contains
 probes for two yeast species, <em>S. cerevisiae</em> and <em>S. pombe</em>. </p>
 
 <p><a id="t.probeMatches"></a></p>
@@ -520,31 +520,31 @@ probes for two yeast species, <em>S. cerevisiae</em> and <em>S. pombe</em>. </p>
 </tr>
 </tbody></table>
 
-<p>Affymetrix&reg; probesets are given suffix definitions depending upon the uniqueness of the exemplar sequence used to<br/>
-design a probe set.  A designation of <code>_</code>at indicates the probe set perfectly matches a single transcript; <code>_</code>a<code>_</code>at<br/>
-probe sets only perfectly match transcripts of the same gene; <code>_</code>s<code>_</code>at perfectly match multiple transcripts for the same<br/>
-gene family; and <code>_</code>x<code>_</code>at indicates the probe set is identical or highly similar to other genes.  One of the<br/>
+<p>Affymetrix&reg; probesets are given suffix definitions depending upon the uniqueness of the exemplar sequence used to
+design a probe set.  A designation of <code>_</code>at indicates the probe set perfectly matches a single transcript; <code>_</code>a<code>_</code>at
+probe sets only perfectly match transcripts of the same gene; <code>_</code>s<code>_</code>at perfectly match multiple transcripts for the same
+gene family; and <code>_</code>x<code>_</code>at indicates the probe set is identical or highly similar to other genes.  One of the
 difficulties with these designations is that it relies upon a set of annotations at a particular point in time.  </p>
 
-<p>Analysis of the probes that map to the genome (<a href="#t.probeMatches">Table 4</a>) indicates that 82% to 98% of the mapped probes map uniquely to<br/>
-a single genomic location.  The fact that a number of probes map to multiple locations is not to be unexpected due to<br/>
-the restrictions placed on probe set design.  However, it is expected that those probes mapping to multiple locations<br/>
+<p>Analysis of the probes that map to the genome (<a href="#t.probeMatches">Table 4</a>) indicates that 82% to 98% of the mapped probes map uniquely to
+a single genomic location.  The fact that a number of probes map to multiple locations is not to be unexpected due to
+the restrictions placed on probe set design.  However, it is expected that those probes mapping to multiple locations
 would not be from the <code>_</code>at class of probes.  </p>
 
-<p>To determine the reliability of these probes with the fluctuation of unknown transcripts, those probes that map with<br/>
-100% identity to two or more locations in the genome were considered.  While these probes typically represent less<br/>
-than 10% of the total number of probes for a given GeneChip®, their classification could be important in detecting<br/>
-cross hybridization.  One might expect that the greatest percentage of these would be within the <code>_</code>x<code>_</code>at and<br/>
-<code>_</code>s<code>_</code>at classes.  However, as <a href="#t.probeType">Table 5</a> shows, the larger genomes actually contain the greatest percentage in the<br/>
-<code>_</code>at and <code>_</code>a<code>_</code>at classes, with anywhere from 18% (S. cerevisiae) to 91% (R. norvegicus) of the probes matching<br/>
-multiple locations belonging to the <code>_</code>at class.  In addition, a small number of MM probes map to the genome as well. <br/>
-To better understand the effects this small set of MM probes might have on gene expression, we further reduced this to<br/>
-a smaller subset where the mapping was within exon regions.  For these probes, we analyzed their signal intensities<br/>
-from random samples compared to the overall distribution of PM and MM intensities, and the distribution of PM and MM<br/>
-intensities within the corresponding exonic sequences (<a href="#f.allPlots">Figure 1</a>).  As these plots indicate, MM probes mapping within<br/>
-exonic regions closely follow the expression density of PM probes mapping within exonic regions, and are significantly <br/>
-shifted from the overall expression profiles of MM probes.  These results suggest that while the number of these<br/>
-probes is small, they offer significant information that should not be ignored, and furthermore, can confound analyses<br/>
+<p>To determine the reliability of these probes with the fluctuation of unknown transcripts, those probes that map with
+100% identity to two or more locations in the genome were considered.  While these probes typically represent less
+than 10% of the total number of probes for a given GeneChip®, their classification could be important in detecting
+cross hybridization.  One might expect that the greatest percentage of these would be within the <code>_</code>x<code>_</code>at and
+<code>_</code>s<code>_</code>at classes.  However, as <a href="#t.probeType">Table 5</a> shows, the larger genomes actually contain the greatest percentage in the
+<code>_</code>at and <code>_</code>a<code>_</code>at classes, with anywhere from 18% (S. cerevisiae) to 91% (R. norvegicus) of the probes matching
+multiple locations belonging to the <code>_</code>at class.  In addition, a small number of MM probes map to the genome as well. 
+To better understand the effects this small set of MM probes might have on gene expression, we further reduced this to
+a smaller subset where the mapping was within exon regions.  For these probes, we analyzed their signal intensities
+from random samples compared to the overall distribution of PM and MM intensities, and the distribution of PM and MM
+intensities within the corresponding exonic sequences (<a href="#f.allPlots">Figure 1</a>).  As these plots indicate, MM probes mapping within
+exonic regions closely follow the expression density of PM probes mapping within exonic regions, and are significantly 
+shifted from the overall expression profiles of MM probes.  These results suggest that while the number of these
+probes is small, they offer significant information that should not be ignored, and furthermore, can confound analyses
 where MM data is incorporated.</p>
 
 <p><a id="t.probeType"></a></p>
@@ -633,16 +633,16 @@ where MM data is incorporated.</p>
 
 <p><strong>Figure 1. Density profile of probe intensities (log2).</strong>  PM: perfect match, MM: mismatch.  mm.all: background MM intensities; pm.all: background PM intensities; mm.exon: intensities of MM probes in exonic regions; pm.exon: intensities of PM probes in exonic regions.</p>
 
-<p>As some of these MM probes may bind to transcripts, we further considered those MM probes that uniquely mapped to<br/>
-exons (irrespective of whether the corresponding PM probe mapped zero, one or multiple times to exons or the full<br/>
-genome), examining the differences in signal intensity between the MM and its associated PM.  In many cases there is a<br/>
+<p>As some of these MM probes may bind to transcripts, we further considered those MM probes that uniquely mapped to
+exons (irrespective of whether the corresponding PM probe mapped zero, one or multiple times to exons or the full
+genome), examining the differences in signal intensity between the MM and its associated PM.  In many cases there is a
 significant negative difference in the expression level of the PM-MM pair (an example is shown in Figures <a href="#f.pmmmDensityPlot"> 2</a> and <a href="#f.pmmmIntensityPlot"> 3</a>). </p>
 
 <p><a id="f.pmmmDensityPlot"></a></p>
 
 <p><img src="data:image/png;base64,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" alt="plot of chunk pmmmDensity"/> </p>
 
-<p><strong>Figure 2. Density of MM and PM probe set intensities not including the PM-MM pair that had a large negative difference.</strong> Intensities from zebrafish probeset Dr.5545.1.S1_at, in GEO sample<br/>
+<p><strong>Figure 2. Density of MM and PM probe set intensities not including the PM-MM pair that had a large negative difference.</strong> Intensities from zebrafish probeset Dr.5545.1.S1_at, in GEO sample
 GSM604808.CEL.gz.</p>
 
 <p><a id="f.pmmmIntensityPlot"></a></p>
@@ -651,8 +651,8 @@ GSM604808.CEL.gz.</p>
 
 <p><strong>Figure 3. Square root transformed intensities for each PM-MM pair.</strong> The negative difference pair is at the extreme right end of the figure. Intensities from zebrafish probeset Dr.5545.1.S1_at, in GEO sample GSM604808.CEL.gz.</p>
 
-<p>If these MM probes are grouped instead with the other probes within the transcriptional region for which they uniquely<br/>
-match  (we have renamed these probes as “true match” &trade; probes since they truly match the region in the genome),<br/>
+<p>If these MM probes are grouped instead with the other probes within the transcriptional region for which they uniquely
+match  (we have renamed these probes as “true match” &trade; probes since they truly match the region in the genome),
 there is a much better association between the probe intensities, as shown in <a href="#f.tmIntensityPlot">Figure 4</a>.</p>
 
 <p><a id="f.tmIntensity"></a></p>
@@ -661,8 +661,8 @@ there is a much better association between the probe intensities, as shown in <a
 
 <p><strong>Figure 4. Plot of probe set intensities for zebrafish where the TM probes overlap with the same TMmm probe in <a href="#f.pmmmIntensityPlot">Figure 3</a></strong> Intensities from zebrafish probeset Dr.5545.1.S1_at, in GEO sample GSM604808.CEL.gz.</p>
 
-<p>Further analysis was performed to test the correlation of the TM probes with the expression levels of both the<br/>
-annotated probe group MM probes and with the TM-mapped transcript probes (<a href="#f.correlationBox">Figure 5</a>).  The box plot in <a href="#f.correlationBox">Figure 5</a> clearly<br/>
+<p>Further analysis was performed to test the correlation of the TM probes with the expression levels of both the
+annotated probe group MM probes and with the TM-mapped transcript probes (<a href="#f.correlationBox">Figure 5</a>).  The box plot in <a href="#f.correlationBox">Figure 5</a> clearly
 indicates that the TM intensities more closely correlate with those from the group based on mapping to the same exon.</p>
 
 <p><a id="f.correlationBox"></a></p>
@@ -671,84 +671,13 @@ indicates that the TM intensities more closely correlate with those from the gro
 
 <p><strong>Figure 5. Box plot of correlations of the TMmm with MM intensities of annotated probe set (red, MM) and TM intensities of custom probe sets based on shared mapping to exons (blue, TM)</strong></p>
 
-<p>To determine if the observed difference in the correlations from <a href="#f.correlationBox">Figure 5</a> is due to measurement of different mRNA<br/>
-entities, we considered the MM probe both within its annotated location as well as within the new mapped location<br/>
-(TMmm). The intensity of the MM probe was compared with the intensity of its corresponding neighbor probes (MM probes<br/>
-for the annotated location; PM probes for the new mapped location).  An average correlation value between intensities<br/>
+<p>To determine if the observed difference in the correlations from <a href="#f.correlationBox">Figure 5</a> is due to measurement of different mRNA
+entities, we considered the MM probe both within its annotated location as well as within the new mapped location
+(TMmm). The intensity of the MM probe was compared with the intensity of its corresponding neighbor probes (MM probes
+for the annotated location; PM probes for the new mapped location).  An average correlation value between intensities
 was calculated on a per-exon probe basis.  The resulting correlations are summarized in <a href="#t.corrTable">Table 6</a>.</p>
 
-<pre><code>## Loading required package: hgu133plus2.db
-</code></pre>
-
-<pre><code>## Loading required package: AnnotationDbi
-</code></pre>
-
-<pre><code>## Warning: package &#39;AnnotationDbi&#39; was built under R version 2.15.1
-</code></pre>
-
-<pre><code>## Loading required package: BiocGenerics
-</code></pre>
-
-<pre><code>## Attaching package: &#39;BiocGenerics&#39;
-</code></pre>
-
-<pre><code>## The following object(s) are masked from &#39;package:stats&#39;:
-## 
-## xtabs
-</code></pre>
-
-<pre><code>## The following object(s) are masked from &#39;package:base&#39;:
-## 
-## anyDuplicated, cbind, colnames, duplicated, eval, Filter, Find, get,
-## intersect, lapply, Map, mapply, mget, order, paste, pmax, pmax.int, pmin,
-## pmin.int, Position, rbind, Reduce, rep.int, rownames, sapply, setdiff,
-## table, tapply, union, unique
-</code></pre>
-
-<pre><code>## Loading required package: Biobase
-</code></pre>
-
-<pre><code>## Welcome to Bioconductor
-## 
-## Vignettes contain introductory material; view with &#39;browseVignettes()&#39;. To
-## cite Bioconductor, see &#39;citation(&quot;Biobase&quot;)&#39;, and for packages
-## &#39;citation(&quot;pkgname&quot;)&#39;.
-</code></pre>
-
-<pre><code>## Loading required package: org.Hs.eg.db
-</code></pre>
-
-<pre><code>## Warning: package &#39;RSQLite&#39; was built under R version 2.15.1
-</code></pre>
-
-<pre><code>## Loading required package: DBI
-</code></pre>
-
-<pre><code>## 
-</code></pre>
-
-<pre><code>## 
-</code></pre>
-
-<pre><code>## Loading required package: GenomicRanges
-</code></pre>
-
-<pre><code>## Warning: package &#39;GenomicRanges&#39; was built under R version 2.15.1
-</code></pre>
-
-<pre><code>## Loading required package: IRanges
-</code></pre>
-
-<pre><code>## Warning: package &#39;IRanges&#39; was built under R version 2.15.1
-</code></pre>
-
-<pre><code>## Attaching package: &#39;IRanges&#39;
-</code></pre>
-
-<pre><code>## The following object(s) are masked from &#39;package:plyr&#39;:
-## 
-## compact, desc, rename
-</code></pre>
+<p><a id="t.corrTable"></a></p>
 
 <table><thead>
 <tr>
@@ -1134,20 +1063,20 @@ was calculated on a per-exon probe basis.  The resulting correlations are summar
 </tr>
 </tbody></table>
 
-<p>What is interesting is that with few exceptions, the transcripts and genes being measured by the probe sets are the<br/>
-same, implying that the TMmm probe aligns to the same gene as its complimentary PM probe. Upon further examination it<br/>
-appears that many of the PM complements of the TMmm do not align to the genome at all (data not shown). One possibility<br/>
-is that these probes are in regions that have seen changes in the reference sequence over the years, or that the<br/>
+<p>What is interesting is that with few exceptions, the transcripts and genes being measured by the probe sets are the
+same, implying that the TMmm probe aligns to the same gene as its complimentary PM probe. Upon further examination it
+appears that many of the PM complements of the TMmm do not align to the genome at all (data not shown). One possibility
+is that these probes are in regions that have seen changes in the reference sequence over the years, or that the
 original sequencing of the ESTs used to design the probe sets was of poor quality. </p>
 
 <h3>Effects of Individual Variation</h3>
 
-<p>To gain an understanding of the effect of individual variation, the unique mapping of PM and MM probes to five<br/>
-distinct human genome assemblies was analyzed (<a href="#t.humanMapping">Table 7</a>).  Four of the five projects have roughly the same number of<br/>
-uniquely mapped PM probes (within 2% variation).  The fifth project (BGI) provides an exception to this trend.  While<br/>
-there are a number of potential explanations for this (including sequence and assembly quality and coverage of the<br/>
-sequencing), one potential feature to be considered is the fact that this sequencing project involves the sequencing<br/>
-of an African individual, and it is the only project not to have a large component of the library consisting of<br/>
+<p>To gain an understanding of the effect of individual variation, the unique mapping of PM and MM probes to five
+distinct human genome assemblies was analyzed (<a href="#t.humanMapping">Table 7</a>).  Four of the five projects have roughly the same number of
+uniquely mapped PM probes (within 2% variation).  The fifth project (BGI) provides an exception to this trend.  While
+there are a number of potential explanations for this (including sequence and assembly quality and coverage of the
+sequencing), one potential feature to be considered is the fact that this sequencing project involves the sequencing
+of an African individual, and it is the only project not to have a large component of the library consisting of
 Caucasian individuals.</p>
 
 <p><a id="t.humanMapping"></a></p>
@@ -1194,34 +1123,111 @@ Caucasian individuals.</p>
 </tr>
 </tbody></table>
 
-<p>While there is a large agreement for the number of probes, we also checked if the probes represented were consistent<br/>
-among all of the projects.  A Venn diagram depicting the number of overlapping perfectly matching probes is given in<br/>
-<a href="#f.vennHumanVariation">Figure 6</a>.  As can be seen from this figure, a total of 422,279 probes uniquely map for all five assemblies.  Of these,<br/>
-422,119 are perfect match probes, indicating that 81% of the HGU133APlus2.0 perfect match probes are reliable in terms<br/>
-of their mapping to the genome for these assemblies.  One of the interesting results is that there are 51 shared<br/>
-perfectly matching mismatch probes.  Of these, 24 fall within RefSeq annotated exonic regions (results not shown),<br/>
-with 22 of the 24 showing higher correlation in the TMmm assignments calculated in Table 6.</p>
+<p>While there is a large agreement for the number of probes, we also checked if the probes represented were consistent
+among all of the projects.  A Venn diagram depicting the number of overlapping perfectly matching probes is given in
+<a href="#f.vennHumanVariation">Figure 6</a>.  As can be seen from this figure, a total of 422279 probes uniquely map for all five assemblies.  Of these,
+422118 are perfect match probes, indicating that 70% of the HGU133APlus2.0 perfect match probes are reliable in terms
+of their mapping to the genome for these assemblies.  One of the interesting results is that there are 161 shared
+perfectly matching mismatch probes.  Of these, 24 fall within RefSeq annotated exonic regions (results not shown),
+with 16 of the 24 showing higher correlation in the TMmm assignments calculated in <a href="#t.corrTable">Table 6</a>.</p>
+
+<p><a id="f.vennHumanVariation"></a></p>
 
 <p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfgAAAH4CAIAAAApSmgoAAAACXBIWXMAAAsSAAALEgHS3X78AAAgAElEQVR4nO29e3wU9b3//9rf4/xxqhWtWjQ3SUoClIvlLklEQC6SEJDbF8tNbNVEC8cE5VIv1dRSLTdNKIgJUqHchMPNEAhXE8QkEG4qkAIJTWJuEhGttnr+298fszuZnZ3ZzO7O7M7Mvp4P/tid204CPOe9r897PuNwOp0ghBBiX/6/cJ8AIYQQY6HoCSHE5lD0hBBicyh6QgixORQ9IYTYHIqeEEJsDkVPCCE2h6InhBCbQ9ETQojNoegJIcTmUPSEEGJzKHpCCLE5FD0hhNgcip4QQmwORU8IITaHoieEEJtD0RNCiM2h6AkhxOZQ9IQQYnMoekIIsTkUPSGE2ByKnhBCbA5FTwghNoeiJ4QQm0PRE0KIzaHoCSHE5lD0hBBicyh6QgixORQ9IYTYHIqeEEJsDkVPCCE2h6In4aU2P9UhJzW/1rW2JMvHSv8+QX0/jw/JKgnmpyHElFD0JLwkZpc7nc6avBQAQEpejdPpLM9OdK1NK3A6nc4DmYorO0RQfFJOhe9N0i/m1TidTuE0CtP9v5QQYnIoemIGEsdNSwGQMm2cksWTeqYAQO9umhXvOmp2ueQ6oUBJVlJOReYB8dqRmF1+IBMVOUms64mtoOiJ7XFdJ7wp2VsIZE5Mky5LW5iXAhQuYVVPbARFTyKWkr2FCksTu/UGUFFdE+rTIcQwKHpiYSTDqPoF68IXgItXWdIT20DRE4tSm5/qSC/MPOAUYviKnKTAnF+4VzGPZ0lPbARFT0yExNZSFPpmavPn5FQgJW+hELALybqffTlpEzMBb9PXVFcASOmZFOQPQ4hpoOiJiUhx9zl64m6+lCDYuL0Px5Ws79jvTzGfVnAgE0BhuuQ7QElWeiEQQIsPIeaFoif2QLW1xidpBc6avBTpN4m9yAS8enEIsTQUPbEkQuwiSV3kJb5mXM327i8PPS8Wgp4nNoOiJ9ZEiF3c/e61+UsK0R7ZB0zJ8pwKPY5DiKmg6IlVSVvYHrok5VRkHvBndgQlavNT0wsByZ2yhNiD/wr3CRASELX5qUnVrzidepXetfmpSTkVSMmrKWA1T+wGK3piBmr376iAateMkL973MNUsjynAoXpmua2FHZXb4yvzU91OJJyKlLyaoL9UkCIOVHqZiMkZCi0Tkq6LBXmI3OvVJ2qzHUPlfLBPRo42w8h2YcQ++FwOp3BXCcICRMlWalXF3oV4LX5qXOwkXU5IVKY0RMrUpufmo5XnN46Txw3bVoNLU+IB8zoiQUpWZ5ToTxHQcl+jONgKiGeUPTEgiT1TEFFTpJ85LUky7G3G1MbQuQwoydWpSTLke45oXzmASd7IwnxhqInhBCbw+iGEEJsDrtuiFVxOBxaNuN3VkIY3RDLoNHsvuE/eBKBUPTE7Pjw+9snO/jXO3+Ir2sD//GTCIGiJyZF0e8dmt03it7nfwFieyh6Yjq8FR+k3xXxlj7/LxC7QtETEyFTvBF+l0Hdk0iAoiemIPSKlyEzPv9fEDtB0ZMwE3bFS5Hqnv81iG2g6Ek4kVo+vIqXQt0Tm0HRk/BgTsWLMMkhdoKiJ2HA5JYXYWlP7AFFT0KKVRQvRdQ9/7MQi0LRk9BhRcsLsLQnloaiJyFCtLy1FC9C1xPrQtGTUGB1y4swxiFWhKInxmLduEYNup5YDj54hBiI/SwPyQ+iy7TJhIQAVvTEKGwT1yjCup5YCFb0xBDsbXmwrieWgqIn+mN7ywvQ9cQqUPREZyLE8gJ0PbEEFD3Rk4iyvABdT8wPRU90IwItL0DXE5ND0ROdiTTLC9D1xMxQ9EQfKDi6npgWip7oQMSGNjLoemJOKHoSLLS8FLqemBCKngQFLe8NfxXEbFD0JHBoed+wqCcmgaInwULLe8MAh5gKip4ECBXmG7qemAeKngQCQxst8JdDTAJFT/yGlvcXFvUkvFD0JEBoeS0wwCFmgKIn/kFh+QtdT8IORU/8gKFNYPDXRcILRU/8htoKGBb1JCxQ9EQrlFQwMMAhYYSiJ5pgaBM8/NWRcEHREz+gqnSBRT0JMRQ96RiKSS8Y4JCwQNGTDmBooy/8NZLQQ9ETTVBPusOinoQMip74gjIyAl41SYih6EnHUEwGwesoCQ0UPVGFGjIOXjtJKKHoSQdQSYbCqykJARQ9UYYCMhpeQUnIoOiJLyijEMBrKjEaip4oQPWEBl5HSWig6IkqZtFQZdb8IY4dlQpr/rHUMX+I60/+9lpx+Y3tqe7lWf9QOtr8IY75Q1I/bjL0vP2AV1ZiKBQ9kWMm6dR+/LRj/vxC5ZVN+Yf3iG9S+qUmul5WZm3BxrdPOt8+eSAZhYVLS9p3qcyaPx+ZJ51vn3S+PB97pobf9ZwUgYQAh9NpjqqNmAbBOGYp5wE05edPzYl62zkt2WPxP5Y6LjwkXwjUfry95qHH0oQ3N7an/vnt3pknC34prHo66cvfirvUfvx00h7kvbwu+26jf4SOmD/EAYD/GYlBsKInHlinriy5sAeV8z0SGwBAomh5AF/VV8TPX/hL4U3T/vMXPLbsOSoFF6q/MvxUCQkzFD1RwETlvAo3ti8RQvv6t5PU0vZ/LHUU4kD2Y4kK6wAAd9/XG7j4VbjTGxHrXGWJxaDoSTtWEk2qmMIDqNgz1XPQtTJr/hBH4R5gzxLZNaD1C9k3AFNg/isrsTQUPZFjCencHSvU6WnTTjpfnp8CFF6QtuUkF7x90vn2zrx4VLSPuMZmj5mE+reT3A08tR//rRDo/fPYEJ+7L6x0rSXWgaInLqyrmLsf2zipj1KpHpud/XYmUPFlo2vBLxfXTOqDyvlCe2XSngvApIm/DPHpqmCJ6yuxKP8V7hMg5sKaukn8eSKi7lPK4pMnJkPanZn40DrnQ8LLpvz8qTv6zUxT2CusOBzshSM6w4qeAFYu5wEAtV/VZvaR91mKpNwb572wZMfUnKi3yx8yU25jzasssQAUPWnHOqKp/fjp9tHXfyxN+vK3Be4eyvx8yV2y/1ia3jp/o8zmN7anzh+SDq/GfPNg8esuMR38kkhM/VTYfyx1FIq3v/YRb26q/fjppD3upvhkD2WX7BiSLo7LKq/qY4qbpNTgzVNEdyh6Yr5bYSMbQfSg64l+MLqJdJgSmA1ecYnuUPQEoFwIsTUUPSEmhV+2iF5Q9BENVWJO+AWL6AtFT6gV88IrMdEFip4QM8KrL9ERij5yYbVISIRA0Uc6rBxNDq/HJHgo+giF+jA/vAYTvaDoIxqqhJBIgKInxOzw6xcJEoo+EqE4rAK/chFdoOgjF0rEQvDaTIKBoifE1PB6TIKHoo84WBsSEmlQ9BEK60RCIgeKnhBrwK9iJGAo+siCsrAi/PpFgoSij0QoDkIiCoqeEMvAL2QkMCj6CIKasC78EkaC4b/CfQIk1FAZkUaIL/BOJ/+BmQ6KnhAr4XA4vE1qqu9qPk6G14BwofCPhtgV4X8gK3rrMn9IgEJvKW7S90zUiM6I9XcXKigEsKKPFExV9BEt+KX1kKncNz5OQ+0aIPuXSe8bASv6SIHlvMnRrnWTOF0XfH8DoJ30gqKPFCh6s6HF7LsLPJw+OculRTu5XooP79NUwUDRRwoUfdjp0OwyrSsiuN6uopeiJn0qKwCY0UcEFgroAx5vlGKe65nvH0eL2SMW6cVMKn3pP2ZKXyOs6CMCM5fzupjdNyH+wX38RMGb3fbpjW8Uy3xKrEMo+ojAhKL3YcNnq8qCOfLawcN9rDXol2Co3GVETnrjG2/p02ZqUPT2R/yqaxLRezsxSLP7xof3g/+FqPnd0EyGopdC3WuBorc/JinnQ+x3RdSk79cvJyxyl0LRK0Lj+4Citz9hF70ZFO+NovR9/JbC7neRCI/pfUPdK0LR25/wil7qRzP43Rtv44u/K/PIXQaL+g6RGT/CRUfR25wwBvTmV7wM36O40MHv9cVLH/zbP2e+UrC0v8Lb0nezZh8Guk/75M2R8Wh778U/5F4R33pC0WuEuhfgfPQRAS0fDLsLmoQ/QR8pPmPxJ7/9hfLb1mPXBhc07S7Y1GVHdnEbgFHPCW/PHG0N+oMjlpbiJunl0EI3lOgLb5giOqNZ8aeOD15c7XrdK3X3mvtjgcoVa7OLAfTMLxuWDEBpiQF41/Iv7it6c/wE4bVQPhsd10SNfCoKAEYMHprXAqBzfBSAtmux44TlJHAE1wvVveD6SCvtKXqiJ34U8pVIqCobBgD44s0ViAWadu55L35GVdntTTv3TF7xRdWC+3DqeHZd6u6y+2NPHR8sLNETRb/LXodY90BpFXKe6QwArccenbvjLIZ2zeg9QnHT6IxYpjfaaSluEpOcSNM9RU90Q7S8pqwm+QG3tZu/RXwX4F+flGL0S7cDiJ06YNLwusoF98U13uwzom8sgNif9dHtPBWzeKnivZfLdA/DjN967NrgWU8Jr6NGfrh7ZOm7WQfPzRrR33Oz3QVN4pkQ7UhLe6g8xcWWUPR2JpSJpH+Wl9JU+U1C8v3AvyTLbk/odbOhGcnJXTHzow+SJz1YeS1x6KTgztAvvytuJuoexhT4rcceXYX8N1FafCwhwzUAmxA7NInRjb5EYJJD0dufEIzEBm554F+f1P/swakAbu+S8GX2ti9+veA+4F91l5AAIOb+P867Nnnm2iPzZqx/IODT8x3RaEfcK+A859zmB//2T2Bp0prFT0V5vm3dHLvkBIAHJ+/AmP9pOud6O+C3f/qQojcCWZJjb9fb/MeLcELTQR+M5YHmz9+s7PLi1NsBAF+8OXz/HmG5ODy78/O4uG8mL66etPTZF/1zvV5+V0Na4PO2Kesi6t7GMqTo7UwIRB+c5QGcOv4mhskM3rRzz6a4SS8+gKade17Dw+un3o7mz598A39cc7+2XNpoxUsJo+7ZTa8X0nZ7WyqR0Q0JnKAtD1SewPAFnktWrM3GuKqprrcX6v8F3K7tYKH0u/QjQt6ZQ3TG9jEORW9bjB6J1cHywBdlSHjR/UZome8zb0aVK8lB7NSHn5+7dfBwAPc+v2WSejkfFsXLPou6tzSyEVqbud5uPw8RMTS30cXyuiBTfCj9rkgASY72RknFR8gyutEXW0b2FL1tMU70ZrB8eEv4DlHTvRHN7xS97tjP9RS96Qg+chH+To0Wfbgsb3LFi0hd3yHVK57vcJueC97yvQGNryM2cz1FH2rMM61SYNeAMJbzZktpfODD8lqcrhE19dP4umAn11P0BhKw0531qwL/0PjnAt5XQMvDN0Jseb8Uf23NhPK4gscneNxm9E3Ron2Y71rYWvT3zPea0WNU4bJBUSrb+I+WEl5HywsIrv+u8PlOmXLpU/fBYxvXs+tGTzSaPRiPazy4oPvKctUPSk5VvR4oPm1Dav9QWt7fKv6bokU7DiLmadnic6fWXYZrYevptz75ZWHR41HnDi4s+mb5hJ8pbOMHan4/WjBd+nZU1ja4vay77gF8V+g6pmh8QVLUvQbq1y148LXLnst65JaveEpsu5T9107JqynPThRel2Q50gtdyzMPOAvSavOz9o8rcK9WoCTLkY4DzoI0lXWFCsvbD6+4pjY/NSmnwuO8PGBFHxQdmt1Qp/ugQ9Gr4eMCIMNo3Qcc1HgX5tfWrLkZ1/APYeHZNW+eTH5xbn8A19ZMqBlSNHaA1zba8Fa8TO4yBNcL6OV6saKXLZcV+NS9Bty675FbvuKpBMkKwfWZQCFkKhX82r7MpWlV37bv4/c24hVAZnvXpgKqB2VF7ze+5R4us+uF4rVB0f4yEevofZ2z+Naim0PmJjYv+gcA4Jvmhpi4ycKaO+N6tDW3YkCUbBvf+Ot32WZGlPadMt+SuV54y+reH+JHDR3w2uWzA4eOSlBaLdTZvbu1e7Q2f05OBVLyNopuTStw1vRMTdrh41NKlgtartixvzZbzfSJ3XoDFR6L0gqcB+BIL0RhempPic4Ts8ud2R18E+ATprTjcCNb7qxfJf0TlnMzGqn9iyteKK54wXubtYOHS/8E9kGyfV/cVxT0iGvr6d1IHBD8Nnhz/AThj3Th0YLpGi0v3UV83WEjTYf4vlR8V/i89ALg/eBsogW1C2RNdQU81Q8gMfuVTB/HKtlbmJmXlwLB9P6dR9rCvBSo7JnUM8XXrqzoO0Cxfrer0NUQK3pR8TLXZ6SslO0i9bWWYt+ojpqzpzF5ws+Ab4LYJuASXg3jSntFpNU9S/vAaCn+JDrjQQCF6Y4Cz7i7cG9JQZo0OU/q2fuqymFq85dczNtYMG7/jpyKCp81vSLuQr+iugbwZ0eKXgVL+z34xhtFFAt5xVUy7/uWvpFNk62nP3jv6OX3jrreZv0dBY/HdGk+2QpEAbjZeLnzEChs447pvet3/c4NRwumi6l9zwVvebr+200ffzv7oXgAJ3a+lXWyT8GK0UNRn7tgd82E32556A7pco0fJ+3M4aOpAuCPPSAbsE3qmQJUoDDd4TG0mphdkK18iNr9OzBtYyISx01LyamoqMhZXpKtMrqqvP/ViwGdOkUvw9J+lxHASKwi2odnRaTe9yF9GQb0xUcNWl40CIDHCO3kUR+8fbq1/yAUldc/NX5u1M8GeG9jrOJlhxVLe9H1J3b+7U1Mng3gxvn63s9XTxUW1oxc8fxvPz6y6cbo2Whfrh1ZaU/XB4Y4E05i9sa8HUk5FUBhuqPQ5+gqAKBkeU7vV5yJEPKdnPRC728DPqndv6MCAFLyFvpxdQBA0Ysohu9hORNz4qOc176jd8Ijopflvyla9O66y7LC3JOoQc8/+PfMCUfRY1Thsp95rQ6N4mUf4RHjPNXnWO/J01y1WwIuvtXz4uTqqfGeO6kt7xixtGeMo8iZdQ9Gr+tgG7frE7PLnd1cw6AVOUmOHPUGSCGen1jgepM2MROF/phe7K6RDv5qhu2VcsXbwO8B91YqIlT0AYveGx+6R1jvdw294qVImy8Fpj31fG4PAPji4/MND/UTopsd8SMOzusnPG5XWJ6l0mHpG2n/JV0vUPfho6nrzg58+pOiR+O9VrqaL2flNm3OjYXsFioNPY61+alzsFGywtUno3xpUGmiUf/WIG/0lBHRXTeyLhobt80EjDy3aTq3IGXl6krXuzPLVmakHDnjele3uv21MhkpK6WWP3p4nvBHuo3Y3OLXXDFBIvu4AHppgkf2odOGTM7tgRM73+q54K0XkTAU+OLjyh2IevHX/e6Dx3IB7ztjfSNtyGE3TgB4FIiJ2eVO5wFXt01FTlJqvrwtpnb/DkwbJ3Vw2sRMAChc4rWtSEpejdODDrIhdSI0urFfFW8oYjnf2vizFyqerNpeh+QENJ1rHvpC8SIAQNO5BdO+/nXF6IEqR5BV8TK5i29HjVktXS7KNzTPh0LIq3hvxBhnx8ndO06iekV7EH/fQ9OrH3K9Hjq1fXn1iucDbtOUxjis6zUifUqJlLQCp3OhUNp7DbOWLM+pqECSI8d7N/+bbwIg4ip6VvHa8R6GjUpOaF62/gSEZPsXOLEyY1kdgDNbS+NXJp5Uqei9q3i1TxRrfLUyP9AfRQEzVPGK6Nto3yH+Zj5ExOFwyKvxxOyNQq/7xauSNbX5SwozDzi9qAmwod5/Ikj0VHxgeKbz38bMeOHXDafPAIi949FFL6zr8s0ZALh/SHLCvJV3NXsWhdKsxrfivTHU+OZUvIj0lELgegEGONoRv/1U18hXJY6bJr91qXb/Dig2yri2DYHpI0X0kaN4g5roBc4sW//0tJUfdBk00BXQr1yJXwwEBg5FbsrKjPcx2O0K7zg+4A/V1/jSvUyoeCkhcz3D+oBRSNhrqiuAFEkeX7I8p/crytmM6zbaipzlJUaeZSRk9DLFh/FMQknwLTeK7fMDF7lDec/XSB5dXNF+545eipehGOVrz/HNFsdrQd55adgNtAzrgfqjJ84COHPiaN2jT3lNd1NXcxkALjfXY2B8++KKnCRHdXvjTG1+anqhtANSWJA5sYPPlk1g47ozyo/4XpiOQfWWWZu3V0ag5fXqrQysq9IgxashG7yFuu5lWY2B52QAHU57qTaHpb+IrTsR5nrVaYoTAKB0UcbszZ4rhRZM4QuQ03lA2gsp6XD0aLr0bqSUrRY2OYB0775KX935CodRaLK0regjUPECXqKvXpr67l6gT/arhdPuBm5sz3o97yIw4ZnKxT291rbjr+h999UYjQ/jW1rxUkTde7teL9HD7foIE32AWOixJPbM6CPW8t407vjqofJVleXPdM3ftL0JOHns2MhXK8tXvYV3l570Whso2vtqDEJLiG9py0NDZO9vK70PGNZrwUKXQxuKXrS8vQddNRI3bVgyAPR8aAIAVB4v73rf3QCSh6Ve++KGbK2IX/PbBNxXozuKw7auVRa3vICa63XM7jkwa0vsJnqp5cN7Jiaj+mM88lgsYhMSrn1xQ22tjA5zG1n3pC4nahCjsrYJf8J9IsESglYcdtbbD1uJnpZXo3HHVw8t7gkgbtojXfNfT059LvmFlpEpd8vW+kWIx101MmrMajGvv7ZrmPDHYwNjdF+1eVv2se/d777fvVS4rpyuci9qPnZkVNa2UVlHdrepbaOwlyIha7tkUa8RjQ+LDiP2ET0tr0bjjrf/hF7JqN6+4wbQc3H5qsrtUyZmzxZKeM+1mgjmNihDkQ7JSv3ubXx9dd987MhLJ6RvL+M3048WTH9jaO1LS680A2i7sgNDjhZM3zgN7xxuUdxGYS91jHY9AxyNWCWmt0nXDS0vIN4tJXbdVC597nl3w+HElatmfPH2tPw69J6yo2BYnNfaxUMApedJSTFtIS++lpXw3nSdcly2JPgEv/nYkWUYkj/yNo+lbVey//DdzIJBg8UlF09nX+/hsZn3Nt5LVPC+VqmnLvXZmbvfB4A+OwtHj1Facu3Ytn7bW4GovyyZ/rvOADtwtOFusjS1SO1wwxQtL0PaRJ+8eFXlYsm6IfMrp0F1rQTfljeP4uGn5cVtpLoXjKn/gG3n2+LxneT997uvx8gvBvJtlJaoIH1GVQdc/Kb7kue/66y+pO38KqR9V3jHtWPb+h2q/93seHHDCL6Fyj5YXvS0fGiwQSEvQ9xeNL7+um/7HtN6uArztivZfzh3CTiODM+KXrKN2hJ1pM+oUufbd4pLf//P0ivPPZ/fW2VJ5375IwGg6z13D8YdwkbSpw8SS2PtjJ6WDw32s7wU4+L7qguYJjq9c/f8gukbp9196UxLs9o2Kks6RLw4qXn5kd8+/92SEZdWvZV9UXUJAODbd64nHR15h1+fTsyPhUVPy4cA84+7evfVBIbuum8+dqT8nu4xngtjRvYa53Mbxb38Qsn1d3TtDHTud3TJiEvF568pLwHazo/K/Nvvt+8edexb2f4GDMnWr1sQG50h/Fn8kXxt6aIAVp1Z7D7go+ta9T7fjjB5441VRU/LhwBzFvLwtLy+R9ZL98LY7PzeAFp2t7ddAheb6wdGx6hso7qXn6jmLZ0TJuPGNbUlnfsdLXz+/GNRVafrxG2M6amvX7cgGy80tRQ3tRRvmoUtszysXbooYzZym1qKm1pyoXXVmcXRudhc3NRS3FT+NF57OnSut8QAhiW7bmh5NYKf0cz7nlhzKh4GWF6G9uac5mNH5uy4AaDXtIz8kbdVbd4m6ba8+3d/Gv3ABdcGGDrs6KxoAN7bxB6WL5ksHTvtCG0dON++s6nukdn9uvpaUp/9l2+e+337Ev1nOjvz3rqYp54Wn9ze+t6Ep3PhflJr3YePpp4Y755QDB+tjp2FTS3zRvhcVb9uwYM1v25a5nrCWf26BQ++BnFWMsMxf+ONhUVPy3uju+gj1vIiRvRiGoTg+qoN0wc/4ZK+3PUXj4y6PsgjgteyxPA+y9JFGbMvu0QvfQ24HtjdY3Px0od9rGp9b8LTuT1yRdFL9woF5hd9yKKbkiyHw+Hwfmau35g8C7MT5rS8XqG8RhRvtgrZpwdG1QbPsdmLRzplvtUp861O590DrV5Lrh3bJt/GCyNvnhowfnA8ALReuwz0iIkXVyTE9AAuX2v1ucoLH6siEy3tlSXS2Zbhnhy5Nj9r/7gCLZPiK0y7HCgMbQxFWs6bx/JhKeS9kXbfG9V3rx9iXd8p863vCp//rnC0x+reo2VLuo6c/t1I1aMZ22d55uDmsTktUR1v6Bv5I0GIBN8VvVCGp8ueaztxr8PhcCTlFHo/L1GRxOxy92Nw9YGWNwK/LF+Vtzp7z7/a358uFSaZefu08P5fu3NWjxqzetSY0vbJXvbsHDVm9agxO3e3+HFWJrG84jmYfJY0eV1vUurXfYDN80YEdYyop3LG4sy6BxedEY+5BejRNeiLh23wIXpXIZ95wCl7uklagdN5INPoM/OGoY1x+DUvcfOenS8dkLxv+Sx7y50bD887umFo/culVUDznnNYNO/o4XlvpF96KeezZgAtn+3A6KOH5218Fu/saND4QeGKa3xj6LQ5+mJ+13+0Ohsv6JCkPzzvkz/2wOZcob3ywdcuA2PHhiagtwRqoheedAhkHlB+hFVawYFMXLxq9LPLFWA5rzui5at3/VnL9jGTpm589l7xbfOpGgyLjwEQ/auZ6ZfKTyNm0ojJ0QAweNrQXtU3mwFE/2r+pNsBxMTe1auLpvtxjOuh1AWr6F5f1+sb09d9+OjBIR8+La27o7r2EEIYcZvmy67a3McqAIh/eoXQr9nUsi53IAb8cUpw3xLshYroS5bnVABIyVuo+qTCtIV5vQ06KSVYzneIOKOZX/hred/EdLm3vkkS6UTfEe+x/l+7m36RP+n2Do9jcsuLWEL3urhe94b6ug8fzUa+pE9m8bpWACPGjsWZE0frxM0az7prcx+rpJQuejq3R67n9cNILDHBp7LoS/YWAkDKtHE+xloTs+VDsUKk7yarRMPn+9ilNj/V3adTkuWyfI2rnL+RP/k5R7z45+18rZYruuYAACAASURBVGGA/fGrt1IXy8fE3nVp7Tkhi29u+NJjXcu3eLa/a9qWls+yx2x6Z+0+j3BfCatYXsT8ujdbhlP34aOp686eWfeg+17W2NQTSaOiAODheZtmXc5dK6TtZxbPOjhTTPB9rBIPG50xG5I+y5Bh5t5KqIje5Xn07qahp8a9T5bDsXeie7y2Ji8FhekddFOq71Kbn+pwuDt1alwpEgDUAEB1VvzrOZhSU7/KWb/K+X4qUJczjK73j+TU53Sr5QeNeCP90ktjVo8as/qlA/cOe6C9YK86hWli/R79q/zD8zY+e++l4/Vqk63LHhsS1FmFHJN3Yerl+uAL2I9Wx6auOytbOHDoKPfNTSOWrcu9LKTtufDshVdb5ZoXIfXE+PLiMFje/CiJvvbqRYWlPinJSscByZhtYvbGvBSgIme5alnvaxdJn05FzhJsFLZw1q9KA2r/dqgQSMno5boIjRiZ1x9AXfU//T3pyEU69KpLYjM4Z97Rw/OObhjaK32QkM4DaN6zszz2V/LJXiYNGue1u4DZGmwCQ6p7s5X2Qbper/Tm4XnuMF3yR7wNCgCinipyLfcap1VeNWKZsDBUt8JaDl/tlSk9k7QdpDZ/SSEK06UhjLseL9yrbHoNuyR26w0gJa8ix+M0EhOiPQ91d7ce2k6TAPCMa3SxvIvTpaOeuDkzp4vwrnnPzmUYPX8QgIbdHo2Y/6wXRm49MWeDTcCYNskxW4ZDQoPSDVOJ3XoDFUBFdQ2gJbypqa5w30alFb93aW+2GfGYs/4x1+uG46nDdulzL1ZkoEtc07xn55y1XwKbsjE7f9LtOF066uVL6Dl042FX/V6Vt/qlAwA2jVoL4N7fbZjq3gVIH380Rz4Ya924xgeyx5uMytpmkhuspHMkkAhB8c7YpJ4pQAVw8Wot0jo2fQBRTwC7yA7wt7eTXq8DUg/Ur8JLz6VvDe5wkYFeoXzMpKlHJ0neDxpx9LDHmNjgnHlHczz3ke0iwZaWFzHz/bTCTbPhPgsSChSjm8Rx01IAV0nfMULGohbSBLlLRY7Xouqs+OeSXo8+UL/KWf+Y9i8REY6+bZR6YW/Li5htkDbIAMcSDYWhwSq/CuWMPjH7lUwAKFziq22mNj9LWJ3UMwVAYbpXQ2VtfqpKk6V/u0hukrqRP/ndQiTkHafi/YCWDztmG6QNzPX8BqCIyXsroT4Ym1ZwIBNARU6Siqlr81PnYKHQSO/+BuDZUFmbn5q0Y5rKHVcB7CLQVn3Ox1qiAC1vHkw1SMuB2chBvesmrUBocCxM95pduCTL4ZiDjeXi/VKJ2eWuyW8qcpLam2iQt1F1dkstuxQq7Ndz4gwAdTkF1a5zcQf0F+tuoOF4fqmGHzqSoOXNhqna7en6CMHn7JViO7vExQ6HcJdTuUzh8pnOUvJqxG1q81NdvZMVOUntlw0fu5RkORyOdHGN46Xq9g9649W8/sDWd4XbYveOXlXzagKAitdfd8zHOM5vIYGWNy3mSXLo+oCxSkAPkz9hik+S8gvZ46UCs3zPKS/DyMnoaXkZ0idYBdmQIz5hKoB9VR9K5YXBT5uyEuZ/sJSIVR8OTnzDWt4qmKS097eut1AxS0DR2xta3iqYIbXX+FWAjTcC1rrUUfQ2xK+niIQGWr5DZKV9GM+EYb12LJHbwMyi5wT0gWHC0IaW1054YxwOzNoV84pegCOxgUHLW5fwxjh0vRasldvA/KInAUDLW53wxjh0vUasktuAorcN4nMEaXnbEMYYJ7AezQjBcuU8KHoFSrc74p/LKlVYKPsj2aY6y7Vwu3zCCMmOqX+7YdApB/a0WEOh5XUh7N04LOrVsFA5D4rekxv5k59z/Kbce0XJEe+FqRNdd+FWZ8W/i/eF5xoiXer60u2O35RnCqvqn+n9+uvy64dZkT7sKZjdafngCVeMwwDHTlD0Uu7O3r3KeXxKinx59d7L7kfUig+qndFHmHut9m+HCvtPWShIf8RjB2aUp7snbCg5Ug5xFXoufDWh8Ei1/NhBY7ZynpY3grDEOHS9N1bMbUDRa6Kh88Ldw6RT+5QcKc8c3RMAUL389br2B9gCSYkJ2Hqhvag/96U4p39NbV1KYmd9T020/HeH9Ynmg4z4aXnjCEuMQ9crYq3cBhS9Jrrc7TmBW/Xere7cpuGri0DvhLvFdYkJ0UDL1QYASMuakoJyV5hTuj0dz5T/9m7oh+6WDxJa3mjCEuNwYFbEouU8zC96s+USELIad27TAV2GlR8XXP+c40gf5xs9jTgfWj7SCFfnJYt6AcuV8zC/6M3Hjf3FyMvSrOwuP+/dPyEFwNZ39e26MeElELR8qAhxZM8AB1Yu52Fm0Zv0stlwaQf6j+uicePjqfEXJu6eX16/6sAMVOjXdWPa0IaEDH8j+8qN2548/L34tunwkcFPbBv8xJEP2jw2azp8pH2zz08PfmLb4Ce2vfk5Xe/CpF7qCPOK3pzUHjsHydAruvy8t/BwK3GDuhYgulsXACgp2FXhDnnS3lh1YAYK/3rcx0N4/cVslmc5H2K0R/ZNh49kS4uMtiubMKRqw/TdM/BWSYtkRcumrTfEbZ4s6rR7w/SqZf1r3zpdGdlhvaXLeVD0fnJjfzGmjZQOqPacOAMVxZdEfdfU1rk7L29cveyxc9roVF1OIjShjcYinZYPO1p+87FjRu+eIfl327n7i2NuAxB77x19om4TF1dubE5wb9b06RcYHB0LoHP3p0bUln0ORKrrRctbtJwHRe8fSrlN2hvPZJ7btVwol0q3p29NPeAadL17XEYCtr7rjmtu5P+1XNqIGRghCG20d1jS8iYh0N//9x98GbN+jFv0bVca+g16UGm7uKi7a7/8XmlNBGFdy4Oil1Hy0nOOYbsqgMLfPOeYLI9Z5LmNi54Fx6dc/M1zjvjnHL/BgfrHxIacxN/Or3k1oVBYFf/6joxX9Wqv9GF54VmAAICruVNe7un6U7ipFQBwfq+wJPe8+jbaoOVNhfi3ID4UsAParjz5RPFbW4+7E/nvPyjBg/e3r4+9944LWy9XAgAaW9vDSbGot3qaoRF7/Jj/Fe4T6BhH/HMhm6w47Y1VzjdU1yb+dr7C9AgAugwrr1eWXeJv5zt/q8upAf6GNucxctefcwEAJ97diygAV3OXtL24+s+zo67mTtl7YtfEoQrbaIKWNzODn9jWccbSufv6Dd2bDh+ZXNXSNKZ77OctSOseC7Q/Cvb+QfkjtmU/IVQ7dz+/7Da1I0UCli7nwYreQnQY2siX9+s21PXq63p07gKg9UZN997DogDc1bW7yjYaoOXNj8a6PnZMr0kA8P0HRefeWrRt8BPbJm+9cWFrsVDmJ8+ZXrVhetWy/n1G9Pq10j3d9qh2fWCbH9DUorf6VdQIAonmW69ci+1+H4Co7mOx/8Xir9F65eB9PYcqbtMRtLzJadrbnuF0rPvPm2sHR8fitl+/Mr1qw/SqDdN3z7i7z4yM9uD+89ODF3331JxotQPYRoXe2GAMVsTUoiciwXTafHG2reuAuwAAd83+n3F4/62ef8Wbz3RT2aYdH403tLyZEV0Pd2nfdPiItFR3N9FvG3xeMhgrQ2iiL+q0e8OgZKX1a8qKhBc2dj1sYXlYIqNHaGN6MxNQp83Xx5s6D8twv/sSY1fPSZq3cey7d1e3u95zG6B6158lg7rt8MYoqyC4Pnbicbgj+6ox7Wtjx4yWvpUSO2b0euHV/YOqNgzy/SlryormDp+gx/maDptdvVjRW4DgGue/voa7XZlMa8XM/8WwqG65u55/8YsySY+NZBt1GNpYDmmMY+gH2UyLdgptBMwuetv8ooMnwMb589V4QJLSXGlr6HAbJWh5i2K06+0X4NjP8jC/6EXMOYdXCAjyBz9xCiP7ud9Epbz5m7asKS/3nPLWwZQps6OUtvFEltXQ8qal65Tjaqv0db33QUTX2wk7WR5WyehJwPfBDn1movTtfRmZ1RkdbOMNo3mrIB2GlS2X5vXBf5Ci3KMzYluKm7yXWwjbfC+RYYGK3maXVr8I4/cYcSIEhjb2wNAMxx4Bji1DGwELiF4kYtMbM8xSScvbgNC43qLY2PKwluhJuKDlbYNatqMjli7qbWl5WEX0dv3t+yZiv8GQEMAAR4rlTthfrCF6kQh0XwC5jeK9TmE5CDEhDHBk2Du0EbCM6G38d6BIeC9ptLy9CcGNVFapkSPB8rCQ6EUiqqj3t5zXZdhWtHzbVq9OTGIXAnO9lo0tFOBEiOVhRdETQ1G0vI+bcYh1Cbiu7zCfsUSAEzmWh7VEL/592L6oD/sPKFqeRb29MTrDMW1RH1GWh7VEH2mEvn2e0bxFCeYrl0GuN3NRH2mWh+VEHzlFfejxHc0zvTE/AffIG9pcb7aiPgItD8uJPhII7zWMWU0kY1BRbzbXI8IsDyuKPkKK+hDnNj5CG6o/EtAS4ARwGTBbgGPCS05osJ7oiRb8StvZT0mgOawPzN1mMGxkhjYClpym2Ol0OhwO8BGDeqDd8l2nHDfbpDcNxecfruj80RsxXVwLftzwUtWfrgivo9bv6ja8fduAVp2/2nVJ+4O4BKa/MmxJP9naTn9Y3e+JKFgdcTZjHTHJ4wYj2fKwQUVv7wAnAALLfHxb3qSVfmvzgve/k7z/ccNLl/E/w67tGnZtV5/paH1yytWyoFah7JTc8kDUqHbLY/2uYdd2DfvoN/jTvPMbvLe1LEZ0W4axqI9wy8O6orfrX1iIr1tW7qf8ccNf29BdsuD8TfyPWFbfuWR1Yn+0rin+MfBVuHn0i8SPdgnXgGHXdg279koURt89XPj0/22d/oqr9u+S0eMP3b/701+bFR7TaDWM6LYM46hsdEYsLQ/rih62HpUN8Uis9oLdPE2WDcWXa/9fj3HSRf1iPMKTqJ90D3JV60+ebg+FAKDsVOv0B+4EgNab+69IP/snI1I64cp/6gL4SYJG978URdcH6f2wjMpKFR/JloelRU+CxMLlfGvzgqYuS1Secyuh07gBPwl8VdRPungsv3n0iDu38aJLzK3Af+rDl97o2wuvdrTgfR2yop6FvBRri97GRb3R+NtpY6aY/scNf/3P3Gfu7GCr8ze2je6iPEAa0KqG4oZtrtzGxZXmH7WdsIUxIsAJAbS8DGuLXgpdL8NHwR5MP2XY05uG4su1/0/aM6PIjxv+F+uVLwYBriqtwB8eda+Kipk7Gufer3rlvLhjK3BrvPUbb0SMmwbH6KKelvfG8qLn32XAmKlI10xr8zr06DC0KXv3Mv5H+WIQ2Cq03tyPziMkHh/+zOA/dMe2Jce7TjnedUrVn64AnvW+DdDd9SEYlaXlFbG86MEAxwvfY7kBR/NmuDCUfVi77f2qrlMker1S+/CU4+7KGgAais8ffUC5qz2wVQAazrYh5U7PyP4nT7zh7sZZndgfndrrfZuiS/ZiaIBDy6thB9HDjq4/nPfyqD1f+1rSUjFqzMudxhS+0yIuupo95uVOY17uNGZvh8cPxtphTG+GPyNpdtw1+A/dge6JH+0aJtb4DcXnF0hK/obiq2J7e2CrAAi5jfrg7c1X5tV2f8UON0x5Y9x8Z7oX9bS8Dyx5Z6xvbHC77LU9hVMPYPCzPpZ8/c6yi5M3/Plo9NXsnIpreSldAZy+0X3Dn7+LBoBOY04rHjnITpu2rRmdZxQHcwRDaSg+//D73wFVXd93L+qe+FFG4KtctN7cj84rVL4HPPz+d+33yoacsA+ZBIDu98pKrxm0vCI2qehhr7/grpMyzz/bxdeS0yd+Hz/8d9EAuo2L37/qNICv39my//dPvJytbHjA7nPalL17/GGPG2UBoH/KnV0CXSWilNvcfGXK8a5Tjj9c0Vn6fSJcGDrPsIjuMxnoUtSzWV4LtqroI2cOnGtNbYO7DBVed+3S5VLT1xiERxb9+XeoGPXEy9l/dmX0Pae8XL2r/bXwQhfLm2Pem5888cawJ9xvhj8z7NozytsFtkqkS0a//5Uvu3PJrmFLtJ4nkaNXUc+4RiP2qehl2Cas18xdXaOB6JSjG8Zd2lKhtlHwlrfltwGiEU87t5bOnTB3+JpLHm8nzJ1b9JWwoLloxfAJc4cvKm0WX0+YO3zCip3tAyDBFPW0vHbsJnrpX3nkuR4AEN19Mtp2ejbeGHETrBXTYRIwVWXzvJZFjVhTMLWX+13z6bMJuWvKin6X8N7RUwBwqRJzyorWlC0bEYOvmmLnlBWtKStas/SpAclRCK79hjPY+IvdRI/I+IvvGtu5qsHVgXOtoaFX7F0eq+M7d1Xai8U48RfvWYtVI5eY2JjiyksA8Mj9DwDNRSWr38t11/s/f6D/zwEAlxrRO8ZjP3+LeobyAWBD0cOO3ZZyBg39S33ZOy1AS8Wy+nHPDZKsOn1id5fuUtHrXs7zgmESQvalSijnlYp6Kf2nL8U7wyd8PnRuLwAxExaUFa3ZElfSnu0AONeGQT93vwng/ikW8oFhT9HD4q6/tqew39qGqrVviY3zXkvu+t2i3rufeLnTExcnLxJ6K/d2Eproy3sendRe4BvaacP0xgyEpuVGikpRf27bieQ1ZblYvKi02b0sZsKceWgT355qQrJHm6r2AIdxTTDYqutGDcs14XSdlPndpA6WIDrl6OGU9reDJn53eKLaAVmDE12oKps3ePhq5XWnKj9B8nT0HzXvg42VrSOmuoTeVo/OU12bXGpE7wcC+VwqPkhsW9Ej4gdmDZ3UnleOSMDHYwWFov7Siqydlw69I7TZPDB5al3u3OETcld3SZsa9dXORUKPjSvJAWS5jQwf6Q0tHzwO2//uhM56AfPX9eIFSRdNdxrzMgyTsniLrAka6iMUITozLroRRO8dzQtFvY6z1giXjZbiJtly3vKqF3au6AUi9t+HYHnjYFEfXpQGSH58b/Hx2InHF58T3t5cPPF47MTjsROvlqpsU7/vfOzE47ETz7/n/yNTjL5Rlt01OmJ/0cNSA7N6feeQWt7o2Wk4JBtGJOX8zcUTq3K79GnaO2xpfwDAuR+T1g5r2jusaW+3EYrbtDavRY+mvcM+eRK5e27Kjuwjt+mo/cZvZO03HHfVnYgQPSzlekICoPSdC5efHNz0O3Gq5B/f216b+6xY3SttExWzdPxPAMTH3DogTnluTt9O17Go9261ZCGvI5EieimWcH0wwYu47//tMjZdEdMbFvVhprU573BUj8aq2InHY99x1eajcoY1rU28/Lrb9UrbAAB+fK/57g/Hq03CrIzuRb0MKl5fIkj0kdaEY7TlSRiRXVnrz7SdHYOxQ4Y17e0z8/CFxecA/CQ+CoiK+XBt4uXtzfXK2wCtzY9OrMpdf+HRfR7Pv/WR2xiE9MsBLa87ESR6WMT1Qcb0Ro/ByuCQbBiR9tsMiIsb0R/AnWPH4LL0qeVRd47Hf+rUtomK+XDvsE+e7HT2k5v1XsfXUrYHn94IXZhBHoT4JrJED4u4XiAYZcvK+RA8LYTpTRiJj7n1bKNL7glxneSru9ya4HOb+PFdZvr/obqkN6LiN7aUbWwpE15LW6KJLkSc6GEp1/tLiMt5ARb14af/3TMPN7zXCuDHo59g/EBJ4H6ucV/cnfEdbHPj8oN3xrvfhSa3kRbyouLFF0RfIlH0ML3rA0tvFMdgQ5nUs6gPH3cuffXW3GePx06sqnms31NRwLmrsUIT/UlxoFW+jbuJXrpNO9oLdn+DF5niFeXOol5fImKuG0XEx1HBxJPhdBrzsr+3yHIM1vYoX1D7d2va2031rdLC+PH9msYHdSa+pr5RwbuKl7GxpWxO9PCgTot4EaEVvYCZ63p/LzwdhjaGxvTssww9Bs18YFxuo5jV+IBFvY5EtOhhbtcL+BW7s5wnulBVNq9p52eVwpvmz54cvvrNU65VlStWDx5eWul+reVoWrIaKUzqdSfSRQ8Tu14s6jt0ve8NQmN/FvU2QFLON2xa7bqpqrISfyybN/xEaSWA5s8ahs6rKhuR7H4tbOMjpvdL8cQgKHrAy/Wm0r12/Bf6DwWvFXeeUbzgU9f7Y+uL00t+kG4hX/Lphc4zpLu4jtB5xoVjgZ848YMQXEeryuYBXWbPc82UkDz1V7H4V0P8L5IBIB4nVg9e0QD3a2Soxvz+ZjXeML3RC4rehexmPJO4XktRrz3b8Yzp2xbM+OgP9w1u25qxoi8A1JWUT/e0tdeStgXLvvvT2xltWwdj2YVjQF3JNfwuo21rxraRDdNfqzvFoj5UhPipUk07zyG5CwDE3P7rBfN2x39bKXntvb2/WY03rP31JXK7brwRXG/+VhxF/C3nj62vqp79cFvaLeKShLTUUyifK9lGvuT6f6qToufeA+CnSUnXASSk9ckCAIzM6DVw/r//GcT5k7DjOQzbsGn1iVrEJ0+9vXLF6uxiYDW6lI3AitXZxegzb/Z6oNL9Gjgh7ibNcHSRtcNh/2dmhAD+EhUw27NKfDyNRPv8Zf89pRhikn69Ln3+v3uObPj7MWDk4LYnOwvb1JWUz0W/AxL7ey75oeC1jz4c8vCB/tfTi2894N4LANC2YMb1tK19RvKBJEYiflUyoqJXe8xIh3h3WOpVjwt9lnRU8DC6UcC0w7NqKY2/5XzduZYzI5E2IKNt6+DHj1WJGX1H3JL1u17Y9FHnd7DGw/LA9f9gdteRfp0ECZTQPw1cO0aMuDKpDx6KXhlTuV76rULq+gAmPBDL7YHRXUf2BdA5bSSqW3/wuZOEVjz69uDHay49sL5NuvjYOcx1fw/gjAhWJLD2+cHDV0vLed0Vz6ReLyh6VUzViuMjQdJYzks3S4jqdKbl38LrX0T/TOtJXK9L34Mx93ResfXhP31RU3DdtbiupLwkKiHBa3MOyVoO7bmNVPGfXnzBsDMi+kDR+8JUrTiyDhyxnB8+pXjuedc214rrDgmvzl/47ynF/z2lfLXrWaA/rC6W1OB973n8mGDqHw6fxKP920P5DqiRj7gKIf6KvgDaCtyNmCzqjcC4C6df5bxM8aGxPNObIOFgrCbMMzwru9h8+JteiRkJte9ewDN9HkHb3CnXJ+zq8whw6HzbI/06Xzvfhn6duwKH3i1+FINxpErYq21rBj690HlZA4DHF7W3Vz6w6RsAA2c/LIy+drjk2PpiSf/lz/70dmrWPa43HJLVHUH0YRyGlaY0Mr/37b0ShiUtHJINHopeKyZxvUz0/7crA/hhdfG/52V0BnCtuK42I+ER18ofDp3HI/1uwfkLc3EPTmG9VPTGQ9frSxhF70PxAiEQPej6IGAfvVZks10iTLp31q+Suf5a8TUM6KOwaeu/cW9n4IfV/9uw/koDgCdfyVi/xPAnkBAjCEtuI+ubDFcWz/ksg4cZvR+YKrIX+O8pxb3eb1gw78IhAGh76/1Lbxa7gvJrXyIxCsAt897I+L9dg58cPXhNP9deIXjgFJjUG4BxjZWycl7WThOyLJ4YBCt6/zDn3bP/t0uo6DuvkbTWdO0nbXXvvOaZEJ9UO12nHGd6Y068y/kOU5owwrtkA4YVfSCEsfNS/Cxn2RRxoXDXqxZCPI8xp7S0BMLzQ8LSTqMRNtQHCUUfIOGNcQTLy1yvXfcIVXpDdMGgy6RYzlsopWGfZWBQ9IHjdDrDfgOts2xKYKV9yGBRrxf6BvTeoY3JFc+iPhiY0QdLKLtx1K4lzrIpjuG7hNf/PaXYdz7zf7syTHg9ICFDpngzy53oBSt6HQhxjCMt4RUXaoxxQpbesKgPBr1+abETjwt/dDlaGGF6EwAUvT6EIMbp8JiyCwDLdjsRcG7j7ffWwyNbD7tmGrVWOc/0JmAoej0JQTeOYjkvXaultA/9M8RZ1IceRb8Lio8awyc/RhYUvc4YVNr7dRztpT17b0xOANdF3yW8FGuV81KY3vgLB2MNwaARWt/lvPeW0hFahKOQl9K2NUO4rvD+KX/Rktt4h++KcocB5bww0U1o4HQIgcGK3ihM0nwpfStNcsIifQY4fqHlt6RWv6tZXkT3cp4BuplhRW8supT2wVwkZKU9vKr7zjOKOSmNmVEs57XX7zJsk85zOgS/oOgNx3t6HASke+25jdq+3roPPQxwAkaxM1Kj32VYN50H05uAoOhDhLS0hz+zoemY+XjrXoBFvQkRcxsd/W5EOR/KgJ4EDL/+hBpZw0CHund9AwiinFc+rJfuEcKJhflMEt+opfOB+V1EEL2+5byhjxxRg8+c8hdW9KHGryTHuCFcxepe8G8IdC8GOETEILmL2CadF2FMrx123YQHv2ZNUCnn/50/d5dj+LkSxbfNNanDdzmG73IM35W6899eG/s6cucZxcIfjT9LMER4+03XKcfFP95rtTTP+IsR5XzoYYePv7CiDxtBD9L+NHvNI5h7VfFtbdNtG8umJAI4VZMf+1MAnhsr0Fg0JW6CQoEPY2r8iB2V9XFtu7LPpfXu43Wuvg0t56ld80PRhxnvQVq4dR9MbpP4wL3Ci5JGjHvA5wm4Z76Mm7CrschV4IfS+LZHi9ml6G55EUs32yjC9EYjFH34kZX28OzJCW4Y9suriErzf7cOjQ89pG/Xot53HqUod290DG0MKufD22/DJku/oOjNgmKSEyynvkfyvR1/tGQ6exlqxodO0reH6zscadAodxhfzn/yx5WFv3jy77PvEBY2bto6fmkrELXwwIyZ9wnL6pb03r0TAO5ffXH0g+7dGzdtfRnp4o4izG0sAUVvLhSq++G7Ai7qO8xtZEjTGxnS5b6lD7snPFoGkLWbXRGDyvnGTVvn/S/uX+x+/8W5jUj/9OIdjZu2jn+/buZrCQBw4puEAy98ep/sMHUbl7Zicft7ts9bC4rejMiD++G7oJThlKw4lHMJmHtbzZqkRK+3stzGa63nJ6oX9d74lj6UJsX0oX4zF/Uam4KC1LpxiJYXyvm42TP2YevL4ur7FYt80AAAGzJJREFU+r8yGwDi4n9+P34GAPh2S0Hp8k9L69a+8MrQ9uN88sfahMVR3kP5ZijnGdNrgb8jk6I2Eavud061f6Jb9GpFvRYUve8D4QIgvTCE3vX+tngap3Uxt9G3d146BquUwHy7ZdM3M2cnCK8bv7gjDuceTy/tJrr+i3NbGvo/VN++o1jOh130vHNKI6zozYhoeWdpLgDHiNz2VSrVvUnwvkj4Vr937e9bu74vA7p35YelVA/pHVJfnHs8vfRz4BCE4P6OuPsA9P/7ATz+0rnGof3j8O2W9/HQa0C9fNewW55oh6I3L4LlESrdK/ZZBo/aofyt/QWMuMHKJMGLQcOwHbRU3tf/7xf7N27aOv7QPxtn949rX/6LR3C6AYg78U/8pn8c0OheY8J0nulNh1D0pkM1tLFade8b37V/YA3mJlF2MIRlwoO42clTD30jX5p0Vxd3ZL/ctWh936WuVyYp59lkqRGK3qSI5bzicoN0b1BRrxHvW3Nl2MDjaoSnnBc5UXv1kUFxHktOH/rFoJm4Y+bmF2YCcIf7ny9dD9NYnmiHc91YEmdpruxKIExrE6bT0Q3x6mJcO7mZMbqcF7rmP1+6/vFN3wpv+/Ze2bf3yr4fJbqGZ08ckS+RIFieWBFmW6ZDiG7UKnqF7SXVvUCQ1b0u7TcB02GAYz9C0GwTPObptJHBxhstsKI3FwE83t5m1X1Yri5mwMzTEZvW8iIB/MeJKCh6M6K9nJfuopfuxS8EGhtj6ovK4ibsiptQtr5Vuvjf6xftipuw6/fnXO9L1+yaWPRv2dq4CedKvQ4YUQGO+DOO3/ODbFXdnrPtC09fjhpzLGrMsYWn29dGjTkWNeZsYUv7LrI7pHTB5JY351mZDYreVoShum+teRcDG4umnHgKubu/dC/98vcTDuV2SW0smvKX/gBQX1T2+KH2neqLrmL+lMaiKX9/pO7xRTX1XkeNKNer8PU7a78VXy98+T9/3DCy9XBfvHz5IwAtje/gl62HR1Y8i9d2fC3bM3IsTzRC0ZsIvb5+CrqXGt/hfgiJ1iNoL+qjkv4y4acA4mM7DYj7qbCsdE355aceaZzbPp9a/IThJ566S/K2/5NRADBi8v0DLn9fp/G0bId4Gat4Vj7y+VHeV0niwpYfLvfsPDoawE+SegIAouOWT7oFQELsrQO7/ETYyrhJ52l5q0PRm44AchsfhwpVgf/v9U3Reyf8FABaa/IPJfRoPBQ3YVfcmi872C/qth4qayKnqFdI51saa1N7jBbfRt81Hlef2/MDWr7eF//zh9u3+6Gw6ef7Jt0i3dWIcp5YHYre/qjp3rfx/SjqW2smTjiU+165EMHXn24++wgeSZ7SWJQ681C5mNGr7Ps9nuo2oqMfwZauV/+hfijcgdGDpEtuyVzUDWsro5ZhVY77i1FL4/gxla+t/VTI8fUt54UmS+G1Vcp5jsf6gKI3C0b/M/XOc9BRga/V9VFJe4umnHjqrrOftNYDAAbEdRvRH8C9jzyCy03/9rFr6Wk8M+Gnamtt3IHjq6Xy9NeYFpcgW9iM8Rv6zqq+mpLnTuSj4/YdHlnx7B1njn+t7xisVPGWsLwlTjK8UPTmQsfcxsdHBFDgd0j8hB7CLZTxsZ3ONrrknhB3l49d6ovKDsUmxfs8rAEBztevjj/W3fXn7EahU+jsZWHJq2elW/6wcaG4UGmvoFFqqfyhcMvV1544FjXmWMrab8+srRy/5we0NI7fgtHRdy0/nPzH+nppm03CpPhZ7te6Wz74oxGTQNFHKBoLfD8CnHMtlx+MigfQP3rmocvrWwH8+9gnGD9IuWCvLyrLwcC/9Afw5foiX1W/zq4/i1H7Rl7ZN/LKvpHrxt6aEAXg61dz//NS4cgr+/oi9/LHru2+fnV85Rvxfa/sG/n6AMW9AsfnD3JLZt7I1sMjWw+PrHj2joHPJrsi+Or/KA9Zn/5qc7WvZ777BS1vVzjXTaSjNnkOtN1hW19UNvS9rwHgkdTGuYLT7/1Lbktc1q5cYGbulL9ESTc7NBGP7J3w09I1ux4/BOBQ3HsA7sotGK7xbLuPPxbs7bID7nrI9eqHOtw6HEDrD1d7dH4yCsBPurqHhj9e8+nVp5OvTLhFda+gEcv5uj1nU9Z+C1SOR7JsZNVFdNyqZ8+mjDkGYOCzyfuixV2A9L5AM/Qo52l5G8MpEEyBbAL6MOI9oYKUMIbm4lcK3eZFaG189fRdr0+4Bfhh48LKkqHJHwz6+te7b/lg7l1obfx15n+6jW3efhAY2/fK3LuU9goQfSc80CWdl3bXWNTy4hyWFJoijG5MRNgtD6UEX0pgk8jrgu5hfcPp/3QdJPj6ljnPd8O6yu5vYencuwA0nG47Pxajhoy8sq/vYwc/lQb3kr0CwcyWt8rQqyLWPfPQQNETBRQTfIG4CbvCpXtdXf9DWeOtw8WovQVphX0fu3x1zBpXT0u/uPseGgDgrlFjcbX5B+W9AkXHZ38jCMtbsYeSBAYzeuIL0fWySEd0fbjCnKDD+h+v4ZY5wsvWxl9/gKXL75qzL7nrwn9sbL1rTsyt50/+CNwCoEvcHcp7BXTOQZywnCAb56n4iIIVffixxI0eanmOUOCHrMbX7bpy9isMkSTvl//TIF074OePHazf2Argh7ITSBOzGtle/mCe0IaFfATCwdjw4+8E9GFErOsrN+cmz8pV3CYENX7wA7Mfr7mMuT3cjTRoKDo7Zt23APo9nfyBMNB69nL33GYAj+WOfH2A8l5+IYg+vDPO22DQ1QecmN4HFH34sZDo4el64UVYjK9/E46RhL2ct7fiBSh6H1D04cdaooeS60VCJn0LPYgqvJaPBMULUPQ+oOjDjHk66LUjHZj1dr2AmvGhn/St4vqwhDayiSftrXgBttL7gKIPM5Yr5wV8FPUyfBgfQUvf/AFOiMt574mFI0HxIizq1aDow4xFRQ9/XC9ihPTN7PpQWj4CS3hvKHo1KPowYwPRwx/Xi/iWPvzxvjldr6/loRTaKD4YJDIVL0DRq0HRhxnrih5Bu14kSOmbM6w3IpoH8OnFF+h3NSh6NSj6cGLFkVgZAQQ4HdKh9+GlfrO53qDQxhv6XQpFrwZFH04sXc6LGOF6KVq8LyO8rtfF8pR7AFD0alD04cQeoofxrpfil/dDb/zALK9l4hr6vUMoejUo+nBiG9EjtK6XEUDJD2OuAR1aXvtMZJ/uewJA3/EbhLe0vBYoejUo+nBiS9EjHK4XCUz6ZkAwuxRa3l8oejUo+rBhg5FYGSZ0ffGWJ7w3yJi5IVTnIsfb5j4QRE/La4eiV4OiDxt2KudFrOJ6fRGvHH553Dcs5wOAoleD89ETPZFet8KYokivMSGr32l5YlooeqIzAbu+8m+5mQdvtr+/fjJzVm7yrPXbr4uLapfOyk2elZs8a1+lZMfGg+s9dhSOtrn9o41zfcbMDbofnJYnukPRE/0JwPWNB9c//5F0wc3t714auTK3cvOw+ndPNgrLPrsRvzK3cnNu5ebxye1b1m7d3Kh4TKOzI2lio2M5L0DLEx2h6Ikh+Ov6uLFP7pgV1/7+s/K8uGGP3QMg8aG4g1s/A3Bz+96DeS/kLv3MY8fKv/0jXrqjJ6Lrvevu1oPVZ3y//qwiY+aGjJn7P7wOb4zI5SEp5wnREYqeGEUweX1ja1uf6DuF17HRcddabwJIeSa3cuXYa8slrr9+8osB41N8HkrF9c27Nn3r+/UZdCne8sS6RX0H3yM/ptGWZzlP9IWiDw+WeCB48MhcH9zw7J1x9wD3DClcOfbaXiHMubl9P1J+1fGeSq6PmTL7Dt+vB/4qBvi+GZ2iPI9GyxPLQdGHE5v1ViriLM3VuRXnnm4j8VUTgM+uYtwQ1dRGBf/GTq9/h3tvU9ydlicWgqInocDvyD6q84UWVyNNU0tj16g7PVf/PNYd2SfPyp22ufHC5lXejTdSvJpwmndtqvrg4PcA1F+j9UvESHIbgywvQssTg+ANU+HBlndLdYj0dip4dcU0Hlz/J0wqHCs4/eb2P+7BM08+hpOZ7+IPr0kq98/2Zbamujfz3tEXAd9IJf0eoLvlWc7rBW+YUoMVPQkdsgubVLuNB9d7FuZ3PvZMr2Mv5Ca/cGnkM0PiAHy2T0j5k8/+UovTFQmsud7QNkpanoQAVvThITIrehHfpb3RaK/rDS3kQcvrDSt6NVjRkzDgo7QPARrreqVC/vstCzf0HV/xiXS71urH1zS7Xozf0Hf8hr7jNzxe5Er5G4v2S99KoeVJyGBFHx4ivKIXCWNp76Ou91nIf79l4YUuy1MedL1tXjL+yM6xoz+dG9N4thkDYuIAnK3eEt1zZhQai/a/jIf+PuE2KGG+ySmbD0+YueUMgIwXWhbc7176+aLhKze7Xif9ccsrT8cAwEcr5swqlu0/YnPZEw8LL09tiF5cCvmhjIYVvRqs6Ek48S7tQ1bdK9b10rlrtCTyn6xpGF44WBBZnGB54JNmPBQFtFa/vO6rz9ftkn8DAGDCO2A/WjEneuaWHks3tpRtlKq5bmfRZvFNr8GjYoRXnx+UWx7I6C+xPDaXbWwp27gZK6NXfG7omRMN/Fe4T4BEOoLrpaW96HqjC/zKze3XlUDi+LMVZUNSXkF1ocfS5gbEPQg0nq7D01M+nXDbJ2s2FBb1eVBS15sttLm+bu6i1zCzvGxMgnzV52tXx24ue+Vh2eJT5y7PW9Yytb319KMVcw4Ovd91tL+XDpy3TNjl4QUvzBq+ctHQjcseMO78SYewoiemQHZflUAoC3wBf/pqvt/ywdWduRv6ZlZ9fvBIewp/9l8Y5HJ6t5jbADw4pJt0N7NZHnU71712acTmNd6WB06d24zSWcOXrGv23CU2rWiqdGKIzw8WjxgrqPxUyWuXksYni2vvSeqFzSdY1IcXVvTERIiuN7rAV7t+9B2/QbPob5u5/ImZAFqrH999uxjEf9KMhwYAQFzMz3Z+UD1nQE80fyMYHya0PPD52tU1A+dNuDZ3zqxLADBw3jK3xK+v+3spAKDmtZlzXus1s9x9MUiI8Zz+59S5zRn9lwEA6hqbgNiuMeK6e7omAHVf1uF+hQsJCREUfRiIkIlugsE7z4GXnf31vqLcvS8tvl3/yZpdyy8DC+/Yt7yn0uwLrtwGAAakrD65Yfz4Kowd/ekE15GFNeaxvFCzA6uLxm/Z2BKDj1bMmbV60aI4V9Iy6qWNT8e4R1YvbUldca/SyOr1dX8vnfX4EyE+cS+EkViiCLtuwgBbbvxFZvzgUfzlSz8lUm6Mqtu5JHV1bHu3jNBjIyne3VxfN3fRa5ckfTUizYcnvIF89/ZeB8RHK+bMqvM+oO6w5cYHrOiJBZB5OTDvd3hldZbmaqzrA8Zcllfi/rEZ2Fznvfyep1+auW9m1bVmPBzjsaKusgojnmYsY24oemI9jPsyZJDrTddMGQgx9/bwCN8Frh8txfiX2iP7hLhYoElyPbh+rQ5IuJdXgrDCrhtCPJBeRXQRtElDG4GE5MEDUXrwlMfCgSN+peDl5i8vi53y7Qs/2wexuR4A8ED/WajZVyk+let6zSXMGhqye6aIIhQ9IXJ0dL2pLQ8AMWPy5yVtXuxuoDy1YVbxiByh66b58IT2e50+XzSzJcdrJLausgryq8L9y5aOOLO6RHgC8EcrVm7OeIFN9OGGg7FhgIOxVkGMcQLLcExveTd1O5ekrq4B4DGNgTgjgmx5O9fXzV2Hl1yTIigfMERTIIgtNxSaIhR9GKDoLUTArTiWsbwtYMuNbxjdEOKLwGIcWp6YCoo+bOjeG04Mwl/X0/LEbFD0YYBfMC2HdtfT8sSEUPSEaEKL62n5sMDJDzqEoidEK75dT8uHF35R9gFFT4gfyFzvrXtanpgQip4Q/5BNnS+43haTHFgS5jZaoOgJCQTFGIflfLhgbuMbip6QAJHd8kbLE9NC0ROiD3OihzNGCDH8hWuE0xQTEgjS+92cTqf41LA50cNZ2ocY5jYdwoo+nPDmWIsi/sU5nU7BMlLXsMwkZoOij2BO7XOMyM06pbq+dud6x7yTtf7tdTN/Xq5jRK5jxL4Svc7TrMgKSZnrqXuj4W9YO4xuwoP0y344uJk/b1XOJZ+bNJ+cs6YRvXr5sdepfY7fn0XGLOfqRH1O03z4/hIm+2tljBMCmNtogRV9ZHJn9upc5+axKaob3Mx/8xJ6yRb62qt253rH79vyNuc6X7C/5cXExhvZKladBsFfrF9Q9ESB2p17qmdPmqZ9h+aTc9Y0Zv7lyWyvR1DYBqnlO9yYMU5oYDmvEYqeeNF8ck7DsAJ/nv5W8sHBil5jJzaud4zIdYzIVUj2LY5flhe3ZGlvEPxl+gtFH2bM13hzM//Nr17xL36p3VsMXDq4BJOcpbnOvwzApYNJK+2j+gAsL8LS3jhYzmuHoice1O7cUz17fJpf+zTfuAhk/iW3fOqdAPDA+AMZQPHx/GZDzjDEBGN5xR3p+iDhLzAAKPqwYcZ6pPnkckzyK7RRJO3BAXqcTfgJ3vLi7izt9cWM/31MDNsrSTslHxwsLD5YuEa67GDSiIOZf8kN3v6WQy/Li7D5Mnh4gQwMij78OEbkyqbHChdpL+Q6XxDf3cyftyoHY2tWD+kgsI/pNq3XwZxPagsekGzYq9c4y3bgyKY30PHIwtGk8yWAs6FpRrQ8y3l/YXRDgufO7BfHphRvTt15EwBQm/X7s5mzO7o8mBUtzfJBwoacYKDlA8DB31p4EYq70Ff0JStz04vdb3oplu0KFb2vvZpPps46WAEAsG7Uo3tc08HHed4dzdLeByzng4GiDzPif3WTpDeRTIgt3/651H1H0PJBwuiGECB8lvf+RPbkyKDlg4eDsWEm3LObEQOHXrUjG6QFe3K8oOWDgdFN+GF6E0bCWMirwSRHCst5XWB0QyIXE1oevLtKAi2vFxR9+OE/4rBgTsuLMLin5XWE0Y0pYHoTSswQymvHewgnEsIcWl5fOBhLIguTF/LeKI7Twta6p+V1hxW9WWBRHwIsZ3kZtq/upfGURf+OzAkrehIRWCuuUUM8c9lsObCF8VnIGwcrehPBot4grF7Iq2GnAp+WNxRW9MTO2KOQV0MtvoeljM+4JgSwojcXLOp1xK6FvCJq91eb2fhUfMhgRU/sSURZHkrxvYA5a3wqPsSwojcdLOqDxN5xjXbMWeNT8WGBojcjdH3ARFohrwUfs+aFTPqy23r5txNiGN0Qm8BCXg21VAde/tXX+4pzNvCvJiywojcpLOq1Q8UHgF+TY3d4AehwHh7+vYQXit680PVaYFajC0Y8FIF/I+aBs1daAGnFSkQcI3Jpeb1wqhDM7kob1uanOnyRml/bwUeVZCnuUpufJe7qtYnD4cgq0fqrsCUUvXmR/leh66XIFE/LG4faBSCw6wGQmF3udDqdBzIBAJkHpAepyUtBRU6Squ2Fi0R6YUpejXSvaTuSHA5HUs5FccO0AslnuD6kIC2I34L1oehNDRXmDRVvA5J6pngvTMwuF+xckZPkVYDX5qcm5VQg84DTWZ6dKNvLeSATqKiu8dgjbWImAGROjGzFC1D0Zqe9ZSLii3pmNfYnbWFeCgAU7vUwfUlWUk4FkHlApTBPK3DX70QRtldaAKf7AeKC5iJwbJZ9NRFNSVZ6IYCUvIXqxXnawryrNaprIx6K3hqIrgfgGJEbOa6n4iOL2v07KgDPwKVkbyEApEwbl6iyFwAkZmf7Wh3hMLqxDJE2NssR14jDlcPLIhqX59G7G0UeMBS9lYgQ11PxkUJhukcLZFJOBVLyajxbZGqvCu00KT2TvA+g0K0Z4X2UKlD0FsPGrhf8TsVHEJ7tlULvTE6SpnZ6AaFb0z0Q63WRIG4oeushc70NdC/7Kaj4CCWtwC1tSYNlYrfeALy7J6X7CY2UDHfUoegtiUyFFnW9rIQHFU/aGyULl7iqenfPvazjkvgDRW9hrFvaK/qdiieA981UieOm0fTBQtFbG+/S3sy6ZwlPOqamugKAJIhJzN7ouotqicbonshhH70dkHbZw3z3VXlfeyh3okJt/hKhm1LaSZ+YvTFvR1JORUVOUlY3DrcGAEVvEwR1euseYTK+4hcL+p0IuKt2GSVZjnSX5mWTHSRmlzu7ZTnSCwvTHYUpeTXS+W5cN856HUzovy/cW1KQFvGXBs5Hb08Upxc32vhqqRH/jRE34j1R6mQe8Fmzt18MVPdR2qSDo9odit7O+H6aRPDe9z0ewH9ahJgEij4iMOL5Qd7w3xIh5oSij0T08j7/8RBiCSh6QgixOeyjJ4QQm0PRE0KIzaHoCSHE5lD0hBBicyh6QgixORR9iFB4FI7CwxVKspSellObn5Vfq3gM2SE8N8gq8Toen8BDSETiJCHE/Sgc2ZN1VNe4l0oWKyzyoCYvBa5n7XT8qYSQSIAVfUhxPQpHOjEfIM7NkXlA/iC09kfuSBbJFshI7NYbKXkbJXM+qX0qISRCoOjDTm1+anohvOfrc5NWcCATF6+2ZzQub6s8hqFkb2HmK9l8pBohRISiDzcly3MqAKTkLVStt9MW5vWWvU+BiulL9haycieEeEDRhxnXpNkp08b5KMITsws8anTXw9UUHrhDzxNCvKDow4vL8/4+vz4x+5VMABU79su6bpZc9PHNgBASmVD0YaX26sUA9xSC+oqc5ZL4pnb/Dvj8ZkAIiUgoelOQ0jPJ3128g/qS5Tm9OQxLCPGCog8rid2EUdaK6hr/9xXiGzGoZzxPCFGGog8vST1TAMCjfVIzrvhGCOrpeUKIChR9eHH1zwRU0rvjm4qc5SUchiWEqELRhwFpIu8KYJRaJSW4Z7uRI/ZZzuEwLCFEDYreeISZxSRziXn2UrrmNKjISVKZbqw2P3UOFiqPsrr7LCs4DEsIUYOiNxxXC2Xhkvxa1F69qDDVQVqBMBVZYbrXfJQlWQ7HHGwsV7e4ENT7jOddzfoqcyYQQuwOHw4eAmrzU5NyKgAAmQecyjPayLZz43P79t2WdytX3Mw1W5rfhySE2AmKnhBCbA6jG0IIsTkUPSGE2ByKnhBCbA5FTwghNoeiJ4QQm0PRE0KIzaHoCSHE5lD0hBBicyh6QgixORQ9IYTYHIqeEEJsDkVPCCE2h6InhBCbQ9ETQojNoegJIcTmUPSEEGJzKHpCCLE5FD0hhNgcip4QQmwORU8IITaHoieEEJtD0RNCiM2h6AkhxOZQ9IQQYnMoekIIsTkUPSGE2ByKnhBCbA5FTwghNoeiJ4QQm/P/A/qIxBcPXj2LAAAAAElFTkSuQmCC" alt="plot of chunk insertVenn"/> </p>
 
+<p><strong>Figure 6. Venn diagram of overlapping perfectly matching Affymetrix&reg; HGU133A Plus2 probes to each of the five human genome assemblies.</strong></p>
+
 <h2>Conclusion</h2>
 
-<p>MM probes are theoretically designed to capture background and non-specific binding. Alignment of the MM probes to the<br/>
-genome shows that in a very small percentage of cases, MM probes align uniquely to the genome in transcribed regions.<br/>
-Signal from these probes should be useful for quantifying true transcriptional events rather than for PM signal<br/>
+<p>MM probes are theoretically designed to capture background and non-specific binding. Alignment of the MM probes to the
+genome shows that in a very small percentage of cases, MM probes align uniquely to the genome in transcribed regions.
+Signal from these probes should be useful for quantifying true transcriptional events rather than for PM signal
 adjustment.</p>
 
-<p>In addition, current custom CDF generation workflows ignore the MM probes during the probe alignment process. Given<br/>
-that some MM probes align to reference genomes, they should be considered for inclusion when creating custom CDFs. The<br/>
+<p>In addition, current custom CDF generation workflows ignore the MM probes during the probe alignment process. Given
+that some MM probes align to reference genomes, they should be considered for inclusion when creating custom CDFs. The
 utility of the probes may be limited due to variation among individuals. </p>
 
 <h2>Acknowledgements</h2>
 
-<p>This work was partially funded by National Institutes of Health (NIH) grant 8P20GM103436-12.  Its contents are solely<br/>
-the responsibility of the authors and do not represent the official views of NIH or the National Institute of General<br/>
+<p>This work was partially funded by National Institutes of Health (NIH) grant 8P20GM103436-12.  Its contents are solely
+the responsibility of the authors and do not represent the official views of NIH or the National Institute of General
 Medical Sciences.</p>
+
+<h2>REFERENCES</h2>
+
+<p>[1] Schena, M., Shalon, D., Davis, R. W. and Brown, P. O. Quantitative monitoring of gene expression patterns with a complementary DNA microarray. Science, 270, 5235 (Oct 20 1995), 467-470.</p>
+
+<p>[2] Nagalakshmi, U., Wang, Z., Waern, K., Shou, C., Raha, D., Gerstein, M. and Snyder, M. The transcriptional landscape of the yeast genome defined by RNA sequencing. Science, 320, 5881 (Jun 6 2008), 1344-1349.</p>
+
+<p>[3] Barrett, T., Troup, D. B., Wilhite, S. E., Ledoux, P., Evangelista, C., Kim, I. F., Tomashevsky, M., Marshall, K. A., Phillippy, K. H., Sherman, P. M., Muertter, R. N., Holko, M., Ayanbule, O., Yefanov, A. and Soboleva, A. NCBI GEO: archive for functional genomics data sets&ndash;10 years on. Nucleic acids research, 39, Database issue (Jan 2011), D1005-1010.</p>
+
+<p>[4] Parkinson, H., Sarkans, U., Kolesnikov, N., Abeygunawardena, N., Burdett, T., Dylag, M., Emam, I., Farne, A., Hastings, E., Holloway, E., Kurbatova, N., Lukk, M., Malone, J., Mani, R., Pilicheva, E., Rustici, G., Sharma, A., Williams, E., Adamusiak, T., Brandizi, M., Sklyar, N. and Brazma, A. ArrayExpress update&ndash;an archive of microarray and high-throughput sequencing-based functional genomics experiments. Nucleic acids research, 39, Database issue (Jan 2011), D1002-1004.</p>
+
+<p>[5] Deng, Y., He, Z., Van Nostrand, J. D. and Zhou, J. Design and analysis of mismatch probes for long oligonucleotide microarrays. BMC genomics, 92008), 491.</p>
+
+<p>[6] Hubbell, E., Liu, W. M. and Mei, R. Robust estimators for expression analysis. Bioinformatics, 18, 12 (Dec 2002), 1585-1592.</p>
+
+<p>[7] Irizarry, R. A., Bolstad, B. M., Collin, F., Cope, L. M., Hobbs, B. and Speed, T. P. Summaries of Affymetrix GeneChip probe level data. Nucleic acids research, 31, 4 (Feb 15 2003), e15.</p>
+
+<p>[8] Wu, Z. and Irizarry, R. A. Stochastic models inspired by hybridization theory for short oligonucleotide arrays. Journal of computational biology : a journal of computational molecular cell biology, 12, 6 (Jul-Aug 2005), 882-893.</p>
+
+<p>[9] Carter, S. L., Eklund, A. C., Mecham, B. H., Kohane, I. S. and Szallasi, Z. Redefinition of Affymetrix probe sets by sequence overlap with cDNA microarray probes reduces cross-platform inconsistencies in cancer-associated gene expression measurements. BMC bioinformatics, 62005), 107.</p>
+
+<p>[10] Dai, M., Wang, P., Boyd, A. D., Kostov, G., Athey, B., Jones, E. G., Bunney, W. E., Myers, R. M., Speed, T. P., Akil, H., Watson, S. J. and Meng, F. Evolving gene/transcript definitions significantly alter the interpretation of GeneChip data. Nucleic acids research, 33, 20 2005), e175.</p>
+
+<p>[11] de Leeuw, W. C., Rauwerda, H., Jonker, M. J. and Breit, T. M. Salvaging Affymetrix probes after probe-level re-annotation. BMC research notes, 12008), 66.</p>
+
+<p>[12] Ferrari, F., Bortoluzzi, S., Coppe, A., Sirota, A., Safran, M., Shmoish, M., Ferrari, S., Lancet, D., Danieli, G. A. and Bicciato, S. Novel definition files for human GeneChips based on GeneAnnot. BMC bioinformatics, 82007), 446.</p>
+
+<p>[13] Langer, W., Sohler, F., Leder, G., Beckmann, G., Seidel, H., Grone, J., Hummel, M. and Sommer, A. Exon array analysis using re-defined probe sets results in reliable identification of alternatively spliced genes in non-small cell lung cancer. BMC genomics, 112010), 676.</p>
+
+<p>[14] Liu, H., Zeeberg, B. R., Qu, G., Koru, A. G., Ferrucci, A., Kahn, A., Ryan, M. C., Nuhanovic, A., Munson, P. J., Reinhold, W. C., Kane, D. W. and Weinstein, J. N. AffyProbeMiner: a web resource for computing or retrieving accurately redefined Affymetrix probe sets. Bioinformatics, 23, 18 (Sep 15 2007), 2385-2390.</p>
+
+<p>[15] Lu, J., Lee, J. C., Salit, M. L. and Cam, M. C. Transcript-based redefinition of grouped oligonucleotide probe sets using AceView: high-resolution annotation for microarrays. BMC bioinformatics, 82007), 108.</p>
+
+<p>[16] Moll, A. G., Lindenmeyer, M. T., Kretzler, M., Nelson, P. J., Zimmer, R. and Cohen, C. D. Transcript-specific expression profiles derived from sequence-based analysis of standard microarrays. PloS one, 4, 3 2009), e4702.</p>
+
+<p>[17] Moreews, F., Rauffet, G., Dehais, P. and Klopp, C. SigReannot-mart: a query environment for expression microarray probe re-annotations. Database : the journal of biological databases and curation, 20112011), bar025.</p>
+
+<p>[18] Neerincx, P. B., Rauwerda, H., Nie, H., Groenen, M. A., Breit, T. M. and Leunissen, J. A. OligoRAP - an Oligo Re-Annotation Pipeline to improve annotation and estimate target specificity. BMC proceedings, 3 Suppl 42009), S4.</p>
+
+<p>[19] Risueno, A., Fontanillo, C., Dinger, M. E. and De Las Rivas, J. GATExplorer: genomic and transcriptomic explorer; mapping expression probes to gene loci, transcripts, exons and ncRNAs. BMC bioinformatics, 112010), 221.</p>
+
+<p>[20] Sandberg, R. and Larsson, O. Improved precision and accuracy for microarrays using updated probe set definitions. BMC bioinformatics, 82007), 48.</p>
+
+<p>[21] Yin, J., McLoughlin, S., Jeffery, I. B., Glaviano, A., Kennedy, B. and Higgins, D. G. Integrating multiple genome annotation databases improves the interpretation of microarray gene expression data. BMC genomics, 112010), 50.</p>
+
+<p>[22] Yu, H., Wang, F., Tu, K., Xie, L., Li, Y. Y. and Li, Y. X. Transcript-level annotation of Affymetrix probesets improves the interpretation of gene expression data. BMC bioinformatics, 82007), 194.</p>
+
+<p>[23] Maglott, D., Ostell, J., Pruitt, K. D. and Tatusova, T. Entrez Gene: gene-centered information at NCBI. Nucleic acids research, 39, Database issue (Jan 2011), D52-57.</p>
+
+<p>[24] Pruitt, K. D., Tatusova, T., Brown, G. R. and Maglott, D. R. NCBI Reference Sequences (RefSeq): current status, new features and genome annotation policy. Nucleic acids research, 40, Database issue (Jan 2012), D130-135.</p>
+
+<p>[25] Lu, X. and Zhang, X. The effect of GeneChip gene definitions on the microarray study of cancers. BioEssays : news and reviews in molecular, cellular and developmental biology, 28, 7 (Jul 2006), 739-746.</p>
+
+<p>[26] Sayers, E. W., Barrett, T., Benson, D. A., Bolton, E., Bryant, S. H., Canese, K., Chetvernin, V., Church, D. M., Dicuccio, M., Federhen, S., Feolo, M., Fingerman, I. M., Geer, L. Y., Helmberg, W., Kapustin, Y., Krasnov, S., Landsman, D., Lipman, D. J., Lu, Z., Madden, T. L., Madej, T., Maglott, D. R., Marchler-Bauer, A., Miller, V., Karsch-Mizrachi, I., Ostell, J., Panchenko, A., Phan, L., Pruitt, K. D., Schuler, G. D., Sequeira, E., Sherry, S. T., Shumway, M., Sirotkin, K., Slotta, D., Souvorov, A., Starchenko, G., Tatusova, T. A., Wagner, L., Wang, Y., Wilbur, W. J., Yaschenko, E. and Ye, J. Database resources of the National Center for Biotechnology Information. Nucleic acids research, 40, Database issue (Jan 2012), D13-25.</p>
+
+<p>[27] Rouchka, E. C., Phatak, A. W. and Singh, A. V. Effect of single nucleotide polymorphisms on Affymetrix match-mismatch probe pairs. Bioinformation, 2, 9 2008), 405-411.</p>
+
+<p>[28] Dreszer, T. R., Karolchik, D., Zweig, A. S., Hinrichs, A. S., Raney, B. J., Kuhn, R. M., Meyer, L. R., Wong, M., Sloan, C. A., Rosenbloom, K. R., Roe, G., Rhead, B., Pohl, A., Malladi, V. S., Li, C. H., Learned, K., Kirkup, V., Hsu, F., Harte, R. A., Guruvadoo, L., Goldman, M., Giardine, B. M., Fujita, P. A., Diekhans, M., Cline, M. S., Clawson, H., Barber, G. P., Haussler, D. and James Kent, W. The UCSC Genome Browser database: extensions and updates 2011. Nucleic acids research, 40, Database issue (Jan 2012), D918-923.</p>
+
+<p>[29] Langmead, B., Trapnell, C., Pop, M. and Salzberg, S. L. Ultrafast and memory-efficient alignment of short DNA sequences to the human genome. Genome biology, 10, 3 2009), R25.</p>
+
+<p>[30] Liu, G., Loraine, A. E., Shigeta, R., Cline, M., Cheng, J., Valmeekam, V., Sun, S., Kulp, D. and Siani-Rose, M. A. NetAffx: Affymetrix probesets and annotations. Nucleic acids research, 31, 1 (Jan 1 2003), 82-86.</p>
+
+<p>[31] Aboyoun, H., Pages, H. and Lawrence, M. GenomicRanges: Representation and manipulation of genomic intervals. . City.</p>
+
+<p>[32] Gnerre, S., Maccallum, I., Przybylski, D., Ribeiro, F. J., Burton, J. N., Walker, B. J., Sharpe, T., Hall, G., Shea, T. P., Sykes, S., Berlin, A. M., Aird, D., Costello, M., Daza, R., Williams, L., Nicol, R., Gnirke, A., Nusbaum, C., Lander, E. S. and Jaffe, D. B. High-quality draft assemblies of mammalian genomes from massively parallel sequence data. Proceedings of the National Academy of Sciences of the United States of America, 108, 4 (Jan 25 2011), 1513-1518.</p>
+
+<p>[33] Istrail, S., Sutton, G. G., Florea, L., Halpern, A. L., Mobarry, C. M., Lippert, R., Walenz, B., Shatkay, H., Dew, I., Miller, J. R., Flanigan, M. J., Edwards, N. J., Bolanos, R., Fasulo, D., Halldorsson, B. V., Hannenhalli, S., Turner, R., Yooseph, S., Lu, F., Nusskern, D. R., Shue, B. C., Zheng, X. H., Zhong, F., Delcher, A. L., Huson, D. H., Kravitz, S. A., Mouchard, L., Reinert, K., Remington, K. A., Clark, A. G., Waterman, M. S., Eichler, E. E., Adams, M. D., Hunkapiller, M. W., Myers, E. W. and Venter, J. C. Whole-genome shotgun assembly and comparison of human genome assemblies. Proceedings of the National Academy of Sciences of the United States of America, 101, 7 (Feb 17 2004), 1916-1921.</p>
+
+<p>[34] Lander, E. S., Linton, L. M., Birren, B., Nusbaum, C., Zody, M. C., Baldwin, J., Devon, K., Dewar, K., Doyle, M., FitzHugh, W., Funke, R., Gage, D., Harris, K., Heaford, A., Howland, J., Kann, L., Lehoczky, J., LeVine, R., McEwan, P., McKernan, K., Meldrim, J., Mesirov, J. P., Miranda, C., Morris, W., Naylor, J., Raymond, C., Rosetti, M., Santos, R., Sheridan, A., Sougnez, C., Stange-Thomann, N., Stojanovic, N., Subramanian, A., Wyman, D., Rogers, J., Sulston, J., Ainscough, R., Beck, S., Bentley, D., Burton, J., Clee, C., Carter, N., Coulson, A., Deadman, R., Deloukas, P., Dunham, A., Dunham, I., Durbin, R., French, L., Grafham, D., Gregory, S., Hubbard, T., Humphray, S., Hunt, A., Jones, M., Lloyd, C., McMurray, A., Matthews, L., Mercer, S., Milne, S., Mullikin, J. C., Mungall, A., Plumb, R., Ross, M., Shownkeen, R., Sims, S., Waterston, R. H., Wilson, R. K., Hillier, L. W., McPherson, J. D., Marra, M. A., Mardis, E. R., Fulton, L. A., Chinwalla, A. T., Pepin, K. H., Gish, W. R., Chissoe, S. L., Wendl, M. C., Delehaunty, K. D., Miner, T. L., Delehaunty, A., Kramer, J. B., Cook, L. L., Fulton, R. S., Johnson, D. L., Minx, P. J., Clifton, S. W., Hawkins, T., Branscomb, E., Predki, P., Richardson, P., Wenning, S., Slezak, T., Doggett, N., Cheng, J. F., Olsen, A., Lucas, S., Elkin, C., Uberbacher, E., Frazier, M., Gibbs, R. A., Muzny, D. M., Scherer, S. E., Bouck, J. B., Sodergren, E. J., Worley, K. C., Rives, C. M., Gorrell, J. H., Metzker, M. L., Naylor, S. L., Kucherlapati, R. S., Nelson, D. L., Weinstock, G. M., Sakaki, Y., Fujiyama, A., Hattori, M., Yada, T., Toyoda, A., Itoh, T., Kawagoe, C., Watanabe, H., Totoki, Y., Taylor, T., Weissenbach, J., Heilig, R., Saurin, W., Artiguenave, F., Brottier, P., Bruls, T., Pelletier, E., Robert, C., Wincker, P., Smith, D. R., Doucette-Stamm, L., Rubenfield, M., Weinstock, K., Lee, H. M., Dubois, J., Rosenthal, A., Platzer, M., Nyakatura, G., Taudien, S., Rump, A., Yang, H., Yu, J., Wang, J., Huang, G., Gu, J., Hood, L., Rowen, L., Madan, A., Qin, S., Davis, R. W., Federspiel, N. A., Abola, A. P., Proctor, M. J., Myers, R. M., Schmutz, J., Dickson, M., Grimwood, J., Cox, D. R., Olson, M. V., Kaul, R., Shimizu, N., Kawasaki, K., Minoshima, S., Evans, G. A., Athanasiou, M., Schultz, R., Roe, B. A., Chen, F., Pan, H., Ramser, J., Lehrach, H., Reinhardt, R., McCombie, W. R., de la Bastide, M., Dedhia, N., Blocker, H., Hornischer, K., Nordsiek, G., Agarwala, R., Aravind, L., Bailey, J. A., Bateman, A., Batzoglou, S., Birney, E., Bork, P., Brown, D. G., Burge, C. B., Cerutti, L., Chen, H. C., Church, D., Clamp, M., Copley, R. R., Doerks, T., Eddy, S. R., Eichler, E. E., Furey, T. S., Galagan, J., Gilbert, J. G., Harmon, C., Hayashizaki, Y., Haussler, D., Hermjakob, H., Hokamp, K., Jang, W., Johnson, L. S., Jones, T. A., Kasif, S., Kaspryzk, A., Kennedy, S., Kent, W. J., Kitts, P., Koonin, E. V., Korf, I., Kulp, D., Lancet, D., Lowe, T. M., McLysaght, A., Mikkelsen, T., Moran, J. V., Mulder, N., Pollara, V. J., Ponting, C. P., Schuler, G., Schultz, J., Slater, G., Smit, A. F., Stupka, E., Szustakowski, J., Thierry-Mieg, D., Thierry-Mieg, J., Wagner, L., Wallis, J., Wheeler, R., Williams, A., Wolf, Y. I., Wolfe, K. H., Yang, S. P., Yeh, R. F., Collins, F., Guyer, M. S., Peterson, J., Felsenfeld, A., Wetterstrand, K. A., Patrinos, A., Morgan, M. J., de Jong, P., Catanese, J. J., Osoegawa, K., Shizuya, H., Choi, S. and Chen, Y. J. Initial sequencing and analysis of the human genome. Nature, 409, 6822 (Feb 15 2001), 860-921.</p>
+
+<p>[35] Levy, S., Sutton, G., Ng, P. C., Feuk, L., Halpern, A. L., Walenz, B. P., Axelrod, N., Huang, J., Kirkness, E. F., Denisov, G., Lin, Y., MacDonald, J. R., Pang, A. W., Shago, M., Stockwell, T. B., Tsiamouri, A., Bafna, V., Bansal, V., Kravitz, S. A., Busam, D. A., Beeson, K. Y., McIntosh, T. C., Remington, K. A., Abril, J. F., Gill, J., Borman, J., Rogers, Y. H., Frazier, M. E., Scherer, S. W., Strausberg, R. L. and Venter, J. C. The diploid genome sequence of an individual human. PLoS biology, 5, 10 (Sep 4 2007), e254.</p>
+
+<p>[36] Li, R., Li, Y., Zheng, H., Luo, R., Zhu, H., Li, Q., Qian, W., Ren, Y., Tian, G., Li, J., Zhou, G., Zhu, X., Wu, H., Qin, J., Jin, X., Li, D., Cao, H., Hu, X., Blanche, H., Cann, H., Zhang, X., Li, S., Bolund, L., Kristiansen, K., Yang, H. and Wang, J. Building the sequence map of the human pan-genome. Nature biotechnology, 28, 1 (Jan 2010), 57-63.</p>
 
 </body>
 
 </html>
-
