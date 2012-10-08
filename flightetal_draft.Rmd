@@ -158,7 +158,7 @@ In addition to changing functional annotations, one potential problem area for m
 of single nucleotide polymorphisms (SNPs) within a population.  As the probes are designed using a reference genome or
 transcriptome, a “one-size fits all” approach has been taken for the probes on a particular array.  However, SNPs are
 known to occur relatively frequently throughout the genome, with build 137 of dbSNP [26] containing over 53.5 million
-reference SNPs for the human genome. We have previously studied the effects of SNPs on Affymetrix® GeneChips® [27]
+reference SNPs for the human genome. We have previously studied the effects of SNPs on Affymetrix(r) GeneChips(r) [27]
 showing that a large number of SNPs lie in the areas where microarray probes have been designed.  This has been taken
 into account in the BrainArray’s custom CDF files which incorporate SNP information.  To study the effects that
 individual variation can play in microarray analysis, we looked at the mappings of PM and MM probes within five
@@ -733,6 +733,15 @@ goodPM <- sum(all5Class == "pm")
 percPM <- goodPM / nPM * 100
 
 goodMM <- all5Intersect[all5Class == "mm"]
+
+# which mm fall within exonic regions? This is not the best because it only
+# uses the exons that overlapped singleAnnot originally
+probeAlign <- allData$hg19$probeAlign
+probeAlign <- probeAlign[(elementMetadata(probeAlign)$probeNames %in% goodMM)]
+isExon <- subsetByOverlaps(probeAlign, exonIntervals, minoverlap=23)
+
+isExonNames <- elementMetadata(isExon)$probeNames
+tmVmm <- corOut[(corOut$'Probe ID' %in% isExonNames), c('tm','mm')]
 ```
 
 While there is a large agreement for the number of probes, we also checked if the probes represented were consistent
@@ -740,8 +749,8 @@ among all of the projects.  A Venn diagram depicting the number of overlapping p
 `r I(pasteLabel("Figure", figCount, "f.vennHumanVariation"))`.  As can be seen from this figure, a total of `r I(length(all5Intersect))` probes uniquely map for all five assemblies.  Of these,
 `r I(goodPM)` are perfect match probes, indicating that `r I(format(percPM, digits=2))`% of the HGU133APlus2.0 perfect match probes are reliable in terms
 of their mapping to the genome for these assemblies.  One of the interesting results is that there are `r I(length(goodMM))` shared
-perfectly matching mismatch probes.  Of these, 24 fall within RefSeq annotated exonic regions (results not shown),
-with 22 of the 24 showing higher correlation in the TMmm assignments calculated in `r I(pasteLabel("Table", tableCount, "t.corrTable"))`.
+perfectly matching mismatch probes.  Of these, `r I(length(isExon))` fall within RefSeq annotated exonic regions (results not shown),
+with `r I(sum(tmVmm["tm"] >= tmVmm["mm"]))` of the `r I(lenth(isExon))` showing higher correlation in the TMmm assignments calculated in `r I(pasteLabel("Table", tableCount, "t.corrTable"))`.
 
 <a id="f.vennHumanVariation"></a>
 
