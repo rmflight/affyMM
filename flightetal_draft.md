@@ -16,7 +16,7 @@ Robert M Flight, Abdallah M Eteleeb, Eric C Rouchka
 
 ## ABSTRACT
 
-Affymetrix® GeneChip® microarray design define probe sets consisting of 11, 16, or 20 distinct 25 base pair (BP) probes
+Affymetrix(r) GeneChip(r) microarray design define probe sets consisting of 11, 16, or 20 distinct 25 base pair (BP) probes
 for determining mRNA expression for a specific gene, which may be covered by one or more probe sets.  Each probe has a
 corresponding perfect match (PM) and mismatch (MM) set.  Traditional analytical techniques have either used the MM probes
 to determine the level of cross-hybridization or reliability of the PM probe, or have been completely ignored.  Given the
@@ -335,6 +335,139 @@ for the annotated location; PM probes for the new mapped location).  An average 
 was calculated on a per-exon probe basis.  The resulting correlations are summarized in [Table 6](#t.corrTable).
 
 
+```
+## Loading required package: hgu133plus2.db
+```
+
+```
+## Loading required package: AnnotationDbi
+```
+
+```
+## Warning: package 'AnnotationDbi' was built under R version 2.15.1
+```
+
+```
+## Loading required package: BiocGenerics
+```
+
+```
+## Attaching package: 'BiocGenerics'
+```
+
+```
+## The following object(s) are masked from 'package:stats':
+## 
+## xtabs
+```
+
+```
+## The following object(s) are masked from 'package:base':
+## 
+## anyDuplicated, cbind, colnames, duplicated, eval, Filter, Find, get,
+## intersect, lapply, Map, mapply, mget, order, paste, pmax, pmax.int, pmin,
+## pmin.int, Position, rbind, Reduce, rep.int, rownames, sapply, setdiff,
+## table, tapply, union, unique
+```
+
+```
+## Loading required package: Biobase
+```
+
+```
+## Welcome to Bioconductor
+## 
+## Vignettes contain introductory material; view with 'browseVignettes()'. To
+## cite Bioconductor, see 'citation("Biobase")', and for packages
+## 'citation("pkgname")'.
+```
+
+```
+## Loading required package: org.Hs.eg.db
+```
+
+```
+## Warning: package 'RSQLite' was built under R version 2.15.1
+```
+
+```
+## Loading required package: DBI
+```
+
+```
+## 
+```
+
+```
+## 
+```
+
+```
+## Loading required package: GenomicRanges
+```
+
+```
+## Warning: package 'GenomicRanges' was built under R version 2.15.1
+```
+
+```
+## Loading required package: IRanges
+```
+
+```
+## Warning: package 'IRanges' was built under R version 2.15.1
+```
+
+```
+## Attaching package: 'IRanges'
+```
+
+```
+## The following object(s) are masked from 'package:plyr':
+## 
+## compact, desc, rename
+```
+
+
+tm | mm | ProbeSet | Probe ID | Annotated RefSeq | Exon RefSeq | Annotated Symbol | Exon Symbol
+--- | --- | --- | --- | --- | --- | --- | ---
+0.8654 | 0.53475 | 209135_at | mm.209135_at.763.274 | NM_001164750, NM_001164751, NM_001164752, NM_001164753, NM_001164754, NM_001164755, NM_001164756, NM_004318, NM_020164, NM_032466, NM_032467, NM_032468 | NM_032466, NM_032468, NM_001164755, NM_001164754, NM_001164753, NM_001164752, NM_001164751 | ASPH | ASPH
+0.8602 | 0.61192 | 204041_at | mm.204041_at.895.14 | NM_000898 | NM_000898 | MAOB | MAOB
+0.8444 | 0.59839 | 206432_at | mm.206432_at.534.594 | NM_005328 | NM_005328 | HAS2 | HAS2
+0.8080 | 0.54951 | 205004_at | mm.205004_at.1030.1044 | NM_001173487, NM_001173488, NM_017544 | NM_001173488, NM_001173487, NM_017544 | NKRF | NKRF
+0.8059 | 0.78041 | 201622_at | mm.201622_at.1129.72 | NM_014390 | NM_014390 | SND1 | SND1
+0.7922 | 0.81628 | 235958_at | mm.235958_at.810.810 | NM_213600, NR_033151 | NM_213600, NR_033151 | PLA2G4F | PLA2G4F
+0.7890 | 0.74357 | 233052_at | mm.233052_at.882.6 | NM_001206927, NM_001371 | NM_001206927 | DNAH8 | DNAH8
+0.7728 | 0.36086 | 206084_at | mm.206084_at.139.1104 | NM_001207015, NM_001207016, NM_002849, NM_130846 | NM_002849, NM_001207015, NM_130846, NM_001207016 | PTPRR | PTPRR
+0.7546 | 0.39994 | 217416_x_at | mm.217416_x_at.747.452 |  | NM_152924, NM_007011 |  | ABHD2
+0.7474 | 0.55101 | 203646_at | mm.203646_at.468.274 | NM_004109 | NM_004109 | FDX1 | FDX1
+0.7416 | 0.60912 | 210467_x_at | mm.210467_x_at.1162.450 | NM_001166386, NM_001166387, NM_005367 | NM_004988 | MAGEA12 | MAGEA1
+0.7221 | 0.64148 | 207687_at | mm.207687_at.947.968 | NM_005538 | NM_005538 | INHBC | INHBC
+0.7125 | 0.48949 | 211741_x_at | mm.211741_x_at.916.1066 | NM_021016 | NM_002781, NM_001130014 | PSG3 | PSG5
+0.6724 | 0.40608 | 211493_x_at | mm.211493_x_at.351.512 | NM_001128175, NM_001198938, NM_001198939, NM_001198940, NM_001198941, NM_001198942, NM_001198943, NM_001198944, NM_001198945, NM_001390, NM_001391, NM_001392, NM_032975, NM_032978, NM_032979, NM_032980, NM_032981 | NM_001198939, NM_001198940, NM_001390, NM_032975, NM_001198938, NM_001198944, NM_001198943, NM_001198942, NM_032980 | DTNA | DTNA
+0.6605 | 0.55326 | 219337_at | mm.219337_at.935.290 | NM_017891 | NM_017891 | C1orf159 | C1orf159
+0.6565 | 0.65743 | 221351_at | mm.221351_at.390.354 | NM_000524 | NM_000524 | HTR1A | HTR1A
+0.6487 | 0.54945 | 238916_at | mm.238916_at.697.790 | NR_028408 | NR_028408 | LOC400027 | LOC400027
+0.6463 | 0.49228 | 222221_x_at | mm.222221_x_at.912.300 | NM_006795 | NM_014600 | EHD1 | EHD3
+0.6446 | 0.41951 | 203399_x_at | mm.203399_x_at.917.1066 | NM_021016 | NM_002781, NM_001130014 | PSG3 | PSG5
+0.6403 | 0.77766 | 201844_s_at | mm.201844_s_at.803.352 | NM_012234 | NM_012234 | RYBP | RYBP
+0.6367 | 0.34014 | 240239_at | mm.240239_at.132.1114 | NM_001145343, NM_001145344, NM_001145345, NM_032838 | NM_001145344, NM_001145343, NM_032838, NM_001145345 | ZNF566 | ZNF566
+0.6315 | 0.37627 | 201220_x_at | mm.201220_x_at.905.256 | NM_001083914, NM_001329, NM_022802 | NR_003682 | CTBP2 | MGC70870
+0.6299 | 0.23979 | 210835_s_at | mm.210835_s_at.906.256 | NM_001083914, NM_001329, NM_022802 | NR_003682 | CTBP2 | MGC70870
+0.5943 | 0.55241 | 223485_at | mm.223485_at.745.316 | NM_032304, NM_207112 | NM_032304 | HAGHL | HAGHL
+0.5930 | 0.45395 | 206281_at | mm.206281_at.529.784 | NM_001099733, NM_001117 | NM_001117, NM_001099733 | ADCYAP1 | ADCYAP1
+0.5866 | 0.55602 | 1562659_at | mm.1562659_at.440.914 | NR_033984 | NR_033984 | LOC400548 | LOC400548
+0.5845 | 0.51707 | 229852_at | mm.229852_at.330.998 | NM_022787 | NM_022787 | NMNAT1 | NMNAT1
+0.5725 | 0.24840 | 1553901_x_at | mm.1553901_x_at.258.150 | NM_052852 | NM_178558 | ZNF486 | ZNF680
+0.5597 | 0.53161 | 220547_s_at | mm.220547_s_at.462.628 | NM_019054 | NM_019054 | FAM35A | FAM35A
+0.5565 | 0.56330 | 209811_at | mm.209811_at.257.468 | NM_001224, NM_032982, NM_032983 | NM_032982, NM_032983, NM_001224 | CASP2 | CASP2
+0.5440 | 0.60341 | 219710_at | mm.219710_at.1132.106 | NM_024577 | NM_024577 | SH3TC2 | SH3TC2
+0.4971 | 0.38237 | 223838_at | mm.223838_at.145.282 | NM_025244, NM_182911 | NM_182911, NM_025244 | TSGA10 | TSGA10
+0.4883 | 0.63939 | 221691_x_at | mm.221691_x_at.746.320 | NM_001037738, NM_002520, NM_199185 | NR_036693, NM_001004419, NM_001197317, NM_001197318, NM_001197319, NM_013269 | NPM1 | CLEC2D
+0.4527 | 0.62369 | 200724_at | mm.200724_at.575.1144 | NM_001256577, NM_001256580, NM_006013, NR_026898 | NM_001256580, NM_001256577, NM_006013 | RPL10 | RPL10
+0.4048 | 0.51515 | 204431_at | mm.204431_at.1040.48 | NM_001144761, NM_001144762, NM_003260 | NM_003260, NM_001144761, NM_001144762 | TLE2 | TLE2
+0.3851 | 0.09551 | 217547_x_at | mm.217547_x_at.860.982 | NM_138330 | NM_016220, NM_001013746 | ZNF675 | ZNF107
+0.3284 | 0.44156 | 228128_x_at | mm.228128_x_at.1075.350 | NM_002581 | NM_002581 | PAPPA | PAPPA
 
 
 What is interesting is that with few exceptions, the transcripts and genes being measured by the probe sets are the
@@ -345,6 +478,9 @@ original sequencing of the ESTs used to design the probe sets was of poor qualit
 
 ###	Effects of Individual Variation 
 
+
+
+
 To gain an understanding of the effect of individual variation, the unique mapping of PM and MM probes to five
 distinct human genome assemblies was analyzed ([Table 7](#t.humanMapping)).  Four of the five projects have roughly the same number of
 uniquely mapped PM probes (within 2% variation).  The fifth project (BGI) provides an exception to this trend.  While
@@ -353,13 +489,32 @@ sequencing), one potential feature to be considered is the fact that this sequen
 of an African individual, and it is the only project not to have a large component of the library consisting of
 Caucasian individuals.
 
+<a id="t.humanMapping"></a>
+
+**Table 7. Number of probes mapping uniquely to individual human genomes.**
+
+Assembly | Total | Perfect Match | Mismatch
+--- | --- | --- | ---
+Hg19 | 522250 | 521642 | 608
+Celera | 515111 | 514518 | 593
+JCVI | 530213 | 529569 | 644
+BGI | 469973 | 469714 | 259
+HSAP1 | 522480 | 521922 | 558
+
+
+
+
+
 While there is a large agreement for the number of probes, we also checked if the probes represented were consistent
 among all of the projects.  A Venn diagram depicting the number of overlapping perfectly matching probes is given in
-Figure 5.  As can be seen from this figure, a total of 422,279 probes uniquely map for all five assemblies.  Of these,
+[Figure 6](#f.vennHumanVariation).  As can be seen from this figure, a total of 422,279 probes uniquely map for all five assemblies.  Of these,
 422,119 are perfect match probes, indicating that 81% of the HGU133APlus2.0 perfect match probes are reliable in terms
 of their mapping to the genome for these assemblies.  One of the interesting results is that there are 51 shared
 perfectly matching mismatch probes.  Of these, 24 fall within RefSeq annotated exonic regions (results not shown),
 with 22 of the 24 showing higher correlation in the TMmm assignments calculated in Table 6.
+
+![plot of chunk insertVenn](figure/insertVenn.png) 
+
 
 ## Conclusion
 

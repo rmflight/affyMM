@@ -65,6 +65,11 @@ sortProbes <- function(probeIDs){
 
 ```{r loadPackages, include=FALSE}
 require(ggplot2)
+require(plyr)
+require(VennDiagram)
+require(hgu133plus2.db)
+require(hgu133plus2probe)
+require(org.Hs.eg.db)
 
 load("counts_Plots_etc_allOrgs.RData")
 ```
@@ -75,7 +80,7 @@ Robert M Flight, Abdallah M Eteleeb, Eric C Rouchka
 
 ## ABSTRACT
 
-Affymetrix® GeneChip® microarray design define probe sets consisting of 11, 16, or 20 distinct 25 base pair (BP) probes
+Affymetrix(r) GeneChip(r) microarray design define probe sets consisting of 11, 16, or 20 distinct 25 base pair (BP) probes
 for determining mRNA expression for a specific gene, which may be covered by one or more probe sets.  Each probe has a
 corresponding perfect match (PM) and mismatch (MM) set.  Traditional analytical techniques have either used the MM probes
 to determine the level of cross-hybridization or reliability of the PM probe, or have been completely ignored.  Given the
@@ -521,8 +526,108 @@ entities, we considered the MM probe both within its annotated location as well 
 for the annotated location; PM probes for the new mapped location).  An average correlation value between intensities
 was calculated on a per-exon probe basis.  The resulting correlations are summarized in `r I(pasteLabel("Table", tableCount, "t.corrTable"))`.
 
-```{r addCorrTable}
+```{r addCorrTable, echo=FALSE, include=FALSE}
+useCor <- corDat$hg19$allCorSame
+mmProbes <- unique(useCor$mmName)
 
+tmV <- useCor$class == "tm"
+mmV <- useCor$class == "mm"
+tmCor <- sapply(mmProbes, function(x){
+	mean(useCor$y[(tmV & (useCor$mmName %in% x))])
+})
+
+mmCor <- sapply(mmProbes, function(x){
+	mean(useCor$y[(mmV & (useCor$mmName %in% x))])
+})
+
+corInfo <- data.frame(tmCor=tmCor, mmCor=mmCor, mmProbe=mmProbes)
+rownames(corInfo) <- NULL
+
+# what are the annotated refseq for the probeset?
+corInfo$probeSet <- sapply(as.character(corInfo$mmProbe), probeSetName)
+annotRefSeq <- mget(corInfo$probeSet, hgu133plus2REFSEQ, ifnotfound=NA)
+names(annotRefSeq) <- corInfo$mmProbe
+annotRefSeq <- lapply(annotRefSeq, function(x){
+	nmVal <- grep("NM", x, value=T)
+	nrVal <- grep("NR", x, value=T)
+	c(nmVal, nrVal)
+}) # get the NMs back
+
+
+probeAlign <- allData$hg19$probeAlign
+probeAlign <- probeAlign[(elementMetadata(probeAlign)$probeNames %in% corInfo$mmProbe)]
+exonIntervals <- allData$hg19$exonIntervals
+geneExons <- allData$hg19$geneExons
+
+probe2Exons <- as.matrix(findOverlaps(probeAlign, exonIntervals, minoverlap=23, type="any"))
+ref2merge <- as.matrix(findOverlaps(geneExons, exonIntervals, type="within")) # the original exons should be "within" the merged exons
+	
+probeNames <- elementMetadata(probeAlign)$probeNames
+refNames <- elementMetadata(geneExons)$refID	
+probe2Ref <- lapply(seq(1, nrow(probe2Exons)), function(inRow){
+	useExon <- probe2Exons[inRow,2]
+	matchRef <- ref2merge[(ref2merge[,2] == useExon),1]
+	refNames[matchRef]
+})
+names(probe2Ref) <- probeNames[probe2Exons[,1]]
+
+invNames <- names(probe2Ref)
+refComp <- lapply(invNames, function(inName){
+	aRef <- annotRefSeq[[inName]]
+	pRef <- probe2Ref[[inName]]
+	aSpec <- aRef[!(aRef %in% pRef)]
+	pSpec <- pRef[!(pRef %in% aRef)]
+	return(list(aRef=aRef, aSpec=aSpec, pRef=pRef, pSpec=pSpec))
+})
+
+names(refComp) <- invNames
+corInfo <- corInfo[order(corInfo$mmProbe),]
+refComp <- refComp[order(names(refComp))]
+corInfo$annotRef <- sapply(refComp, function(x){paste(x$aRef, collapse=", ")})
+corInfo$exonRef <- sapply(refComp, function(x){paste(x$pRef, collapse=", ")})
+corInfo <- corInfo[,c("tmCor", "mmCor", "probeSet", "mmProbe", "annotRef", "exonRef")]
+
+tmpGene <- vector("list", length(refComp))
+for (iGene in 1:length(refComp)){
+	aRef <- refComp[[iGene]]$aRef
+	if (length(aRef) != 0){
+		tmpEnt <- unlist2(mget(aRef, org.Hs.egREFSEQ2EG, ifnotfound=NA))
+		tmpSym <- unlist2(mget(tmpEnt, org.Hs.egSYMBOL, ifnotfound=NA))
+		useEnt <- unique(names(tmpSym))
+		for (iEnt in 1:length(useEnt)){
+			tEnt <- useEnt[iEnt]
+			names(tmpSym)[names(tmpSym) %in% tEnt] <- unique(names(tmpEnt)[tmpEnt %in% tEnt])
+		}
+		tmpGene[[iGene]]$aRef <- tmpSym
+	}
+	
+	pRef <- refComp[[iGene]]$pRef
+	if (length(pRef) != 0){
+		tmpEnt <- unlist2(mget(pRef, org.Hs.egREFSEQ2EG, ifnotfound=NA))
+		tmpSym <- unlist2(mget(tmpEnt, org.Hs.egSYMBOL, ifnotfound=NA))
+		useEnt <- unique(names(tmpSym))
+		for (iEnt in 1:length(useEnt)){
+			tEnt <- useEnt[iEnt]
+			names(tmpSym)[names(tmpSym) %in% tEnt] <- unique(names(tmpEnt)[tmpEnt %in% tEnt])
+		}
+		tmpGene[[iGene]]$pRef <- tmpSym
+	}
+	
+}
+
+names(tmpGene) <- names(refComp)
+corInfo$aSym <- sapply(tmpGene, function(x){paste(unique(x$aRef), collapse=", ")})
+corInfo$pSym <- sapply(tmpGene, function(x){paste(unique(x$pRef), collapse=", ")})
+corOut <- corInfo
+names(corOut) <- c("tm", "mm", "ProbeSet", "Probe ID", "Annotated RefSeq", "Exon RefSeq", "Annotated Symbol", "Exon Symbol")
+corOut <- corOut[order(corOut$tm, decreasing=T),]
+corOut2 <- tableCat(corOut)
+```
+
+<a id="t.corrTable"></a>
+
+```{r insertCorTable, results='asis', echo=FALSE}
+cat(corOut2, sep="\n")
 ```
 
 What is interesting is that with few exceptions, the transcripts and genes being measured by the probe sets are the
@@ -533,6 +638,25 @@ original sequencing of the ESTs used to design the probe sets was of poor qualit
 
 ###	Effects of Individual Variation 
 
+```{r humanMappingResults, echo=FALSE, include=FALSE}
+hgVariationFiles <- c(Hg19="hg.txt", Celera="celera.txt", JCVI="jcvi.txt", BGI="bgi.txt", HSAP1="hsapl.txt")
+
+hgAlignRes <- alply(hgVariationFiles, 1, function(x){
+	scan(file=file.path("hgs_uniquelyMapped_probes", x), what=character())
+})
+
+probeCounts <- ldply(hgAlignRes, function(x){
+	nTot <- length(x)
+	tmpClass <- probeClass(x)
+	nPM <- sum(tmpClass == "pm")
+	nMM <- sum(tmpClass == "mm")
+	return(c(nTot, nPM, nMM))
+})
+
+names(probeCounts) <- c("Assembly", "Total", "Perfect Match", "Mismatch")
+probeCounts2 <- tableCat(probeCounts)
+```
+
 To gain an understanding of the effect of individual variation, the unique mapping of PM and MM probes to five
 distinct human genome assemblies was analyzed (`r I(pasteLabel("Table", tableCount, "t.humanMapping"))`).  Four of the five projects have roughly the same number of
 uniquely mapped PM probes (within 2% variation).  The fifth project (BGI) provides an exception to this trend.  While
@@ -541,13 +665,91 @@ sequencing), one potential feature to be considered is the fact that this sequen
 of an African individual, and it is the only project not to have a large component of the library consisting of
 Caucasian individuals.
 
+<a id="t.humanMapping"></a>
+
+**`r I(pasteLabel("Table", tableCount, "t.humanMapping", F))`. Number of probes mapping uniquely to individual human genomes.**
+
+```{r insertHumanMapping, results='asis', echo=FALSE}
+cat(probeCounts2, sep="\n")
+```
+
+```{r incVennFigure, include=FALSE}
+figCount <- incCount(figCount, "f.vennHumanVariation")
+
+# get the actual counts of individual and intersections
+qVennArgs <- list()
+
+count <- 1
+for (iVal in 1:length(hgAlignRes)){
+	useName <- paste("area", iVal, sep="", collapse="")
+	qVennArgs[[iVal]] <- length(hgAlignRes[[iVal]])
+	names(qVennArgs)[iVal] <- useName
+	count <- count + 1
+}
+
+# get the intersection of each 2, 3, 4, and 5 way combination
+allIntersection <- function(listIndices){
+	nIntersect <- length(listIndices)
+	foundIntersection <- hgAlignRes[[listIndices[1]]]
+	for (iI in 2:nIntersect){
+		foundIntersection <- intersect(foundIntersection, hgAlignRes[[listIndices[iI]]])
+	}
+	return(foundIntersection)
+}
+
+getIntersection <- combn(seq(1,5), 2, simplify=F)
+getIntersection <- c(getIntersection, combn(seq(1,5), 3, simplify=F))
+getIntersection <- c(getIntersection, combn(seq(1,5), 4, simplify=F))
+getIntersection <- c(getIntersection, combn(seq(1,5), 5, simplify=F))
+
+whichIntersect <- lapply(getIntersection, allIntersection)
+sumIntersect <- lapply(whichIntersect, length)
+
+intersectLabels <- sapply(getIntersection, function(x){
+	paste("n", paste(x, sep="", collapse=""), sep="", collapse="")
+})
+
+names(sumIntersect) <- intersectLabels
+names(whichIntersect) <- intersectLabels
+
+qVennArgs <- c(qVennArgs, sumIntersect)
+qVennArgs$category <- probeCounts$Assembly
+qVennArgs$fill <- c("dodgerblue", "goldenrod1", "darkorange1", "seagreen3", "orchid3")
+#qVennArgs$cat.col <- c("dodgerblue", "goldenrod1", "darkorange1", "seagreen3", "orchid3")
+qVennArgs$cat.cex <- 2
+qVennArgs$margin <- 0.1
+qVennArgs$cex <- c(1.5, 1.5, 1.5, 1.5, 1.5, 1, 0.8, 1, 0.8, 1, 0.8, 1, 0.8, 1, 0.8, 1, 0.55, 1, 0.55, 1, 0.55, 1, 0.55, 1, 0.55, 1, 1, 1, 1, 1, 1.5)
+qVennArgs$ind <- TRUE
+```
+
+```{r intersectStats}
+all5Intersect <- whichIntersect$n12345
+all5Class <- probeClass(all5Intersect)
+
+data(hgu133plus2probe)
+nPM <- nrow(hgu133plus2probe)
+
+goodPM <- sum(all5Class == "pm")
+percPM <- goodPM / nPM * 100
+
+goodMM <- all5Intersect[all5Class == "mm"]
+```
+
 While there is a large agreement for the number of probes, we also checked if the probes represented were consistent
 among all of the projects.  A Venn diagram depicting the number of overlapping perfectly matching probes is given in
-Figure 5.  As can be seen from this figure, a total of 422,279 probes uniquely map for all five assemblies.  Of these,
-422,119 are perfect match probes, indicating that 81% of the HGU133APlus2.0 perfect match probes are reliable in terms
-of their mapping to the genome for these assemblies.  One of the interesting results is that there are 51 shared
+`r I(pasteLabel("Figure", figCount, "f.vennHumanVariation"))`.  As can be seen from this figure, a total of `r I(length(all5Intersect))` probes uniquely map for all five assemblies.  Of these,
+`r I(goodPM)` are perfect match probes, indicating that `r I(format(percPM, digits=2))`% of the HGU133APlus2.0 perfect match probes are reliable in terms
+of their mapping to the genome for these assemblies.  One of the interesting results is that there are `r I(length(goodMM))` shared
 perfectly matching mismatch probes.  Of these, 24 fall within RefSeq annotated exonic regions (results not shown),
-with 22 of the 24 showing higher correlation in the TMmm assignments calculated in Table 6.
+with 22 of the 24 showing higher correlation in the TMmm assignments calculated in `r I(pasteLabel("Table", tableCount, "t.corrTable"))`.
+
+<a id="f.vennHumanVariation"></a>
+
+```{r insertVenn, echo=FALSE}
+venPlot <- do.call("draw.quintuple.venn", qVennArgs) 
+```
+
+**`r I(pasteLabel("Figure", figCount, "f.vennHumanVariation", F))`. Venn diagram of overlapping perfectly matching Affymetrix(r) HGU133A Plus2 probes to each of the five human genome assemblies.**
 
 ## Conclusion
 
