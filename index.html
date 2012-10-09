@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Affymm : hosting code and files related to our paper on alignment of affymetrix mismatch probes" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Affymm</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/rmflight/affyMM">View on GitHub</a>
+
+          <h1 id="project_title">Affymm</h1>
+          <h2 id="project_tagline">hosting code and files related to our paper on alignment of affymetrix mismatch probes</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/rmflight/affyMM/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/rmflight/affyMM/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Affymetrix(r) Mismatch (MM) Probes: Useful After All</h1>
+
+<p>Robert M Flight, Abdallah M Eteleeb, Eric C Rouchka</p>
+
+<h2>ABSTRACT</h2>
+
+<p>Affymetrix(r) GeneChip(r) microarray design define probe sets consisting of 11, 16, or 20 distinct 25 base pair (BP) probes
+for determining mRNA expression for a specific gene, which may be covered by one or more probe sets.  Each probe has a
+corresponding perfect match (PM) and mismatch (MM) set.  Traditional analytical techniques have either used the MM probes
+to determine the level of cross-hybridization or reliability of the PM probe, or have been completely ignored.  Given the
+availability of reference genome sequences, we have reanalyzed the mapping of both PM and MM probes to reference genomes
+in transcript regions.  Our results suggest that depending of the species of interest, 66%-93% of the PM probes can be 
+used reliably in terms of single unique matches to the genome, while a small number of the MM probes (typically less 
+than 1%) could be incorporated into the analysis.  In addition, we have examined the mapping of PM and MM probes to five
+different human genome projects, resulting in approximately a 70% overlap of uniquely mapping PM probes, and a subset of
+51 uniquely mapping MM probes commonly found in all five projects, 24 of which are found within annotated exonic regions. 
+These results suggest that individual variation in transcriptome regions provides an additional complexity to microarray
+data analysis. Given these results, we conclude that the development of custom chip definition files (CDFs) should
+include MM probe sequences to provide the most effective means of transcriptome analysis of Affymetrix(r) GeneChip(r) 
+arrays.</p>
+
+<p><strong>Categories and Subject Descriptors</strong>: J.3 [Life and Medical Sciences]: Biology and Genetics</p>
+
+<p><strong>General Terms</strong>: Algorithms, Measurement, Theory</p>
+
+<p><strong>Keywords</strong>: Bioinformatics, microarray, probe set, custom definition files.</p>
+
+<h2>INTRODUCTION</h2>
+
+<p>Oligonucleotide-based microarray technologies provide a methodology whereby a researcher can indirectly measure the
+expression level of an mRNA molecule being actively transcribed under a set of conditions by labeling a cDNA fragment
+that hybridizes to a complementary probe sequence specific to a particular transcript.  Since their first use on
+customized cDNA arrays [1] in the mid-1990s, they have been used as the de-facto standard for measuring global 
+transcriptional changes under differing conditions.  While RNA-Seq [2] may eventually supplant microarrays as the 
+method of choice, a large number of microarray experiments exist that have been deposited into publicly available
+repositories such as NCBI’s Gene Expression Omnibus (GEO) [3] and EBI’s ArrayExpress [4].  As a case in point, GEO
+contains 32,471 series as of 9/6/2012.  The majority of the entries in GEO were performed on arrays designed by
+companies such as Affymetrix(r), Inc. (Santa Clara, CA), Agilent Technologies, Inc. (Santa Clara, CA), Illumina(r), Inc.
+(San Diego, CA), and GE Healthcare Lifesciences (Piscataway, NJ), with nearly half of the series (16,181) being
+performed on various Affymetrix® arrays. </p>
+
+<p>The design of Affymetrix® GeneChip(r) arrays in particular provides for probe sets consisting of 11, 16, or 20 distinct
+25 base pair (BP) probes, with each probe having a corresponding perfect match (PM) and mismatch (MM) probe.  The PM
+and MM differ by the exchange of the complementary base at the 13th position in the probe.  While MM probes were
+originally designed to account for signal in the PM resulting from non-specific cross-hybridization, they are often
+underutilized or completely ignored. Mismatch probes have been explored for use in long oligonucleotide arrays as well
+[5], but their utilization is limited to the Affymetrix(r) platform. </p>
+
+<p>Affymetrix® provides a default GeneChip® analysis package known as the Micro Array Suite 5.0 (MAS 5.0) [6] that measures the signal intensity for a particular probe pair as: </p>
+
+<p>signal = TukeyBiweight{log(PMj - MM*j)} (1)</p>
+
+<p>Where MM<code>*</code> is a modified version of MM that is never bigger than the intensity value of the PM.  The motivation behind
+the modified mismatch intensity MM* is to report all probe-level intensities as positive values, and to remove the
+influence of the minority of probes where the MM intensity value is significantly higher than the corresponding PM
+intensity.  In addition to the intensity signal, MAS 5.0 also produces a detection p-value which flags a transcript as
+"P"" (present), "M"" (marginal), or "A"" (absent) based on the reliability of the probe set based on differences between
+PM and MM intensities.</p>
+
+<p>Known issues in the use of PM and MM probe intensities to generate a single probe set intensity values led to the
+development of other approaches, including RMA [7] and GCRMA [8]  which completely ignore the MM probes. </p>
+
+<p>With the availability of individual probe and reference genome sequences, it is possible to re-map probes based on new
+sources of genome annotations. This allows custom Chip Description Files (CDFs) wherein probes are grouped into novel
+probe sets based on exon, transcript, and gene level annotation [9-22]. Most notable is the effort of the BrainArray
+group [10] which updates custom CDFs for a large number of Affymetrix(r) GeneChips(r) by creating probe sets based on
+annotated features such as Entrez Gene [23], Ensembl transcript, Ensembl gene, and RefSeq Gene [24].  Using custom CDFs
+has been shown to impact the reliability of expression analysis [10, 20-22, 25]. However, to the authors’ knowledge,
+only the PM probe sequences are used when generating custom CDFs.</p>
+
+<p>Based on the observation that a small, yet significant number of PM-MM probe pairs exist where the MM intensity is
+significantly increased over the PM intensity, our initial inclination was that these differences in intensities were
+not due to cross-hybridization or rogue probes alone.  Therefore, keeping in mind that Affymetrix(r) probes have been
+designed according to continually evolving genome assemblies, we proceeded to analyze PM and MM probes across eight
+commonly studied species (<a href="#t.genomeAssemblies">Table 1</a>) by looking at PM and MM probes that uniquely map to the respective genome.</p>
+
+<p>In addition to changing functional annotations, one potential problem area for microarray probe design is the presence
+of single nucleotide polymorphisms (SNPs) within a population.  As the probes are designed using a reference genome or
+transcriptome, a “one-size fits all” approach has been taken for the probes on a particular array.  However, SNPs are
+known to occur relatively frequently throughout the genome, with build 137 of dbSNP [26] containing over 53.5 million
+reference SNPs for the human genome. We have previously studied the effects of SNPs on Affymetrix(r) GeneChips(r) [27]
+showing that a large number of SNPs lie in the areas where microarray probes have been designed.  This has been taken
+into account in the BrainArray’s custom CDF files which incorporate SNP information.  To study the effects that
+individual variation can play in microarray analysis, we looked at the mappings of PM and MM probes within five
+distinct publicly available assemblies of human genomes.</p>
+
+<h2>METHODS</h2>
+
+<h3>Mapping of PM and MM Probes</h3>
+
+<p>Chromosomal-based genome assemblies were downloaded from the UCSC Goldenpath Genomes ftp server using an anonymous
+login (<a>ftp://hgdownload.cse.ucsc.edu/goldenPath/</a>) [28] for eight commonly studied species, including <em>C. elegans</em>
+(roundworm), <em>D. melanogaster</em> (fruit fly), <em>S. cerevisiae</em> (baker’s yeast), <em>X. tropicalis</em> (western clawed frog), <em>D. rerio</em>
+(zebrafish), <em>M. musculus</em> (house mouse), <em>R. norvegicus</em> (brown Norway rat), and <em>H. sapiens</em> (human) (<a href="#t.genomeAssemblies">Table 1</a>).  Genome
+indices were created using <code>bowtie-build</code> version 0.12.8 [29] with the default parameters.  Perfect match (PM) probe
+sequences for Affymetrix(r) GeneChips(r) were obtained from Bioconductor (v 2.10) probe packages, which are constructed
+from data available in NetAffx (<a href="#t.affyGenechips">Table 2</a>) with each new Bioconductor release. Mismatch (MM) probe sequences were
+constructed by replacing the 13th base in the supplied PM probe sequence with the complementary base. PM and MM probes
+were aligned to the indexed genomes using <code>bowtie</code> version 0.12.8 [29] with the parameters –v 0 and –a which used
+together will report all valid probes matching with 100% identity.</p>
+
+<p><a></a></p>
+
+<p><strong>Table 1. Genome assemblies used</strong></p>
+
+<table>
+<tr>
+<th>Organism</th>
+<th>Reference Assembly</th>
+<th>Build Date</th>
+</tr>
+<tr>
+<td><em>Caenorhabditis elegans</em></td>
+<td>ce6</td>
+<td>May 2008</td>
+</tr>
+<tr>
+<td><em>Drosophila melanogaster</em></td>
+<td>dm3</td>
+<td>Apr. 2006</td>
+</tr>
+<tr>
+<td><em>Saccaromyces cerevisiae</em></td>
+<td>sc3</td>
+<td>Apr. 2011</td>
+</tr>
+<tr>
+<td><em>Xenopus tropicalis</em></td>
+<td>xt3</td>
+<td>Nov. 2009</td>
+</tr>
+<tr>
+<td><em>Danio rerio</em></td>
+<td>dr6</td>
+<td>Dec. 2008</td>
+</tr>
+<tr>
+<td><em>Mus musculus</em></td>
+<td>mm10</td>
+<td>Dec. 2011</td>
+</tr>
+<tr>
+<td><em>Rattus norvegicus</em></td>
+<td>rn4</td>
+<td>Nov. 2004</td>
+</tr>
+<tr>
+<td><em>Homo sapiens</em></td>
+<td>hg19</td>
+<td>Feb. 2009</td>
+</tr>
+</table><p><a></a></p>
+
+<p><strong>Table 2. Affymetrix(r) GeneChips(r) used</strong></p>
+
+<table>
+<tr>
+<th>Organism</th>
+<th>GeneChip(r) Name</th>
+</tr>
+<tr>
+<td><em>Caenorhabditis elegans</em></td>
+<td>
+<em>C. elegans</em> Genome</td>
+</tr>
+<tr>
+<td><em>Drosophila melanogaster</em></td>
+<td>
+<em>Drosophila</em> Genome 2.0</td>
+</tr>
+<tr>
+<td><em>Saccaromyces cerevisiae</em></td>
+<td>Yeast Genome 2.0</td>
+</tr>
+<tr>
+<td><em>Xenopus tropicalis</em></td>
+<td>
+<em>Xenopus tropicalis</em> Genome</td>
+</tr>
+<tr>
+<td><em>Danio rerio</em></td>
+<td>Zebrafish Genome</td>
+</tr>
+<tr>
+<td><em>Mus musculus</em></td>
+<td>Mouse Genome 430 2.0</td>
+</tr>
+<tr>
+<td><em>Rattus norvegicus</em></td>
+<td>Rat Genome 230 2.0</td>
+</tr>
+<tr>
+<td><em>Homo sapiens</em></td>
+<td>Human Genome U133 Plus 2.0</td>
+</tr>
+</table><h3>Generation of Exons and Overlap</h3>
+
+<p>Exon regions were obtained from the UCSC genome browser as <code>BED</code> files with an entry for each exon. <code>mergeBed</code> from the
+<code>bedTools</code> suite was used to merge overlapping exons from multiple transcripts into single contiguous exons. These
+merged exons were used when defining overlaps of probe alignments with an exon. Probe and exon overlaps were defined
+as any type of overlap with at least 23 bases overlapping on the same strand. Overlaps were determined using <code>Genomic Ranges</code> version 1.8.7 [31].</p>
+
+<h3>DNA Microarray Data</h3>
+
+<p>For each GeneChip(r), CEL files were downloaded from GEO for 20 random samples (with the exception of <em>S. cerevisiae</em> (12)
+and <em>X. tropicalis</em> (4), the GSMs are listed in <a href="gsmFiles.txt">gsmFiles.txt</a>). Probe intensities were background
+corrected using the MAS background correction method implemented in Bioconductor. Depending on the application,
+intensities were log (base 2), square root transformed, or used as is. </p>
+
+<h3>Negative PM-MM Set</h3>
+
+<p>A PM-MM set of probes was considered to be negative if nine (two for <em>S. cerevisiae</em> and six for <em>X. tropicalis</em>) or more
+samples had a negative value for the difference in the PM-MM intensities. For examination of intensity distribution,
+any PM-MM pair with a negative different greater than 1000 in one or more samples was considered and examined. </p>
+
+<h3>Probe Correlations</h3>
+
+<p>For each MM probe that uniquely overlapped one merged exon (designated as a true-match MM, (TM^(mm))), the correlation
+with all other MM probes in the probe set (mm) and the correlation with all other TM probes that also mapped uniquely
+to the same exon (if there were three or more other probes also mapped to the exon) was calculated (tm). </p>
+
+<h3>Human Variation</h3>
+
+<p>To gain an understanding of individual variation and the unique mapping of microarray probes, five whole genome
+assemblies were downloaded for the human genome <a href="%5BTable%203%5D(#t.humanAssemblies">32-36</a>).   Probes from the HGU133APlus2.0 Affymetrix®
+GeneChip® were aligned to each of these genomes using the methods previously described for mapping PM and MM probes.</p>
+
+<p><a></a></p>
+
+<p><strong>Table 3. Whole human genome sequencing projects</strong></p>
+
+<table>
+<tr>
+<th>Name</th>
+<th>Abbr.</th>
+<th>Assembly Identifier</th>
+<th>Bioproject</th>
+<th>Number</th>
+<th>Race</th>
+</tr>
+<tr>
+<td>GRCh37</td>
+<td>Hg19</td>
+<td>420368</td>
+<td>31257</td>
+<td>Mixed</td>
+<td></td>
+</tr>
+<tr>
+<td>Hs<code>_</code>Celera<code>_</code>WGSA</td>
+<td>Celera</td>
+<td>281338</td>
+<td>1431</td>
+<td>Mixed^1</td>
+<td></td>
+</tr>
+<tr>
+<td>HuRefPrime</td>
+<td>JCVI</td>
+<td>281188</td>
+<td>19621</td>
+<td>Caucasian</td>
+<td></td>
+</tr>
+<tr>
+<td>BGIAF</td>
+<td>BGI</td>
+<td>165398</td>
+<td>42201</td>
+<td>African</td>
+<td></td>
+</tr>
+<tr>
+<td>HsapALLPATHS1</td>
+<td>HSAP1</td>
+<td>238948</td>
+<td>59877</td>
+<td>Caucasian</td>
+<td></td>
+</tr>
+</table><p>^(1)Celera assembly consists of one African-American, one Asian-Chinese, one Hispanic-Mexican, and two Caucasians.</p>
+
+<h2>RESULTS</h2>
+
+<h3>Probes Matching Genomic Locations</h3>
+
+<p>Given the PM probe sequences and the inferred MM sequences, individual probes were mapped to the corresponding genome
+assembly as outlined in Methods.  The percentage of perfect match probes mapping to the genome ranged from a low of
+80% (<em>X. tropicalis</em>) to a high of 95% (<em>D. melanogaster</em>), with the exception of <em>S. cerevisiae</em> (<a href="#t.probeMatches">Table 4</a>).  It must be
+noted that the lower percentage of <em>S. cerevisiae</em> matches (53%) is expected, as the Yeast Genome 2.0 GeneChip(r) contains
+probes for two yeast species, <em>S. cerevisiae</em> and <em>S. pombe</em>. </p>
+
+<p><a></a></p>
+
+<p><strong>Table 4. GeneChip(r) probes mapping to reference genomes</strong></p>
+
+<table>
+<tr>
+<th>Organism</th>
+<th>Number of Probe Pairs</th>
+<th>PM Mapped to Reference</th>
+<th>MM Mapped to Reference</th>
+<th>PM Unique</th>
+<th>MM Unique</th>
+</tr>
+<tr>
+<td><em>Ce</em></td>
+<td>249165</td>
+<td>226856</td>
+<td>143</td>
+<td>213745</td>
+<td>96</td>
+</tr>
+<tr>
+<td><em>Dm</em></td>
+<td>265400</td>
+<td>251602</td>
+<td>89</td>
+<td>245712</td>
+<td>54</td>
+</tr>
+<tr>
+<td><em>Dr</em></td>
+<td>249752</td>
+<td>200608</td>
+<td>1282</td>
+<td>171282</td>
+<td>726</td>
+</tr>
+<tr>
+<td><em>Hs</em></td>
+<td>604258</td>
+<td>562673</td>
+<td>1094</td>
+<td>521642</td>
+<td>608</td>
+</tr>
+<tr>
+<td><em>Mm</em></td>
+<td>496468</td>
+<td>456674</td>
+<td>557</td>
+<td>427920</td>
+<td>394</td>
+</tr>
+<tr>
+<td><em>Rn</em></td>
+<td>342410</td>
+<td>304646</td>
+<td>391</td>
+<td>286784</td>
+<td>282</td>
+</tr>
+<tr>
+<td><em>Sc</em></td>
+<td>120855</td>
+<td>63731</td>
+<td>1</td>
+<td>61942</td>
+<td>1</td>
+</tr>
+<tr>
+<td><em>Xt</em></td>
+<td>648548</td>
+<td>519177</td>
+<td>1884</td>
+<td>426237</td>
+<td>1014</td>
+</tr>
+</table><p>Affymetrix(r) probesets are given suffix definitions depending upon the uniqueness of the exemplar sequence used to
+design a probe set.  A designation of <code>_</code>at indicates the probe set perfectly matches a single transcript; <code>_</code>a<code>_</code>at
+probe sets only perfectly match transcripts of the same gene; <code>_</code>s<code>_</code>at perfectly match multiple transcripts for the same
+gene family; and <code>_</code>x<code>_</code>at indicates the probe set is identical or highly similar to other genes.  One of the
+difficulties with these designations is that it relies upon a set of annotations at a particular point in time.  </p>
+
+<p>Analysis of the probes that map to the genome (<a href="#t.probeMatches">Table 4</a>) indicates that 82% to 98% of the mapped probes map uniquely to
+a single genomic location.  The fact that a number of probes map to multiple locations is not to be unexpected due to
+the restrictions placed on probe set design.  However, it is expected that those probes mapping to multiple locations
+would not be from the <code>_</code>at class of probes.  </p>
+
+<p>To determine the reliability of these probes with the fluctuation of unknown transcripts, those probes that map with
+100% identity to two or more locations in the genome were considered.  While these probes typically represent less
+than 10% of the total number of probes for a given GeneChip®, their classification could be important in detecting
+cross hybridization.  One might expect that the greatest percentage of these would be within the <code>_</code>x<code>_</code>at and
+<code>_</code>s<code>_</code>at classes.  However, as <a href="#t.probeType">Table 5</a> shows, the larger genomes actually contain the greatest percentage in the
+<code>_</code>at and <code>_</code>a<code>_</code>at classes, with anywhere from 18% (S. cerevisiae) to 91% (R. norvegicus) of the probes matching
+multiple locations belonging to the <code>_</code>at class.  In addition, a small number of MM probes map to the genome as well. 
+To better understand the effects this small set of MM probes might have on gene expression, we further reduced this to
+a smaller subset where the mapping was within exon regions.  For these probes, we analyzed their signal intensities
+from random samples compared to the overall distribution of PM and MM intensities, and the distribution of PM and MM
+intensities within the corresponding exonic sequences (<a href="#f.allPlots">Figure 1</a>).  As these plots indicate, MM probes mapping within
+exonic regions closely follow the expression density of PM probes mapping within exonic regions, and are significantly 
+shifted from the overall expression profiles of MM probes.  These results suggest that while the number of these
+probes is small, they offer significant information that should not be ignored, and furthermore, can confound analyses
+where MM data is incorporated.</p>
+
+<p><a></a></p>
+
+<p><strong>Table 5. Probe set classification of probes perfectly matching multiple genomic locations.</strong> </p>
+
+<table>
+<tr>
+<th>Organism</th>
+<th>_x_at</th>
+<th>_s_at</th>
+<th>_a_at</th>
+<th>_at</th>
+<th>other</th>
+</tr>
+<tr>
+<td><em>Ce</em></td>
+<td>4064 (31%)</td>
+<td>6552 (50%)</td>
+<td>0 (0%)</td>
+<td>2495 (19%)</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td><em>Dm</em></td>
+<td>361 (6.1%)</td>
+<td>2742 (47%)</td>
+<td>224 (3.8%)</td>
+<td>2563 (44%)</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td><em>Dr</em></td>
+<td>1390 (4.7%)</td>
+<td>404 (1.4%)</td>
+<td>1203 (4.1%)</td>
+<td>26329 (90%)</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td><em>Hs</em></td>
+<td>9402 (23%)</td>
+<td>10634 (26%)</td>
+<td>803 (2%)</td>
+<td>20192 (49%)</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td><em>Mm</em></td>
+<td>4075 (14%)</td>
+<td>2920 (10%)</td>
+<td>4893 (17%)</td>
+<td>16866 (59%)</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td><em>Rn</em></td>
+<td>440 (2.5%)</td>
+<td>394 (2.2%)</td>
+<td>805 (4.5%)</td>
+<td>16223 (91%)</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td><em>Sc</em></td>
+<td>81 (4.5%)</td>
+<td>1137 (64%)</td>
+<td>0 (0%)</td>
+<td>571 (32%)</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td><em>Xt</em></td>
+<td>14092 (15%)</td>
+<td>12154 (13%)</td>
+<td>34877 (38%)</td>
+<td>31817 (34%)</td>
+<td>0 (0%)</td>
+</tr>
+</table><p><a></a></p>
+
+<p><img src="figure/allPlots1.png" alt="plot of chunk allPlots"><img src="figure/allPlots2.png" alt="plot of chunk allPlots"><img src="figure/allPlots3.png" alt="plot of chunk allPlots"><img src="figure/allPlots4.png" alt="plot of chunk allPlots"><img src="figure/allPlots5.png" alt="plot of chunk allPlots"><img src="figure/allPlots6.png" alt="plot of chunk allPlots"><img src="figure/allPlots7.png" alt="plot of chunk allPlots"><img src="figure/allPlots8.png" alt="plot of chunk allPlots"></p>
+
+<p><strong>Figure 1. Density profile of probe intensities (log2).</strong>  PM: perfect match, MM: mismatch.  mm.all: background MM intensities; pm.all: background PM intensities; mm.exon: intensities of MM probes in exonic regions; pm.exon: intensities of PM probes in exonic regions.</p>
+
+<p>As some of these MM probes may bind to transcripts, we further considered those MM probes that uniquely mapped to
+exons (irrespective of whether the corresponding PM probe mapped zero, one or multiple times to exons or the full
+genome), examining the differences in signal intensity between the MM and its associated PM.  In many cases there is a
+significant negative difference in the expression level of the PM-MM pair (an example is shown in Figures <a href="#f.pmmmDensityPlot"> 2</a> and <a href="#f.pmmmIntensityPlot"> 3</a>). </p>
+
+<p><a></a></p>
+
+<p><img src="figure/pmmmDensity.png" alt="plot of chunk pmmmDensity"></p>
+
+<p><strong>Figure 2. Density of MM and PM probe set intensities not including the PM-MM pair that had a large negative difference.</strong> Intensities from zebrafish probeset Dr.5545.1.S1_at, in GEO sample
+GSM604808.CEL.gz.</p>
+
+<p><a></a></p>
+
+<p><img src="figure/pmmmIntensity.png" alt="plot of chunk pmmmIntensity"></p>
+
+<p><strong>Figure 3. Square root transformed intensities for each PM-MM pair.</strong> The negative difference pair is at the extreme right end of the figure. Intensities from zebrafish probeset Dr.5545.1.S1_at, in GEO sample GSM604808.CEL.gz.</p>
+
+<p>If these MM probes are grouped instead with the other probes within the transcriptional region for which they uniquely
+match  (we have renamed these probes as “true match” (TM) probes since they truly match the region in the genome),
+there is a much better association between the probe intensities, as shown in <a href="#f.tmIntensityPlot">Figure 4</a>.</p>
+
+<p><a></a></p>
+
+<p><img src="figure/tmIntensity.png" alt="plot of chunk tmIntensity"></p>
+
+<p><strong>Figure 4. Plot of probe set intensities for zebrafish where the TM probes overlap with the same TMmm probe in <a href="#f.pmmmIntensityPlot">Figure 3</a></strong> Intensities from zebrafish probeset Dr.5545.1.S1_at, in GEO sample GSM604808.CEL.gz.</p>
+
+<p>Further analysis was performed to test the correlation of the TM probes with the expression levels of both the
+annotated probe group MM probes and with the TM-mapped transcript probes (<a href="#f.correlationBox">Figure 5</a>).  The box plot in <a href="#f.correlationBox">Figure 5</a> clearly
+indicates that the TM intensities more closely correlate with those from the group based on mapping to the same exon.</p>
+
+<p><a></a></p>
+
+<p><img src="figure/correlationBoxPlot.png" alt="plot of chunk correlationBoxPlot"></p>
+
+<p><strong>Figure 5. Box plot of correlations of the TMmm with MM intensities of annotated probe set (red, MM) and TM intensities of custom probe sets based on shared mapping to exons (blue, TM)</strong></p>
+
+<p>To determine if the observed difference in the correlations from <a href="#f.correlationBox">Figure 5</a> is due to measurement of different mRNA
+entities, we considered the MM probe both within its annotated location as well as within the new mapped location
+(TMmm). The intensity of the MM probe was compared with the intensity of its corresponding neighbor probes (MM probes
+for the annotated location; PM probes for the new mapped location).  An average correlation value between intensities
+was calculated on a per-exon probe basis.  The resulting correlations are summarized in <a href="#t.corrTable">Table 6</a>.</p>
+
+<p><a></a></p>
+
+<table>
+<tr>
+<th>tm</th>
+<th>mm</th>
+<th>ProbeSet</th>
+<th>Probe ID</th>
+<th>Annotated RefSeq</th>
+<th>Exon RefSeq</th>
+<th>Annotated Symbol</th>
+<th>Exon Symbol</th>
+</tr>
+<tr>
+<td>0.8654</td>
+<td>0.53475</td>
+<td>209135_at</td>
+<td>mm.209135_at.763.274</td>
+<td>NM_001164750, NM_001164751, NM_001164752, NM_001164753, NM_001164754, NM_001164755, NM_001164756, NM_004318, NM_020164, NM_032466, NM_032467, NM_032468</td>
+<td>NM_032466, NM_032468, NM_001164755, NM_001164754, NM_001164753, NM_001164752, NM_001164751</td>
+<td>ASPH</td>
+<td>ASPH</td>
+</tr>
+<tr>
+<td>0.8602</td>
+<td>0.61192</td>
+<td>204041_at</td>
+<td>mm.204041_at.895.14</td>
+<td>NM_000898</td>
+<td>NM_000898</td>
+<td>MAOB</td>
+<td>MAOB</td>
+</tr>
+<tr>
+<td>0.8444</td>
+<td>0.59839</td>
+<td>206432_at</td>
+<td>mm.206432_at.534.594</td>
+<td>NM_005328</td>
+<td>NM_005328</td>
+<td>HAS2</td>
+<td>HAS2</td>
+</tr>
+<tr>
+<td>0.8080</td>
+<td>0.54951</td>
+<td>205004_at</td>
+<td>mm.205004_at.1030.1044</td>
+<td>NM_001173487, NM_001173488, NM_017544</td>
+<td>NM_001173488, NM_001173487, NM_017544</td>
+<td>NKRF</td>
+<td>NKRF</td>
+</tr>
+<tr>
+<td>0.8059</td>
+<td>0.78041</td>
+<td>201622_at</td>
+<td>mm.201622_at.1129.72</td>
+<td>NM_014390</td>
+<td>NM_014390</td>
+<td>SND1</td>
+<td>SND1</td>
+</tr>
+<tr>
+<td>0.7922</td>
+<td>0.81628</td>
+<td>235958_at</td>
+<td>mm.235958_at.810.810</td>
+<td>NM_213600, NR_033151</td>
+<td>NM_213600, NR_033151</td>
+<td>PLA2G4F</td>
+<td>PLA2G4F</td>
+</tr>
+<tr>
+<td>0.7890</td>
+<td>0.74357</td>
+<td>233052_at</td>
+<td>mm.233052_at.882.6</td>
+<td>NM_001206927, NM_001371</td>
+<td>NM_001206927</td>
+<td>DNAH8</td>
+<td>DNAH8</td>
+</tr>
+<tr>
+<td>0.7728</td>
+<td>0.36086</td>
+<td>206084_at</td>
+<td>mm.206084_at.139.1104</td>
+<td>NM_001207015, NM_001207016, NM_002849, NM_130846</td>
+<td>NM_002849, NM_001207015, NM_130846, NM_001207016</td>
+<td>PTPRR</td>
+<td>PTPRR</td>
+</tr>
+<tr>
+<td>0.7546</td>
+<td>0.39994</td>
+<td>217416_x_at</td>
+<td>mm.217416_x_at.747.452</td>
+<td></td>
+<td>NM_152924, NM_007011</td>
+<td></td>
+<td>ABHD2</td>
+</tr>
+<tr>
+<td>0.7474</td>
+<td>0.55101</td>
+<td>203646_at</td>
+<td>mm.203646_at.468.274</td>
+<td>NM_004109</td>
+<td>NM_004109</td>
+<td>FDX1</td>
+<td>FDX1</td>
+</tr>
+<tr>
+<td>0.7416</td>
+<td>0.60912</td>
+<td>210467_x_at</td>
+<td>mm.210467_x_at.1162.450</td>
+<td>NM_001166386, NM_001166387, NM_005367</td>
+<td>NM_004988</td>
+<td>MAGEA12</td>
+<td>MAGEA1</td>
+</tr>
+<tr>
+<td>0.7221</td>
+<td>0.64148</td>
+<td>207687_at</td>
+<td>mm.207687_at.947.968</td>
+<td>NM_005538</td>
+<td>NM_005538</td>
+<td>INHBC</td>
+<td>INHBC</td>
+</tr>
+<tr>
+<td>0.7125</td>
+<td>0.48949</td>
+<td>211741_x_at</td>
+<td>mm.211741_x_at.916.1066</td>
+<td>NM_021016</td>
+<td>NM_002781, NM_001130014</td>
+<td>PSG3</td>
+<td>PSG5</td>
+</tr>
+<tr>
+<td>0.6724</td>
+<td>0.40608</td>
+<td>211493_x_at</td>
+<td>mm.211493_x_at.351.512</td>
+<td>NM_001128175, NM_001198938, NM_001198939, NM_001198940, NM_001198941, NM_001198942, NM_001198943, NM_001198944, NM_001198945, NM_001390, NM_001391, NM_001392, NM_032975, NM_032978, NM_032979, NM_032980, NM_032981</td>
+<td>NM_001198939, NM_001198940, NM_001390, NM_032975, NM_001198938, NM_001198944, NM_001198943, NM_001198942, NM_032980</td>
+<td>DTNA</td>
+<td>DTNA</td>
+</tr>
+<tr>
+<td>0.6605</td>
+<td>0.55326</td>
+<td>219337_at</td>
+<td>mm.219337_at.935.290</td>
+<td>NM_017891</td>
+<td>NM_017891</td>
+<td>C1orf159</td>
+<td>C1orf159</td>
+</tr>
+<tr>
+<td>0.6565</td>
+<td>0.65743</td>
+<td>221351_at</td>
+<td>mm.221351_at.390.354</td>
+<td>NM_000524</td>
+<td>NM_000524</td>
+<td>HTR1A</td>
+<td>HTR1A</td>
+</tr>
+<tr>
+<td>0.6487</td>
+<td>0.54945</td>
+<td>238916_at</td>
+<td>mm.238916_at.697.790</td>
+<td>NR_028408</td>
+<td>NR_028408</td>
+<td>LOC400027</td>
+<td>LOC400027</td>
+</tr>
+<tr>
+<td>0.6463</td>
+<td>0.49228</td>
+<td>222221_x_at</td>
+<td>mm.222221_x_at.912.300</td>
+<td>NM_006795</td>
+<td>NM_014600</td>
+<td>EHD1</td>
+<td>EHD3</td>
+</tr>
+<tr>
+<td>0.6446</td>
+<td>0.41951</td>
+<td>203399_x_at</td>
+<td>mm.203399_x_at.917.1066</td>
+<td>NM_021016</td>
+<td>NM_002781, NM_001130014</td>
+<td>PSG3</td>
+<td>PSG5</td>
+</tr>
+<tr>
+<td>0.6403</td>
+<td>0.77766</td>
+<td>201844_s_at</td>
+<td>mm.201844_s_at.803.352</td>
+<td>NM_012234</td>
+<td>NM_012234</td>
+<td>RYBP</td>
+<td>RYBP</td>
+</tr>
+<tr>
+<td>0.6367</td>
+<td>0.34014</td>
+<td>240239_at</td>
+<td>mm.240239_at.132.1114</td>
+<td>NM_001145343, NM_001145344, NM_001145345, NM_032838</td>
+<td>NM_001145344, NM_001145343, NM_032838, NM_001145345</td>
+<td>ZNF566</td>
+<td>ZNF566</td>
+</tr>
+<tr>
+<td>0.6315</td>
+<td>0.37627</td>
+<td>201220_x_at</td>
+<td>mm.201220_x_at.905.256</td>
+<td>NM_001083914, NM_001329, NM_022802</td>
+<td>NR_003682</td>
+<td>CTBP2</td>
+<td>MGC70870</td>
+</tr>
+<tr>
+<td>0.6299</td>
+<td>0.23979</td>
+<td>210835_s_at</td>
+<td>mm.210835_s_at.906.256</td>
+<td>NM_001083914, NM_001329, NM_022802</td>
+<td>NR_003682</td>
+<td>CTBP2</td>
+<td>MGC70870</td>
+</tr>
+<tr>
+<td>0.5943</td>
+<td>0.55241</td>
+<td>223485_at</td>
+<td>mm.223485_at.745.316</td>
+<td>NM_032304, NM_207112</td>
+<td>NM_032304</td>
+<td>HAGHL</td>
+<td>HAGHL</td>
+</tr>
+<tr>
+<td>0.5930</td>
+<td>0.45395</td>
+<td>206281_at</td>
+<td>mm.206281_at.529.784</td>
+<td>NM_001099733, NM_001117</td>
+<td>NM_001117, NM_001099733</td>
+<td>ADCYAP1</td>
+<td>ADCYAP1</td>
+</tr>
+<tr>
+<td>0.5866</td>
+<td>0.55602</td>
+<td>1562659_at</td>
+<td>mm.1562659_at.440.914</td>
+<td>NR_033984</td>
+<td>NR_033984</td>
+<td>LOC400548</td>
+<td>LOC400548</td>
+</tr>
+<tr>
+<td>0.5845</td>
+<td>0.51707</td>
+<td>229852_at</td>
+<td>mm.229852_at.330.998</td>
+<td>NM_022787</td>
+<td>NM_022787</td>
+<td>NMNAT1</td>
+<td>NMNAT1</td>
+</tr>
+<tr>
+<td>0.5725</td>
+<td>0.24840</td>
+<td>1553901_x_at</td>
+<td>mm.1553901_x_at.258.150</td>
+<td>NM_052852</td>
+<td>NM_178558</td>
+<td>ZNF486</td>
+<td>ZNF680</td>
+</tr>
+<tr>
+<td>0.5597</td>
+<td>0.53161</td>
+<td>220547_s_at</td>
+<td>mm.220547_s_at.462.628</td>
+<td>NM_019054</td>
+<td>NM_019054</td>
+<td>FAM35A</td>
+<td>FAM35A</td>
+</tr>
+<tr>
+<td>0.5565</td>
+<td>0.56330</td>
+<td>209811_at</td>
+<td>mm.209811_at.257.468</td>
+<td>NM_001224, NM_032982, NM_032983</td>
+<td>NM_032982, NM_032983, NM_001224</td>
+<td>CASP2</td>
+<td>CASP2</td>
+</tr>
+<tr>
+<td>0.5440</td>
+<td>0.60341</td>
+<td>219710_at</td>
+<td>mm.219710_at.1132.106</td>
+<td>NM_024577</td>
+<td>NM_024577</td>
+<td>SH3TC2</td>
+<td>SH3TC2</td>
+</tr>
+<tr>
+<td>0.4971</td>
+<td>0.38237</td>
+<td>223838_at</td>
+<td>mm.223838_at.145.282</td>
+<td>NM_025244, NM_182911</td>
+<td>NM_182911, NM_025244</td>
+<td>TSGA10</td>
+<td>TSGA10</td>
+</tr>
+<tr>
+<td>0.4883</td>
+<td>0.63939</td>
+<td>221691_x_at</td>
+<td>mm.221691_x_at.746.320</td>
+<td>NM_001037738, NM_002520, NM_199185</td>
+<td>NR_036693, NM_001004419, NM_001197317, NM_001197318, NM_001197319, NM_013269</td>
+<td>NPM1</td>
+<td>CLEC2D</td>
+</tr>
+<tr>
+<td>0.4527</td>
+<td>0.62369</td>
+<td>200724_at</td>
+<td>mm.200724_at.575.1144</td>
+<td>NM_001256577, NM_001256580, NM_006013, NR_026898</td>
+<td>NM_001256580, NM_001256577, NM_006013</td>
+<td>RPL10</td>
+<td>RPL10</td>
+</tr>
+<tr>
+<td>0.4048</td>
+<td>0.51515</td>
+<td>204431_at</td>
+<td>mm.204431_at.1040.48</td>
+<td>NM_001144761, NM_001144762, NM_003260</td>
+<td>NM_003260, NM_001144761, NM_001144762</td>
+<td>TLE2</td>
+<td>TLE2</td>
+</tr>
+<tr>
+<td>0.3851</td>
+<td>0.09551</td>
+<td>217547_x_at</td>
+<td>mm.217547_x_at.860.982</td>
+<td>NM_138330</td>
+<td>NM_016220, NM_001013746</td>
+<td>ZNF675</td>
+<td>ZNF107</td>
+</tr>
+<tr>
+<td>0.3284</td>
+<td>0.44156</td>
+<td>228128_x_at</td>
+<td>mm.228128_x_at.1075.350</td>
+<td>NM_002581</td>
+<td>NM_002581</td>
+<td>PAPPA</td>
+<td>PAPPA</td>
+</tr>
+</table><p>What is interesting is that with few exceptions, the transcripts and genes being measured by the probe sets are the
+same, implying that the TMmm probe aligns to the same gene as its complimentary PM probe. Upon further examination it
+appears that many of the PM complements of the TMmm do not align to the genome at all (data not shown). One possibility
+is that these probes are in regions that have seen changes in the reference sequence over the years, or that the
+original sequencing of the ESTs used to design the probe sets was of poor quality. </p>
+
+<h3>Effects of Individual Variation</h3>
+
+<p>To gain an understanding of the effect of individual variation, the unique mapping of PM and MM probes to five
+distinct human genome assemblies was analyzed (<a href="#t.humanMapping">Table 7</a>).  Four of the five projects have roughly the same number of
+uniquely mapped PM probes (within 2% variation).  The fifth project (BGI) provides an exception to this trend.  While
+there are a number of potential explanations for this (including sequence and assembly quality and coverage of the
+sequencing), one potential feature to be considered is the fact that this sequencing project involves the sequencing
+of an African individual, and it is the only project not to have a large component of the library consisting of
+Caucasian individuals.</p>
+
+<p><a></a></p>
+
+<p><strong>Table 7. Number of probes mapping uniquely to individual human genomes.</strong></p>
+
+<table>
+<tr>
+<th>Assembly</th>
+<th>Total</th>
+<th>Perfect Match</th>
+<th>Mismatch</th>
+</tr>
+<tr>
+<td>Hg19</td>
+<td>522250</td>
+<td>521642</td>
+<td>608</td>
+</tr>
+<tr>
+<td>Celera</td>
+<td>515111</td>
+<td>514518</td>
+<td>593</td>
+</tr>
+<tr>
+<td>JCVI</td>
+<td>530213</td>
+<td>529569</td>
+<td>644</td>
+</tr>
+<tr>
+<td>BGI</td>
+<td>469973</td>
+<td>469714</td>
+<td>259</td>
+</tr>
+<tr>
+<td>HSAP1</td>
+<td>522480</td>
+<td>521922</td>
+<td>558</td>
+</tr>
+</table><p>While there is a large agreement for the number of probes, we also checked if the probes represented were consistent
+among all of the projects.  A Venn diagram depicting the number of overlapping perfectly matching probes is given in
+<a href="#f.vennHumanVariation">Figure 6</a>.  As can be seen from this figure, a total of 422279 probes uniquely map for all five assemblies.  Of these,
+422118 are perfect match probes, indicating that 70% of the HGU133APlus2.0 perfect match probes are reliable in terms
+of their mapping to the genome for these assemblies.  One of the interesting results is that there are 161 shared
+perfectly matching mismatch probes.  Of these, 24 fall within RefSeq annotated exonic regions (results not shown),
+with 16 of the 24 showing higher correlation in the TMmm assignments calculated in <a href="#t.corrTable">Table 6</a>.</p>
+
+<p><a></a></p>
+
+<p><img src="figure/insertVenn.png" alt="plot of chunk insertVenn"></p>
+
+<p><strong>Figure 6. Venn diagram of overlapping perfectly matching Affymetrix(r) HGU133A Plus2 probes to each of the five human genome assemblies.</strong></p>
+
+<h2>Conclusion</h2>
+
+<p>MM probes are theoretically designed to capture background and non-specific binding. Alignment of the MM probes to the
+genome shows that in a very small percentage of cases, MM probes align uniquely to the genome in transcribed regions.
+Signal from these probes should be useful for quantifying true transcriptional events rather than for PM signal
+adjustment.</p>
+
+<p>In addition, current custom CDF generation workflows ignore the MM probes during the probe alignment process. Given
+that some MM probes align to reference genomes, they should be considered for inclusion when creating custom CDFs. The
+utility of the probes may be limited due to variation among individuals. </p>
+
+<h2>ACKNOWLEDGEMENTS</h2>
+
+<p>This work was partially funded by National Institutes of Health (NIH) grant 8P20GM103436-12.  Its contents are solely
+the responsibility of the authors and do not represent the official views of NIH or the National Institute of General
+Medical Sciences.</p>
+
+<h2>REFERENCES</h2>
+
+<p>[1] Schena, M., Shalon, D., Davis, R. W. and Brown, P. O. Quantitative monitoring of gene expression patterns with a complementary DNA microarray. Science, 270, 5235 (Oct 20 1995), 467-470.</p>
+
+<p>[2] Nagalakshmi, U., Wang, Z., Waern, K., Shou, C., Raha, D., Gerstein, M. and Snyder, M. The transcriptional landscape of the yeast genome defined by RNA sequencing. Science, 320, 5881 (Jun 6 2008), 1344-1349.</p>
+
+<p>[3] Barrett, T., Troup, D. B., Wilhite, S. E., Ledoux, P., Evangelista, C., Kim, I. F., Tomashevsky, M., Marshall, K. A., Phillippy, K. H., Sherman, P. M., Muertter, R. N., Holko, M., Ayanbule, O., Yefanov, A. and Soboleva, A. NCBI GEO: archive for functional genomics data sets--10 years on. Nucleic acids research, 39, Database issue (Jan 2011), D1005-1010.</p>
+
+<p>[4] Parkinson, H., Sarkans, U., Kolesnikov, N., Abeygunawardena, N., Burdett, T., Dylag, M., Emam, I., Farne, A., Hastings, E., Holloway, E., Kurbatova, N., Lukk, M., Malone, J., Mani, R., Pilicheva, E., Rustici, G., Sharma, A., Williams, E., Adamusiak, T., Brandizi, M., Sklyar, N. and Brazma, A. ArrayExpress update--an archive of microarray and high-throughput sequencing-based functional genomics experiments. Nucleic acids research, 39, Database issue (Jan 2011), D1002-1004.</p>
+
+<p>[5] Deng, Y., He, Z., Van Nostrand, J. D. and Zhou, J. Design and analysis of mismatch probes for long oligonucleotide microarrays. BMC genomics, 92008), 491.</p>
+
+<p>[6] Hubbell, E., Liu, W. M. and Mei, R. Robust estimators for expression analysis. Bioinformatics, 18, 12 (Dec 2002), 1585-1592.</p>
+
+<p>[7] Irizarry, R. A., Bolstad, B. M., Collin, F., Cope, L. M., Hobbs, B. and Speed, T. P. Summaries of Affymetrix GeneChip probe level data. Nucleic acids research, 31, 4 (Feb 15 2003), e15.</p>
+
+<p>[8] Wu, Z. and Irizarry, R. A. Stochastic models inspired by hybridization theory for short oligonucleotide arrays. Journal of computational biology : a journal of computational molecular cell biology, 12, 6 (Jul-Aug 2005), 882-893.</p>
+
+<p>[9] Carter, S. L., Eklund, A. C., Mecham, B. H., Kohane, I. S. and Szallasi, Z. Redefinition of Affymetrix probe sets by sequence overlap with cDNA microarray probes reduces cross-platform inconsistencies in cancer-associated gene expression measurements. BMC bioinformatics, 62005), 107.</p>
+
+<p>[10] Dai, M., Wang, P., Boyd, A. D., Kostov, G., Athey, B., Jones, E. G., Bunney, W. E., Myers, R. M., Speed, T. P., Akil, H., Watson, S. J. and Meng, F. Evolving gene/transcript definitions significantly alter the interpretation of GeneChip data. Nucleic acids research, 33, 20 2005), e175.</p>
+
+<p>[11] de Leeuw, W. C., Rauwerda, H., Jonker, M. J. and Breit, T. M. Salvaging Affymetrix probes after probe-level re-annotation. BMC research notes, 12008), 66.</p>
+
+<p>[12] Ferrari, F., Bortoluzzi, S., Coppe, A., Sirota, A., Safran, M., Shmoish, M., Ferrari, S., Lancet, D., Danieli, G. A. and Bicciato, S. Novel definition files for human GeneChips based on GeneAnnot. BMC bioinformatics, 82007), 446.</p>
+
+<p>[13] Langer, W., Sohler, F., Leder, G., Beckmann, G., Seidel, H., Grone, J., Hummel, M. and Sommer, A. Exon array analysis using re-defined probe sets results in reliable identification of alternatively spliced genes in non-small cell lung cancer. BMC genomics, 112010), 676.</p>
+
+<p>[14] Liu, H., Zeeberg, B. R., Qu, G., Koru, A. G., Ferrucci, A., Kahn, A., Ryan, M. C., Nuhanovic, A., Munson, P. J., Reinhold, W. C., Kane, D. W. and Weinstein, J. N. AffyProbeMiner: a web resource for computing or retrieving accurately redefined Affymetrix probe sets. Bioinformatics, 23, 18 (Sep 15 2007), 2385-2390.</p>
+
+<p>[15] Lu, J., Lee, J. C., Salit, M. L. and Cam, M. C. Transcript-based redefinition of grouped oligonucleotide probe sets using AceView: high-resolution annotation for microarrays. BMC bioinformatics, 82007), 108.</p>
+
+<p>[16] Moll, A. G., Lindenmeyer, M. T., Kretzler, M., Nelson, P. J., Zimmer, R. and Cohen, C. D. Transcript-specific expression profiles derived from sequence-based analysis of standard microarrays. PloS one, 4, 3 2009), e4702.</p>
+
+<p>[17] Moreews, F., Rauffet, G., Dehais, P. and Klopp, C. SigReannot-mart: a query environment for expression microarray probe re-annotations. Database : the journal of biological databases and curation, 20112011), bar025.</p>
+
+<p>[18] Neerincx, P. B., Rauwerda, H., Nie, H., Groenen, M. A., Breit, T. M. and Leunissen, J. A. OligoRAP - an Oligo Re-Annotation Pipeline to improve annotation and estimate target specificity. BMC proceedings, 3 Suppl 42009), S4.</p>
+
+<p>[19] Risueno, A., Fontanillo, C., Dinger, M. E. and De Las Rivas, J. GATExplorer: genomic and transcriptomic explorer; mapping expression probes to gene loci, transcripts, exons and ncRNAs. BMC bioinformatics, 112010), 221.</p>
+
+<p>[20] Sandberg, R. and Larsson, O. Improved precision and accuracy for microarrays using updated probe set definitions. BMC bioinformatics, 82007), 48.</p>
+
+<p>[21] Yin, J., McLoughlin, S., Jeffery, I. B., Glaviano, A., Kennedy, B. and Higgins, D. G. Integrating multiple genome annotation databases improves the interpretation of microarray gene expression data. BMC genomics, 112010), 50.</p>
+
+<p>[22] Yu, H., Wang, F., Tu, K., Xie, L., Li, Y. Y. and Li, Y. X. Transcript-level annotation of Affymetrix probesets improves the interpretation of gene expression data. BMC bioinformatics, 82007), 194.</p>
+
+<p>[23] Maglott, D., Ostell, J., Pruitt, K. D. and Tatusova, T. Entrez Gene: gene-centered information at NCBI. Nucleic acids research, 39, Database issue (Jan 2011), D52-57.</p>
+
+<p>[24] Pruitt, K. D., Tatusova, T., Brown, G. R. and Maglott, D. R. NCBI Reference Sequences (RefSeq): current status, new features and genome annotation policy. Nucleic acids research, 40, Database issue (Jan 2012), D130-135.</p>
+
+<p>[25] Lu, X. and Zhang, X. The effect of GeneChip gene definitions on the microarray study of cancers. BioEssays : news and reviews in molecular, cellular and developmental biology, 28, 7 (Jul 2006), 739-746.</p>
+
+<p>[26] Sayers, E. W., Barrett, T., Benson, D. A., Bolton, E., Bryant, S. H., Canese, K., Chetvernin, V., Church, D. M., Dicuccio, M., Federhen, S., Feolo, M., Fingerman, I. M., Geer, L. Y., Helmberg, W., Kapustin, Y., Krasnov, S., Landsman, D., Lipman, D. J., Lu, Z., Madden, T. L., Madej, T., Maglott, D. R., Marchler-Bauer, A., Miller, V., Karsch-Mizrachi, I., Ostell, J., Panchenko, A., Phan, L., Pruitt, K. D., Schuler, G. D., Sequeira, E., Sherry, S. T., Shumway, M., Sirotkin, K., Slotta, D., Souvorov, A., Starchenko, G., Tatusova, T. A., Wagner, L., Wang, Y., Wilbur, W. J., Yaschenko, E. and Ye, J. Database resources of the National Center for Biotechnology Information. Nucleic acids research, 40, Database issue (Jan 2012), D13-25.</p>
+
+<p>[27] Rouchka, E. C., Phatak, A. W. and Singh, A. V. Effect of single nucleotide polymorphisms on Affymetrix match-mismatch probe pairs. Bioinformation, 2, 9 2008), 405-411.</p>
+
+<p>[28] Dreszer, T. R., Karolchik, D., Zweig, A. S., Hinrichs, A. S., Raney, B. J., Kuhn, R. M., Meyer, L. R., Wong, M., Sloan, C. A., Rosenbloom, K. R., Roe, G., Rhead, B., Pohl, A., Malladi, V. S., Li, C. H., Learned, K., Kirkup, V., Hsu, F., Harte, R. A., Guruvadoo, L., Goldman, M., Giardine, B. M., Fujita, P. A., Diekhans, M., Cline, M. S., Clawson, H., Barber, G. P., Haussler, D. and James Kent, W. The UCSC Genome Browser database: extensions and updates 2011. Nucleic acids research, 40, Database issue (Jan 2012), D918-923.</p>
+
+<p>[29] Langmead, B., Trapnell, C., Pop, M. and Salzberg, S. L. Ultrafast and memory-efficient alignment of short DNA sequences to the human genome. Genome biology, 10, 3 2009), R25.</p>
+
+<p>[30] Liu, G., Loraine, A. E., Shigeta, R., Cline, M., Cheng, J., Valmeekam, V., Sun, S., Kulp, D. and Siani-Rose, M. A. NetAffx: Affymetrix probesets and annotations. Nucleic acids research, 31, 1 (Jan 1 2003), 82-86.</p>
+
+<p>[31] Aboyoun, H., Pages, H. and Lawrence, M. GenomicRanges: Representation and manipulation of genomic intervals. . City.</p>
+
+<p>[32] Gnerre, S., Maccallum, I., Przybylski, D., Ribeiro, F. J., Burton, J. N., Walker, B. J., Sharpe, T., Hall, G., Shea, T. P., Sykes, S., Berlin, A. M., Aird, D., Costello, M., Daza, R., Williams, L., Nicol, R., Gnirke, A., Nusbaum, C., Lander, E. S. and Jaffe, D. B. High-quality draft assemblies of mammalian genomes from massively parallel sequence data. Proceedings of the National Academy of Sciences of the United States of America, 108, 4 (Jan 25 2011), 1513-1518.</p>
+
+<p>[33] Istrail, S., Sutton, G. G., Florea, L., Halpern, A. L., Mobarry, C. M., Lippert, R., Walenz, B., Shatkay, H., Dew, I., Miller, J. R., Flanigan, M. J., Edwards, N. J., Bolanos, R., Fasulo, D., Halldorsson, B. V., Hannenhalli, S., Turner, R., Yooseph, S., Lu, F., Nusskern, D. R., Shue, B. C., Zheng, X. H., Zhong, F., Delcher, A. L., Huson, D. H., Kravitz, S. A., Mouchard, L., Reinert, K., Remington, K. A., Clark, A. G., Waterman, M. S., Eichler, E. E., Adams, M. D., Hunkapiller, M. W., Myers, E. W. and Venter, J. C. Whole-genome shotgun assembly and comparison of human genome assemblies. Proceedings of the National Academy of Sciences of the United States of America, 101, 7 (Feb 17 2004), 1916-1921.</p>
+
+<p>[34] Lander, E. S., Linton, L. M., Birren, B., Nusbaum, C., Zody, M. C., Baldwin, J., Devon, K., Dewar, K., Doyle, M., FitzHugh, W., Funke, R., Gage, D., Harris, K., Heaford, A., Howland, J., Kann, L., Lehoczky, J., LeVine, R., McEwan, P., McKernan, K., Meldrim, J., Mesirov, J. P., Miranda, C., Morris, W., Naylor, J., Raymond, C., Rosetti, M., Santos, R., Sheridan, A., Sougnez, C., Stange-Thomann, N., Stojanovic, N., Subramanian, A., Wyman, D., Rogers, J., Sulston, J., Ainscough, R., Beck, S., Bentley, D., Burton, J., Clee, C., Carter, N., Coulson, A., Deadman, R., Deloukas, P., Dunham, A., Dunham, I., Durbin, R., French, L., Grafham, D., Gregory, S., Hubbard, T., Humphray, S., Hunt, A., Jones, M., Lloyd, C., McMurray, A., Matthews, L., Mercer, S., Milne, S., Mullikin, J. C., Mungall, A., Plumb, R., Ross, M., Shownkeen, R., Sims, S., Waterston, R. H., Wilson, R. K., Hillier, L. W., McPherson, J. D., Marra, M. A., Mardis, E. R., Fulton, L. A., Chinwalla, A. T., Pepin, K. H., Gish, W. R., Chissoe, S. L., Wendl, M. C., Delehaunty, K. D., Miner, T. L., Delehaunty, A., Kramer, J. B., Cook, L. L., Fulton, R. S., Johnson, D. L., Minx, P. J., Clifton, S. W., Hawkins, T., Branscomb, E., Predki, P., Richardson, P., Wenning, S., Slezak, T., Doggett, N., Cheng, J. F., Olsen, A., Lucas, S., Elkin, C., Uberbacher, E., Frazier, M., Gibbs, R. A., Muzny, D. M., Scherer, S. E., Bouck, J. B., Sodergren, E. J., Worley, K. C., Rives, C. M., Gorrell, J. H., Metzker, M. L., Naylor, S. L., Kucherlapati, R. S., Nelson, D. L., Weinstock, G. M., Sakaki, Y., Fujiyama, A., Hattori, M., Yada, T., Toyoda, A., Itoh, T., Kawagoe, C., Watanabe, H., Totoki, Y., Taylor, T., Weissenbach, J., Heilig, R., Saurin, W., Artiguenave, F., Brottier, P., Bruls, T., Pelletier, E., Robert, C., Wincker, P., Smith, D. R., Doucette-Stamm, L., Rubenfield, M., Weinstock, K., Lee, H. M., Dubois, J., Rosenthal, A., Platzer, M., Nyakatura, G., Taudien, S., Rump, A., Yang, H., Yu, J., Wang, J., Huang, G., Gu, J., Hood, L., Rowen, L., Madan, A., Qin, S., Davis, R. W., Federspiel, N. A., Abola, A. P., Proctor, M. J., Myers, R. M., Schmutz, J., Dickson, M., Grimwood, J., Cox, D. R., Olson, M. V., Kaul, R., Shimizu, N., Kawasaki, K., Minoshima, S., Evans, G. A., Athanasiou, M., Schultz, R., Roe, B. A., Chen, F., Pan, H., Ramser, J., Lehrach, H., Reinhardt, R., McCombie, W. R., de la Bastide, M., Dedhia, N., Blocker, H., Hornischer, K., Nordsiek, G., Agarwala, R., Aravind, L., Bailey, J. A., Bateman, A., Batzoglou, S., Birney, E., Bork, P., Brown, D. G., Burge, C. B., Cerutti, L., Chen, H. C., Church, D., Clamp, M., Copley, R. R., Doerks, T., Eddy, S. R., Eichler, E. E., Furey, T. S., Galagan, J., Gilbert, J. G., Harmon, C., Hayashizaki, Y., Haussler, D., Hermjakob, H., Hokamp, K., Jang, W., Johnson, L. S., Jones, T. A., Kasif, S., Kaspryzk, A., Kennedy, S., Kent, W. J., Kitts, P., Koonin, E. V., Korf, I., Kulp, D., Lancet, D., Lowe, T. M., McLysaght, A., Mikkelsen, T., Moran, J. V., Mulder, N., Pollara, V. J., Ponting, C. P., Schuler, G., Schultz, J., Slater, G., Smit, A. F., Stupka, E., Szustakowski, J., Thierry-Mieg, D., Thierry-Mieg, J., Wagner, L., Wallis, J., Wheeler, R., Williams, A., Wolf, Y. I., Wolfe, K. H., Yang, S. P., Yeh, R. F., Collins, F., Guyer, M. S., Peterson, J., Felsenfeld, A., Wetterstrand, K. A., Patrinos, A., Morgan, M. J., de Jong, P., Catanese, J. J., Osoegawa, K., Shizuya, H., Choi, S. and Chen, Y. J. Initial sequencing and analysis of the human genome. Nature, 409, 6822 (Feb 15 2001), 860-921.</p>
+
+<p>[35] Levy, S., Sutton, G., Ng, P. C., Feuk, L., Halpern, A. L., Walenz, B. P., Axelrod, N., Huang, J., Kirkness, E. F., Denisov, G., Lin, Y., MacDonald, J. R., Pang, A. W., Shago, M., Stockwell, T. B., Tsiamouri, A., Bafna, V., Bansal, V., Kravitz, S. A., Busam, D. A., Beeson, K. Y., McIntosh, T. C., Remington, K. A., Abril, J. F., Gill, J., Borman, J., Rogers, Y. H., Frazier, M. E., Scherer, S. W., Strausberg, R. L. and Venter, J. C. The diploid genome sequence of an individual human. PLoS biology, 5, 10 (Sep 4 2007), e254.</p>
+
+<p>[36] Li, R., Li, Y., Zheng, H., Luo, R., Zhu, H., Li, Q., Qian, W., Ren, Y., Tian, G., Li, J., Zhou, G., Zhu, X., Wu, H., Qin, J., Jin, X., Li, D., Cao, H., Hu, X., Blanche, H., Cann, H., Zhang, X., Li, S., Bolund, L., Kristiansen, K., Yang, H. and Wang, J. Building the sequence map of the human pan-genome. Nature biotechnology, 28, 1 (Jan 2010), 57-63.</p>
+
+<h2>RECREATION OF RESULTS</h2>
+
+<p>All of the necessary code to regenerate this work is hosted at <a href="https://github.com/rmflight/affymm">https://github.com/rmflight/affymm</a>. To recreate this html document, you need to run:</p>
+
+<p><code>knit2html("flightetal_draft.Rmd", "flightetal_draft.html")</code></p>
+
+<p>Alternatively use the <code>Knit HTML</code> button in <code>RStudio v0.97</code> or newer. This document was
+generated using R version 2.15.0 (2012-03-30). The following information about packages used is also supplied:</p>
+
+<div class="highlight"><pre>sessionInfo<span class="p">()</span>
+</pre></div>
+
+<pre><code>R version 2.15.0 (2012-03-30)
+Platform: x86_64-pc-mingw32/x64 (64-bit)
+
+locale:
+[1] LC_COLLATE=English_United States.1252 
+[2] LC_CTYPE=English_United States.1252   
+[3] LC_MONETARY=English_United States.1252
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.1252    
+
+attached base packages:
+[1] grid      stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] GenomicRanges_1.8.13    IRanges_1.14.4         
+ [3] hgu133plus2probe_2.10.0 hgu133plus2.db_2.7.1   
+ [5] org.Hs.eg.db_2.7.1      RSQLite_0.11.2         
+ [7] DBI_0.2-5               AnnotationDbi_1.18.3   
+ [9] Biobase_2.16.0          BiocGenerics_0.2.0     
+[11] VennDiagram_1.5.1       plyr_1.7.1             
+[13] ggplot2_0.9.2.1         knitr_0.8.1            
+
+loaded via a namespace (and not attached):
+ [1] colorspace_1.1-1   dichromat_1.2-4    digest_0.5.2      
+ [4] evaluate_0.4.2     formatR_0.6        gtable_0.1.1      
+ [7] labeling_0.1       MASS_7.3-21        memoise_0.1       
+[10] munsell_0.4        proto_0.3-9.2      RColorBrewer_1.0-5
+[13] reshape2_1.2.1     scales_0.2.2       stats4_2.15.0     
+[16] stringr_0.6.1      tools_2.15.0      
+</code></pre>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Affymm maintained by <a href="https://github.com/rmflight">rmflight</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
