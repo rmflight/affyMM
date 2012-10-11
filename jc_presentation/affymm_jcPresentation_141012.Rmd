@@ -1,0 +1,58 @@
+% Affymetrix MisMatch (MM) Probes: Useful After All
+% Robert M Flight, Abdallah Eteleeb, Eric C Rouchka
+% 14/10/12
+
+```{r functionDefs, include=FALSE}
+tableCat <- function(inFrame){
+	outText <- paste(names(inFrame), collapse=" | ")
+	outText <- c(outText, paste(rep("---", ncol(inFrame)), collapse=" | "))
+	invisible(apply(inFrame, 1, function(inRow){
+		outText <<- c(outText, paste(inRow, collapse=" | "))
+	}))
+	return(outText)
+}
+
+probeClass <- function(probeIDs){
+	sapply(strsplit(probeIDs, ".", fixed=T), function(y){y[1]})
+}
+
+probeSetName <- function(probeID){
+	splitName <- strsplit(probeID, ".", fixed=T)[[1]]
+	nSplit <- length(splitName)
+	rmSplit <- -1 * c(1, nSplit-1, nSplit)
+	paste(splitName[rmSplit], sep=".", collapse=".")
+}
+
+sortProbes <- function(probeIDs){
+	splitIDs <- strsplit(probeIDs, ".", fixed=T)
+	endIndx <- sapply(splitIDs, function(x){
+		nEnt <- length(x)
+		as.numeric(x[c(nEnt-1, nEnt)])
+	})
+	endIndx <- t(endIndx)
+	order(endIndx[,1], endIndx[,2])
+}
+```
+
+```{r loadPackagesData, include=FALSE}
+require(ggplot2)
+require(plyr)
+require(VennDiagram)
+require(hgu133plus2.db)
+require(hgu133plus2probe)
+require(org.Hs.eg.db)
+
+load("counts_Plots_etc_allOrgs.RData")
+```
+
+# Custom CDF
+
+CDF: Chip Definition File
+- Defines how the individual probes on the array are organized into probesets
+- Possible to define **custom** groupings of probes based on your own criteria
+
+
+# BrainArray
+
+- the BrainArray group has been doing this for quite a while
+- x samples in **GEO** that have BrainArray CDFs
