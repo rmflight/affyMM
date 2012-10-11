@@ -1,6 +1,12 @@
-% Affymetrix MisMatch (MM) Probes: Useful After All
-% Robert M Flight, Abdallah Eteleeb, Eric C Rouchka
+% Affymetrix MisMatch (MM) Probes: </br> Useful After All
+% Robert M Flight </br> Abdallah Eteleeb and Eric C Rouchka
 % 14/10/12
+
+```{r knitrSetup, include=FALSE}
+# opts_chunk$set(cache=TRUE)
+knit_hooks$set(error = function(x, options) stop(x)) 
+```
+
 
 ```{r functionDefs, include=FALSE}
 tableCat <- function(inFrame){
@@ -35,6 +41,7 @@ sortProbes <- function(probeIDs){
 ```
 
 ```{r loadPackagesData, include=FALSE}
+options(stringsAsFactors=FALSE)
 require(ggplot2)
 require(plyr)
 require(VennDiagram)
@@ -42,17 +49,80 @@ require(hgu133plus2.db)
 require(hgu133plus2probe)
 require(org.Hs.eg.db)
 
-load("counts_Plots_etc_allOrgs.RData")
+# load("../counts_Plots_etc_allOrgs.RData")
 ```
+
+# Affymetrix GeneChips
+
+
+## GeneChip
+
+- solid support with attached 25 mer oligonucleotides
+- oligonucleotides organized into **probesets**
+- **probeset** consists of 11, 16, 20, 25 probe pairs
+- each probe pair consists of a perfect match (PM) and mis-match (MM) probe
+
+```{r insertChipImage, echo=FALSE}
+
+```
+
+```{r insertProbeSet, echo=FALSE}
+
+```
+
+
+## Perfect Match & MisMatch
+
+### Perfect Match
+
+- supposed to perfectly match the sequence of interest
+- has exact complementarity
+- binds **perfectly**
+
+### MisMatch
+
+- 13th base is reverse complement of **PM** sequence
+- supposed to account for non-specific binding in the **PM**
+- therefore should have lower signal
+- useful for **PM** signal correction
+
+
+## Perfect Match & MisMatch
+
+### True Signal
+
+- therefore true signal should be PMi - MMi
+
+### Problems
+
+- MM may have higher signal than PM
+- most modern summarization methods ignore it
+
+
+## CDF: Chip Definition File
+
+### Defines organization of probes into probesets
+
+- genes
+- gene families
+- transcripts
+
+### Defined by Affymetrix based on available annotations
+
 
 # Custom CDF
 
-CDF: Chip Definition File
-- Defines how the individual probes on the array are organized into probesets
-- Possible to define **custom** groupings of probes based on your own criteria
+## Custom??
 
+### Reorganize probes 
 
-# BrainArray
+- available probe sequences & chip locations
+- available target genome sequences
+- available genome annotations (genes, transcripts, exons, etc)
 
-- the BrainArray group has been doing this for quite a while
-- x samples in **GEO** that have BrainArray CDFs
+## Better Results
+
+### Reorganization gives
+
+- more reproducible
+- more consistent
