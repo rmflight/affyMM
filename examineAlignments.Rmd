@@ -280,7 +280,7 @@ allData <- lapply(useData, function(inData){
 		
 		plotInt <- rbind(allInt, useInt)
 		outPlotAllExp <- ggplot(plotInt, aes(x=probeInt, colour=probeType, linetype=probeType)) + geom_density(size=1.5) + labs(title=allTitle, x="log2 probe intensity") + theme_bw()
-		return(outPlotAllExp)
+		return(list(allPlot=outPlotAllExp, plotInt=plotInt))
 	}
 	
 	# determine correlations between TMmm and MM, and other TM probes
