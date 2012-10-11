@@ -46,9 +46,13 @@ require(ggplot2)
 require(plyr)
 require(VennDiagram)
 require(hgu133plus2.db)
+require(hgu133plus2cdf)
 require(hgu133plus2probe)
 require(org.Hs.eg.db)
+require(affy)
+require(Biostrings)
 
+require(xtable)
 # load("../counts_Plots_etc_allOrgs.RData")
 ```
 
@@ -62,50 +66,78 @@ require(org.Hs.eg.db)
 - **probeset** consists of 11, 16, 20, 25 probe pairs
 - each probe pair consists of a perfect match (PM) and mis-match (MM) probe
 
-```{r insertChipImage, echo=FALSE}
+## GeneChip
 
+```{r insertChipImage, echo=FALSE, fig.cap="chip"}
+celFile <- "../randomCels/hs/GSM259617.CEL.gz"
+celInt <- ReadAffy(filenames=celFile)
+image(celInt)
 ```
 
-```{r insertProbeSet, echo=FALSE}
+## ProbeSet
 
+```{r insertProbeSet, echo=FALSE, fig.cap="probeset"}
+cdfDat <- as.list(hgu133plus2cdf)
+allIntensity <- intensity(celInt)
+tmpQ <- cdfDat[["AFFX-HUMGAPDH/M33197_3_at"]]
+
+mmInt <- data.frame(probeIntensity=allIntensity[tmpQ[,"mm"]], x=seq(1,nrow(tmpQ)), class="mm", yloc=2)
+pmInt <- data.frame(probeIntensity=allIntensity[tmpQ[,"pm"]], x=seq(1,nrow(tmpQ)), class="pm", yloc=1)
+
+pm.mm.Int <- rbind(pmInt, mmInt)
+pm.mm.Int$fill <- sqrt(pm.mm.Int$probeIntensity)
+xlim <- 0.5 + c(0, nrow(pm.mm.Int)/2)
+
+tm.image <- ggplot(pm.mm.Int, aes(x=x, y=class, fill=fill)) + geom_tile() + scale_fill_gradient(low="black", high="white", limits=c(0, 256)) + theme(axis.text.x=element_blank(), axis.ticks=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank()) + coord_equal(ratio=1, xlim=xlim) + theme(legend.position = "none")
+print(tm.image)
 ```
 
 
 ## Perfect Match & MisMatch
 
-### Perfect Match
+- Perfect Match
+    - supposed to perfectly match the sequence of interest
+    - has exact complementarity
+    - binds **perfectly**
+- MisMatch
+    - 13th base is reverse complement of **PM** sequence
+    - supposed to account for non-specific binding in the **PM**
+    - therefore should have lower signal
+    - useful for **PM** signal correction
 
-- supposed to perfectly match the sequence of interest
-- has exact complementarity
-- binds **perfectly**
+## 
 
-### MisMatch
+```{r pm.mm.Diff, echo=FALSE}
+data(hgu133plus2probe)
+pmSeq <- DNAString(x=hgu133plus2probe[1,1])
+mmSeq <- pmSeq
+subseq(mmSeq, start=13, end=13) <- complement(subseq(mmSeq, start=13, end=13))
+outSeq <- data.frame(sequence=c(as.character(pmSeq), as.character(mmSeq)))
+rownames(outSeq) <- c("pm", "mm")
+colnames(outSeq) <- NULL
+```
 
-- 13th base is reverse complement of **PM** sequence
-- supposed to account for non-specific binding in the **PM**
-- therefore should have lower signal
-- useful for **PM** signal correction
+```{r insertSequence, comment=""}
+outSeq
+```
+
 
 
 ## Perfect Match & MisMatch
 
-### True Signal
-
-- therefore true signal should be PMi - MMi
-
-### Problems
-
-- MM may have higher signal than PM
-- most modern summarization methods ignore it
+- True Signal
+    - therefore true signal should be PMi - MMi
+- Problems
+    - MM may have higher signal than PM
+    - most modern summarization methods ignore it
 
 
 ## CDF: Chip Definition File
 
-### Defines organization of probes into probesets
-
-- genes
-- gene families
-- transcripts
+- Defines organization of probes into probesets
+    - genes
+    - gene families
+    - transcripts
 
 ### Defined by Affymetrix based on available annotations
 
@@ -114,15 +146,180 @@ require(org.Hs.eg.db)
 
 ## Custom??
 
-### Reorganize probes 
-
-- available probe sequences & chip locations
-- available target genome sequences
-- available genome annotations (genes, transcripts, exons, etc)
+- Reorganize probes 
+    - available probe sequences & chip locations
+    - available target genome sequences
+    - available genome annotations (genes, transcripts, exons, etc)
 
 ## Better Results
 
-### Reorganization gives
+- Reorganization gives results that are:
+    - more reproducible
+    - more consistent
+    
+- Dai et al, 2005, NAR 33(20):e175 
+- Sandberg & Larsson, 2007, BMC Bioin. 8:48
 
-- more reproducible
-- more consistent
+## But ...
+
+- only uses perfect match probes!
+
+- can we use mismatch probes in custom probesets??
+    - why not?
+    - have sequences
+    - matter of aligning to genome
+
+
+# Mismatch Probes in Custom Probesets
+
+
+## Organisms
+
+```{r organismTable, echo=FALSE}
+organismTable <- data.frame(Organism=c("C elegans",
+																			 "D melanogaster",
+																			 "S cerevisiae",
+																			 "X tropicalis",
+																			 "D rerio",
+																			 "M musculus",
+																			 "R norvegicus",
+																			 "H sapiens"),
+														'Reference Assembly'=c("ce6",
+																									 "dm3",
+																									 "sc3",
+																									 "xt3",
+																									 "dr6",
+																									 "mm10",
+																									 "rn4",
+																									 "hg19"),
+														'Build date'=c("May 2008",
+																					 "Apr. 2006",
+																					 "Apr. 2011",
+																					 "Nov 2009",
+																					 "Dec. 2008",
+																					 "Dec. 2011",
+																					 "Nov 2004",
+																					 "Feb. 2009"))
+names(organismTable) <- c("Organism", "Reference Assembly", "Build Date")
+```
+
+```{r insertOrganism, echo=FALSE, results='asis'}
+print(xtable(organismTable), type = 'html', html.table.attributes = '', include.rownames=FALSE)
+```
+
+## GeneChips
+
+```{r chipTable, include=FALSE}
+chipTable <- data.frame(Organism=c("C elegans",
+																			 "D melanogaster",
+																			 "S cerevisiae",
+																			 "X tropicalis",
+																			 "D rerio",
+																			 "M musculus",
+																			 "R norvegicus",
+																			 "H sapiens"),
+												chip=c("C. elegans Genome",
+															 "Drosophila Genome 2.0",
+															 "Yeast Genome 2.0",
+															 "X. tropicalus Genome",
+															 "Zebrafish Genome",
+															 "Mouse Genome 430 2.0",
+															 "Rat Genome 230 2.0",
+															 "Human Genome U133 Plus 2.0"))
+names(chipTable) <- c("Organism", "GeneChip")
+```
+
+```{r insertChips, echo=FALSE, results='asis'}
+print(xtable(chipTable), type = 'html', html.table.attributes = '', include.rownames=FALSE)
+```
+
+## Microarray Data
+
+- random data from gene expression omnibus (GEO)
+- 20 random CEL files for each organism
+    - Only 4 for X. tropicalis, 12 for Yeast
+    
+## Probe Sequences & Alignment
+
+- Sequences:
+    - from **Bioconductor** `probe` packages
+    - MM sequences generated from PM sequences
+- Alignments:
+    - align both PM and MM to reference using `bowtie v0.12.8`
+    - report only alignments with **0** mismatches
+    
+# Results
+
+## Number of Alignments
+
+```{r countAlignments, include=FALSE}
+cntTable <- read.table("../alignmentCounts.txt", sep="\t", header=T)
+cntTable$Organism <- paste("*", cntTable$Organism, "*", sep="")
+cntTable <- cntTable[, c("Organism", "nPair", "map.PM", "map.MM", "singPM", "singMM")]
+names(cntTable) <- c("Organism", "Number of Probe Pairs", "PM Mapped to Reference",
+										 "MM Mapped to Reference", "PM Unique", "MM Unique")
+```
+
+```{r insertCounts, echo=FALSE, results='asis'}
+print(xtable(cntTable), type = 'html', html.table.attributes = '', include.rownames=FALSE)
+```
+
+
+## Types of Alignments
+
+Which types of probes align to multiple locations?
+
+```{r probeTypeAnalysis, include=FALSE}
+translationTable <- matrix(ncol=3, byrow=T, data=c("ce6", "Ce", "celegans",
+																									 "dm3", "Dm", "drosophila2",
+																									 "dr6", "Dr", "zebrafish",
+																									 "hg19", "Hs", "hsa",
+																									 "mm10", "Mm", "mus",
+																									 "rn4", "Rn", "rat",
+																									 "sc3", "Sc", "yeast2",
+																									 "xt3", "Xt", "xtropicalis"))
+colnames(translationTable) <- c("short", "Organism", "array")
+
+multFiles <- file.path("../seqData", paste("multMatch_", translationTable[,"short"], ".txt", sep=""))
+nOrg <- nrow(translationTable)
+typeCounts <- matrix("", nrow=nOrg, ncol=5)
+colnames(typeCounts) <- c("_x_at", "_s_at", "_a_at", "_at", "other")
+rownames(typeCounts) <- translationTable[,"Organism"]
+probeType <- c("_x_at", "_s_at", "_at", "_a_at")
+for (iOrg in 1:nOrg){
+	multProbes <- scan(file=multFiles[iOrg], what=character())
+	pClass <- probeClass(multProbes)
+	multProbes <- multProbes[pClass == "pm"]
+	totMult <- length(multProbes)
+	x_at <- grep("_x_at", multProbes)
+	n_xat <- length(x_at)
+	p_xat <- format(n_xat / totMult * 100, digits=2)
+	s_at <- grep("_s_at", multProbes)
+	n_sat <- length(s_at)
+	p_sat <- format(n_sat / totMult * 100, digits=2)
+	a_at <- grep("_a_at", multProbes)
+	n_aat <- length(a_at)
+	p_aat <- format(n_aat / totMult * 100, digits=2)
+	
+	oProbes <- multProbes[-1*c(x_at, s_at, a_at)]
+	o_at <- grep("_at", oProbes)
+	n_oat <- length(o_at)
+	p_oat <- format(n_oat / totMult * 100, digits=2)
+	otherProbes <- length(oProbes[-o_at])
+	pOther <- format(otherProbes / totMult * 100, digits=2)
+	typeCounts[iOrg, "_x_at"] <- paste(n_xat, " (", p_xat, "%)", collapse="", sep="") 
+	typeCounts[iOrg, "_s_at"] <- paste(n_sat, " (", p_sat, "%)", collapse="", sep="") 
+	typeCounts[iOrg, "_a_at"] <- paste(n_aat, " (", p_aat, "%)", collapse="", sep="") 
+	typeCounts[iOrg, "_at"] <- paste(n_oat, " (", p_oat, "%)", collapse="", sep="") 
+	typeCounts[iOrg, "other"] <- paste(otherProbes, " (", pOther, "%)", collapse="", sep="") 
+}
+
+typeCounts <- cbind(translationTable[,"Organism"], typeCounts)
+typeCounts <- as.data.frame(typeCounts)
+names(typeCounts)[1] <- "Organism"
+# note: Eric gets 29 "other" probes for Ce here, and I think it is because he is counting control probes as other
+```
+
+```{r insertTypeCounts, echo=FALSE, results='asis'}
+print(xtable(typeCounts), type = 'html', html.table.attributes = 'style="font-size:90%;"', include.rownames=FALSE)
+```
