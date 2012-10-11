@@ -36,7 +36,7 @@ sortProbes <- function(probeIDs){
 
 ```{r loadSc}
 
-seqLoc <- readBamGappedAlignments("seqData/mappedSequences_sc3.bam", use.names=T)
+seqLoc <- readGappedAlignments("seqData/mappedSequences_sc3.bam", use.names=T)
 
 classSeq <- sapply(strsplit(names(seqLoc), ".", fixed=T), function(x){x[1]})
 sum(classSeq == "mm")
@@ -644,7 +644,7 @@ allPMInt <- sample(allPMInt, nSamp)
 allInt <- data.frame(probeInt=c(allMMInt, allPMInt), probeType=c(rep("mm.all", length(allMMInt)), rep("pm.all", length(allPMInt))) )
 
 yeastPlot <- ggplot(allInt, aes(x=probeInt, colour=probeType, linetype=probeType)) + geom_density(size=1.2) + labs(title=inData, x="log2 probe intensity")
-allData$sc3 <- list(allPlot=yeastPlot)
+allData$sc3 <- list(allPlot=list(allPlot=yeasatPlot, plotInt=allInt))
 .sessionInfo <- sessionInfo()
 .timedate <- Sys.time()
 save(.sessionInfo, .timedate, allData, file="counts_Plots_etc_allOrgs.RData")
@@ -659,8 +659,6 @@ plot with PM on one row and MM on the second row, using `sqrt` transformed inten
 Similar to the second part of above, but this time with the TM for the exon matching the original MM that mapped to it.
 
 ```{r densityDif}
-require(ggplot2)
-require(Cairo)
 dr6 <- list(c(1,1), c(2,6), c(4,1), c(12,2))
 xtrop <- list(c(2,1), c(3,4))
 rn4 <- list(c(3,8), c(3,5), c(4,2), c(7,2))
@@ -669,5 +667,7 @@ mm10 <- list(c(2,4), c(4,1), c(5,1), c(6,1), c(8,4), c(14,10), c(20,2), c(22,2))
 ce6 <- list(c(1,18))
 ```
 
-
+```{r sessionInfo}
+sessionInfo()
+```
 
