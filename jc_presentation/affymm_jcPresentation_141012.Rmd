@@ -53,7 +53,7 @@ require(affy)
 require(Biostrings)
 
 require(xtable)
-# load("../counts_Plots_etc_allOrgs.RData")
+load("../counts_Plots_etc_allOrgs.RData")
 ```
 
 # Affymetrix GeneChips
@@ -321,5 +321,31 @@ names(typeCounts)[1] <- "Organism"
 ```
 
 ```{r insertTypeCounts, echo=FALSE, results='asis'}
-print(xtable(typeCounts), type = 'html', html.table.attributes = 'style="font-size:90%;"', include.rownames=FALSE)
+print(xtable(typeCounts), type = 'html', html.table.attributes = 'style="font-size:80%; text-align:right"', include.rownames=FALSE)
 ```
+
+## Comparison of PM and MM Signals
+
+```{r getDensityData, include=FALSE}
+theme_set(theme_bw())
+allData <- allData[!(names(allData) %in% "mm9")]
+
+plotData <- adply(names(allData), 1, function(x){
+	tmpInt <- allData[[x]]$allPlot$plotInt
+	tmpInt$organism <- x
+	return(tmpInt)
+})
+
+g <- ggplot(plotData, aes(x=x, y=y, colour=colour, linetype=linetype)) + geom_line() + facet_wrap(~organism, ncol=4)
+print(g)
+nPlot <- length(plots)
+useNames <- names(plots)
+for (iPlot in 1:nPlot){
+	tmpPlot <- plots[[iPlot]]
+	tmpPlot$layers[[1]]$geom_params$size <- 0.5
+	tmpPlot
+}
+```
+
+
+system("pandoc -s -S -t dzslides --slide-level=2 --mathjax affymm_jcPresentation_141012.md -o affymm_slides.html")
