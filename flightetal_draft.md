@@ -243,7 +243,7 @@ would not be from the `_`at class of probes.
 
 To determine the reliability of these probes with the fluctuation of unknown transcripts, those probes that map with
 100% identity to two or more locations in the genome were considered.  While these probes typically represent less
-than 10% of the total number of probes for a given GeneChip®, their classification could be important in detecting
+than 10% of the total number of probes for a given GeneChip(r), their classification could be important in detecting
 cross hybridization.  One might expect that the greatest percentage of these would be within the `_`x`_`at and
 `_`s`_`at classes.  However, as [Table 5](#t.probeType) shows, the larger genomes actually contain the greatest percentage in the
 `_`at and `_`a`_`at classes, with anywhere from 18% (S. cerevisiae) to 91% (R. norvegicus) of the probes matching
@@ -275,7 +275,7 @@ Organism | _x_at | _s_at | _a_at | _at | other
 
 <a id="f.allPlots"></a>
 
-![plot of chunk allPlots](figure/allPlots1.png) ![plot of chunk allPlots](figure/allPlots2.png) ![plot of chunk allPlots](figure/allPlots3.png) ![plot of chunk allPlots](figure/allPlots4.png) ![plot of chunk allPlots](figure/allPlots5.png) ![plot of chunk allPlots](figure/allPlots6.png) ![plot of chunk allPlots](figure/allPlots7.png) ![plot of chunk allPlots](figure/allPlots8.png) 
+![plot of chunk allPlots](figure/allPlots.png) 
 
 
 **Figure 1. Density profile of probe intensities (log2).**  PM: perfect match, MM: mismatch.  mm.all: background MM intensities; pm.all: background PM intensities; mm.exon: intensities of MM probes in exonic regions; pm.exon: intensities of PM probes in exonic regions.

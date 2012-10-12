@@ -1,5 +1,5 @@
 % Affymetrix MisMatch (MM) Probes: </br> Useful After All
-% Robert M Flight </br> Abdallah Eteleeb and Eric C Rouchka
+% Robert M Flight; Abdallah Eteleeb; Eric C Rouchka
 % 14/10/12
 
 ```{r knitrSetup, include=FALSE}
@@ -66,17 +66,15 @@ load("../counts_Plots_etc_allOrgs.RData")
 - **probeset** consists of 11, 16, 20, 25 probe pairs
 - each probe pair consists of a perfect match (PM) and mis-match (MM) probe
 
-## GeneChip
+## GeneChip & ProbeSet
 
-```{r insertChipImage, echo=FALSE, fig.cap="chip"}
+```{r insertChipImage, echo=FALSE, fig.cap="chip", out.height=450, dev='png'}
 celFile <- "../randomCels/hs/GSM259617.CEL.gz"
 celInt <- ReadAffy(filenames=celFile)
 image(celInt)
 ```
 
-## ProbeSet
-
-```{r insertProbeSet, echo=FALSE, fig.cap="probeset"}
+```{r insertProbeSet1, echo=FALSE, fig.cap="probeset", fig.align='center', fig.width=10, out.width=300, dev='svg'}
 cdfDat <- as.list(hgu133plus2cdf)
 allIntensity <- intensity(celInt)
 tmpQ <- cdfDat[["AFFX-HUMGAPDH/M33197_3_at"]]
@@ -88,7 +86,7 @@ pm.mm.Int <- rbind(pmInt, mmInt)
 pm.mm.Int$fill <- sqrt(pm.mm.Int$probeIntensity)
 xlim <- 0.5 + c(0, nrow(pm.mm.Int)/2)
 
-tm.image <- ggplot(pm.mm.Int, aes(x=x, y=class, fill=fill)) + geom_tile() + scale_fill_gradient(low="black", high="white", limits=c(0, 256)) + theme(axis.text.x=element_blank(), axis.ticks=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank()) + coord_equal(ratio=1, xlim=xlim) + theme(legend.position = "none")
+tm.image <- ggplot(pm.mm.Int, aes(x=x, y=class, fill=fill)) + geom_tile() + scale_fill_gradient(low="black", high="white", limits=c(0, 256)) + theme(axis.text.x=element_blank(), axis.ticks=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank()) + coord_equal(ratio=1, xlim=xlim) + theme(legend.position = "none", plot.margin = unit(c(0, 0, 0, 0), "lines"))
 print(tm.image)
 ```
 
@@ -104,6 +102,7 @@ print(tm.image)
     - supposed to account for non-specific binding in the **PM**
     - therefore should have lower signal
     - useful for **PM** signal correction
+
 
 ## 
 
@@ -261,7 +260,7 @@ names(cntTable) <- c("Organism", "Number of Probe Pairs", "PM Mapped to Referenc
 ```
 
 ```{r insertCounts, echo=FALSE, results='asis'}
-print(xtable(cntTable), type = 'html', html.table.attributes = '', include.rownames=FALSE)
+print(xtable(cntTable), type = 'html', html.table.attributes = 'style="font-size:70%; text-align:left"', include.rownames=FALSE)
 ```
 
 
@@ -321,7 +320,7 @@ names(typeCounts)[1] <- "Organism"
 ```
 
 ```{r insertTypeCounts, echo=FALSE, results='asis'}
-print(xtable(typeCounts), type = 'html', html.table.attributes = 'style="font-size:80%; text-align:right"', include.rownames=FALSE)
+print(xtable(typeCounts), type = 'html', html.table.attributes = 'style="font-size:70%; text-align:left"', include.rownames=FALSE)
 ```
 
 ## Comparison of PM and MM Signals
@@ -336,16 +335,59 @@ plotData <- adply(names(allData), 1, function(x){
 	return(tmpInt)
 })
 
-g <- ggplot(plotData, aes(x=x, y=y, colour=colour, linetype=linetype)) + geom_line() + facet_wrap(~organism, ncol=4)
-print(g)
-nPlot <- length(plots)
-useNames <- names(plots)
-for (iPlot in 1:nPlot){
-	tmpPlot <- plots[[iPlot]]
-	tmpPlot$layers[[1]]$geom_params$size <- 0.5
-	tmpPlot
-}
+g <- ggplot(plotData, aes(x=probeInt, colour=probeType, linetype=probeType)) + geom_density() + facet_wrap(~organism, nrow=2) + labs(x="log2 probe intensity")
 ```
 
+Signal density for all probes and those that align to known exons.
+
+```{r insertDensity, echo=FALSE, dev='svg', fig.width=14, out.height=325, fig.align='center'}
+print(g)
+```
+
+## Comparison of PM and MM Signals
+
+- MM probes generally show lower signal intensity
+- MM probes in exons tend toward the signal of PM probes in exons
+- Although few in number, these would confound any analysis depending on PM - MM
+
+## PM MM Negative Difference
+
+```{r pmmmDensity, echo=FALSE, out.height=325, dev='svg', fig.cap="Probe Set Density"}
+# need to get the experiment and probe set ID used for this figure and set it as a variable we can use!
+mmIndx <- 12
+negIndx <- 2
+
+tmpDat <- allData$dr6$pmDifDat[[mmIndx]]
+mmName <- tmpDat$invProbes[negIndx]
+setName <- probeSetName(mmName)
+expName <- tmpDat$probeData$gsmID[negIndx]
+
+denPlot <- tmpDat$plotDat[[negIndx]]$denPlot
+
+denPlot <- denPlot + ggtitle("")
+print(denPlot)
+```
+
+```{r pmmmIntensity, echo=FALSE, out.width=300, dev='svg', fig.cap="Probe Set Intensity"}
+probeSetPlot <- tmpDat$plotDat[[negIndx]]$psImage
+probeSetPlot <- probeSetPlot + ggtitle("") + theme_grey() + theme(legend.position = "none", plot.margin = unit(c(0, 0, 0, 0), "lines"))
+print(probeSetPlot)
+```
+
+
+## TM Signal 
+
+- compare signal of exon matching MM with other probes in that exon
+- matches much better than with the other MM probes
+
+```{r tmIntensity, echo=FALSE, dev='svg', out.width=400, fig.cap="True Match Intensity Comparison"}
+intenPlot <- tmpDat$plotDat[[negIndx]]$exonImage
+intenPlot <- intenPlot + ggtitle("") + theme(legend.position = "none", plot.margin = unit(c(0, 0, 0, 0), "lines"))
+print(intenPlot)
+```
+
+
+
+##
 
 system("pandoc -s -S -t dzslides --slide-level=2 --mathjax affymm_jcPresentation_141012.md -o affymm_slides.html")
