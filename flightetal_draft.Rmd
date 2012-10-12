@@ -361,7 +361,7 @@ typeTable <- tableCat(typeCounts)
 
 To determine the reliability of these probes with the fluctuation of unknown transcripts, those probes that map with
 100% identity to two or more locations in the genome were considered.  While these probes typically represent less
-than 10% of the total number of probes for a given GeneChip®, their classification could be important in detecting
+than 10% of the total number of probes for a given GeneChip(r), their classification could be important in detecting
 cross hybridization.  One might expect that the greatest percentage of these would be within the `_`x`_`at and
 `_`s`_`at classes.  However, as `r I(pasteLabel("Table", tableCount, "t.probeType", T))` shows, the larger genomes actually contain the greatest percentage in the
 `_`at and `_`a`_`at classes, with anywhere from 18% (S. cerevisiae) to 91% (R. norvegicus) of the probes matching
@@ -385,19 +385,18 @@ cat(typeTable, sep="\n")
 
 <a id="f.allPlots"></a>
 
-```{r allPlots, echo=FALSE}
+```{r allPlots, echo=FALSE, fig.width=10}
 theme_set(theme_bw())
 allData <- allData[!(names(allData) %in% "mm9")]
 
-plots <- lapply(allData, function(x){x$allPlot})
+plotData <- adply(names(allData), 1, function(x){
+	tmpInt <- allData[[x]]$allPlot$plotInt
+	tmpInt$organism <- x
+	return(tmpInt)
+})
 
-nPlot <- length(plots)
-useNames <- names(plots)
-for (iPlot in 1:nPlot){
-	tmpPlot <- plots[[iPlot]]
-	tmpPlot$layers[[1]]$geom_params$size <- 0.5
-	print(tmpPlot)
-}
+g <- ggplot(plotData, aes(x=probeInt, colour=probeType, linetype=probeType)) + geom_density() + facet_wrap(~organism, nrow=2) + labs(x="log2 probe intensity")
+print(g)
 ```
 
 **`r I(pasteLabel("Figure", figCount, "f.allPlots", F))`. Density profile of probe intensities (log2).**  PM: perfect match, MM: mismatch.  mm.all: background MM intensities; pm.all: background PM intensities; mm.exon: intensities of MM probes in exonic regions; pm.exon: intensities of PM probes in exonic regions.
