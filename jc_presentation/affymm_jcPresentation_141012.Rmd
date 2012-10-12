@@ -3,7 +3,7 @@
 % 14/10/12
 
 ```{r knitrSetup, include=FALSE}
-# opts_chunk$set(cache=TRUE)
+opts_chunk$set(cache=TRUE)
 knit_hooks$set(error = function(x, options) stop(x)) 
 ```
 
@@ -40,7 +40,7 @@ sortProbes <- function(probeIDs){
 }
 ```
 
-```{r loadPackagesData, include=FALSE}
+```{r loadPackagesData, include=FALSE, cache=FALSE}
 options(stringsAsFactors=FALSE)
 require(ggplot2)
 require(plyr)
@@ -379,6 +379,8 @@ print(probeSetPlot)
 
 - compare signal of exon matching MM with other probes in that exon
 - matches much better than with the other MM probes
+- call these "true match" probes, because they are based on alignment
+- is this a general phenomenom?
 
 ```{r tmIntensity, echo=FALSE, dev='svg', out.width=400, fig.cap="True Match Intensity Comparison"}
 intenPlot <- tmpDat$plotDat[[negIndx]]$exonImage
@@ -386,6 +388,164 @@ intenPlot <- intenPlot + ggtitle("") + theme(legend.position = "none", plot.marg
 print(intenPlot)
 ```
 
+
+
+## MM vs TM Correlation
+
+- compare the correlation of TM with other MM or with TM on same exon
+
+```{r correlationBoxPlot, echo=FALSE, warning=FALSE, dev='svg', out.height=350, fig.width=12, fig.cap="Correlation of TM with MM or other TM", fig.align='center'}
+allData <- allData[!(names(allData) %in% c("mm9", "sc3"))]
+useName <- names(allData)
+
+calcCor <- function(inN){
+	useCor <- allData[[inN]]$mmCor
+	mmProbes <- names(useCor)
+
+	nCor <- length(useCor)
+	
+	mmCor <- data.frame(x=0, y=0, class="", orgName=inN, mmName="")
+	tmCor <- data.frame(x=0, y=0, class="", orgName=inN, mmName="")
+	
+	for (iCor in 1:nCor){
+		mmT <- as.vector(useCor[[iCor]]$mmCor)
+		mmT <- data.frame(x=as.character(iCor), y=mmT, class="mm", orgName=inN, mmName=mmProbes[iCor])
+		mmCor <- rbind(mmCor, mmT)
+		
+		tmT <- as.vector(useCor[[iCor]]$tmCor)
+		if (!(is.na(tmT))){
+			tmT <- data.frame(x=as.character(iCor), y=tmT, class="tm", orgName=inN, mmName=mmProbes[iCor])
+			tmCor <- rbind(tmCor, tmT)
+		}
+	}
+	
+	mmCor <- mmCor[seq(2, nrow(mmCor)),]
+	tmCor <- tmCor[seq(2, nrow(tmCor)),]
+	
+	allCor <- rbind(mmCor, tmCor)
+	hasSame <- unique(mmCor$x[(mmCor$x %in% tmCor$x)])
+	allCorSame <- allCor[(allCor$x %in% hasSame),]
+	return(list(allCor=allCor, allCorSame=allCorSame))
+}
+corDat <- lapply(useName, calcCor)
+names(corDat) <- useName
+
+initCor <- corDat[[1]]$allCorSame
+invisible(sapply(corDat[2:length(corDat)], function(x){
+	initCor <<- rbind(initCor, x$allCorSame)
+}))
+
+initCor$orgName <- as.character(initCor$orgName)
+initCor$orgName[(initCor$orgName == "xtropicalis")] <- "xt3"
+initCor$class.orgName <- paste(initCor$orgName, initCor$class, sep=":")
+
+ggplot(initCor, aes(x=orgName, y=y, colour=class)) + geom_boxplot() + theme_bw() + labs(x="organism", y="correlation")
+```
+
+
+## Different Transcripts?
+
+```{r addCorrTable, echo=FALSE, include=FALSE}
+useCor <- corDat$hg19$allCorSame
+mmProbes <- unique(useCor$mmName)
+
+tmV <- useCor$class == "tm"
+mmV <- useCor$class == "mm"
+tmCor <- sapply(mmProbes, function(x){
+	mean(useCor$y[(tmV & (useCor$mmName %in% x))])
+})
+
+mmCor <- sapply(mmProbes, function(x){
+	mean(useCor$y[(mmV & (useCor$mmName %in% x))])
+})
+
+corInfo <- data.frame(tmCor=tmCor, mmCor=mmCor, mmProbe=mmProbes)
+rownames(corInfo) <- NULL
+
+# what are the annotated refseq for the probeset?
+corInfo$probeSet <- sapply(as.character(corInfo$mmProbe), probeSetName)
+annotRefSeq <- mget(corInfo$probeSet, hgu133plus2REFSEQ, ifnotfound=NA)
+names(annotRefSeq) <- corInfo$mmProbe
+annotRefSeq <- lapply(annotRefSeq, function(x){
+	nmVal <- grep("NM", x, value=T)
+	nrVal <- grep("NR", x, value=T)
+	c(nmVal, nrVal)
+}) # get the NMs back
+
+
+probeAlign <- allData$hg19$probeAlign
+probeAlign <- probeAlign[(elementMetadata(probeAlign)$probeNames %in% corInfo$mmProbe)]
+exonIntervals <- allData$hg19$exonIntervals
+geneExons <- allData$hg19$geneExons
+
+probe2Exons <- as.matrix(findOverlaps(probeAlign, exonIntervals, minoverlap=23, type="any"))
+ref2merge <- as.matrix(findOverlaps(geneExons, exonIntervals, type="within")) # the original exons should be "within" the merged exons
+	
+probeNames <- elementMetadata(probeAlign)$probeNames
+refNames <- elementMetadata(geneExons)$refID	
+probe2Ref <- lapply(seq(1, nrow(probe2Exons)), function(inRow){
+	useExon <- probe2Exons[inRow,2]
+	matchRef <- ref2merge[(ref2merge[,2] == useExon),1]
+	refNames[matchRef]
+})
+names(probe2Ref) <- probeNames[probe2Exons[,1]]
+
+invNames <- names(probe2Ref)
+refComp <- lapply(invNames, function(inName){
+	aRef <- annotRefSeq[[inName]]
+	pRef <- probe2Ref[[inName]]
+	aSpec <- aRef[!(aRef %in% pRef)]
+	pSpec <- pRef[!(pRef %in% aRef)]
+	return(list(aRef=aRef, aSpec=aSpec, pRef=pRef, pSpec=pSpec))
+})
+
+names(refComp) <- invNames
+corInfo <- corInfo[order(corInfo$mmProbe),]
+refComp <- refComp[order(names(refComp))]
+corInfo$annotRef <- sapply(refComp, function(x){paste(x$aRef, collapse=", ")})
+corInfo$exonRef <- sapply(refComp, function(x){paste(x$pRef, collapse=", ")})
+corInfo <- corInfo[,c("tmCor", "mmCor", "probeSet", "mmProbe", "annotRef", "exonRef")]
+
+tmpGene <- vector("list", length(refComp))
+for (iGene in 1:length(refComp)){
+	aRef <- refComp[[iGene]]$aRef
+	if (length(aRef) != 0){
+		tmpEnt <- unlist2(mget(aRef, org.Hs.egREFSEQ2EG, ifnotfound=NA))
+		tmpSym <- unlist2(mget(tmpEnt, org.Hs.egSYMBOL, ifnotfound=NA))
+		useEnt <- unique(names(tmpSym))
+		for (iEnt in 1:length(useEnt)){
+			tEnt <- useEnt[iEnt]
+			names(tmpSym)[names(tmpSym) %in% tEnt] <- unique(names(tmpEnt)[tmpEnt %in% tEnt])
+		}
+		tmpGene[[iGene]]$aRef <- tmpSym
+	}
+	
+	pRef <- refComp[[iGene]]$pRef
+	if (length(pRef) != 0){
+		tmpEnt <- unlist2(mget(pRef, org.Hs.egREFSEQ2EG, ifnotfound=NA))
+		tmpSym <- unlist2(mget(tmpEnt, org.Hs.egSYMBOL, ifnotfound=NA))
+		useEnt <- unique(names(tmpSym))
+		for (iEnt in 1:length(useEnt)){
+			tEnt <- useEnt[iEnt]
+			names(tmpSym)[names(tmpSym) %in% tEnt] <- unique(names(tmpEnt)[tmpEnt %in% tEnt])
+		}
+		tmpGene[[iGene]]$pRef <- tmpSym
+	}
+	
+}
+
+names(tmpGene) <- names(refComp)
+corInfo$aSym <- sapply(tmpGene, function(x){paste(unique(x$aRef), collapse=", ")})
+corInfo$pSym <- sapply(tmpGene, function(x){paste(unique(x$pRef), collapse=", ")})
+corOut <- corInfo
+names(corOut) <- c("tm", "mm", "ProbeSet", "Probe ID", "Annotated RefSeq", "Exon RefSeq", "Annotated Symbol", "Exon Symbol")
+corOut <- corOut[order(corOut$tm, decreasing=T),]
+tmpCor <- xtable(head(corOut))
+```
+
+```{r printCorTable, echo=FALSE, results='asis', comment=""}
+print(tmpCor, type='html', html.table.attributes = 'style="font-size:50%; text-align:left"', include.rownames=FALSE)
+```
 
 
 ##
