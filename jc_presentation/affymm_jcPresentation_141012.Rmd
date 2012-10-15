@@ -93,11 +93,11 @@ print(tm.image)
 
 ## Perfect Match & MisMatch
 
-- Perfect Match
+- Perfect Match (PM)
     - supposed to perfectly match the sequence of interest
     - has exact complementarity
     - binds **perfectly**
-- MisMatch
+- MisMatch (MM)
     - 13th base is reverse complement of **PM** sequence
     - supposed to account for non-specific binding in the **PM**
     - therefore should have lower signal
@@ -113,10 +113,10 @@ mmSeq <- pmSeq
 subseq(mmSeq, start=13, end=13) <- complement(subseq(mmSeq, start=13, end=13))
 outSeq <- data.frame(sequence=c(as.character(pmSeq), as.character(mmSeq)))
 rownames(outSeq) <- c("pm", "mm")
-colnames(outSeq) <- NULL
+colnames(outSeq) <- ""
 ```
 
-```{r insertSequence, comment=""}
+```{r insertSequence, comment="", echo=FALSE}
 outSeq
 ```
 

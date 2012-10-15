@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+  <meta name="author" content="Robert M Flight" />
+  <meta name="author" content="Abdallah Eteleeb" />
+  <meta name="author" content="Eric C Rouchka" />
+  <meta name="dcterms.date" content="2012-12-10" />
+  <title>Affymetrix MisMatch (MM) Probes:  Useful After All</title>
+<style>
+  html { background-color: black; }
+  body { background-color: white; border-radius: 12px}
+  /* A section is a slide. It's size is 800x600, and this will never change */
+  section {
+      font-family: Arial, serif;
+      font-size: 20pt;
+    }
+  address, blockquote, dl, fieldset, form, h1, h2, h3, h4, h5, h6, hr, ol, p, pre, table, ul, dl { padding: 10px 20px 10px 20px; }
+  h1, h2, h3 {
+    text-align: center;
+    margin: 10pt 10pt 20pt 10pt;
+  }
+  ul, ol {
+    margin: 10px 10px 10px 50px;
+  }
+  section.titleslide h1 { margin-top: 200px; }
+  h1.title { margin-top: 150px; }
+  h1 { font-size: 180%; }
+  h2 { font-size: 120%; }
+  h3 { font-size: 100%; }
+  q { quotes: "“" "”" "‘" "’"; }
+  blockquote { font-style: italic }
+  /* Figures are displayed full-page, with the caption on
+     top of the image/video */
+  figure {
+    background-color: black;
+  }
+  figcaption {
+    margin: 70px;
+  }
+  footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 40px;
+    text-align: right;
+    background-color: #F3F4F8;
+    border-top: 1px solid #CCC;
+  }
+
+  /* Transition effect */
+  /* Feel free to change the transition effect for original
+     animations. See here:
+     https://developer.mozilla.org/en/CSS/CSS_transitions
+     How to use CSS3 Transitions: */
+  section {
+      -moz-transition: left 400ms linear 0s;
+      -webkit-transition: left 400ms linear 0s;
+      -ms-transition: left 400ms linear 0s;
+      transition: left 400ms linear 0s;
+  }
+
+  /* Before */
+  section { left: -150%; }
+  /* Now */
+  section[aria-selected] { left: 0; }
+  /* After */
+  section[aria-selected] ~ section { left: +150%; }
+
+  /* Incremental elements */
+
+  /* By default, visible */
+  .incremental > * { opacity: 1; }
+
+  /* The current item */
+  .incremental > *[aria-selected] { color: red; opacity: 1; }
+
+  /* The items to-be-selected */
+  .incremental > *[aria-selected] ~ * { opacity: 0.2; }
+</style>
+</head>
+<body>
+<section>
+  <h1 class="title">Affymetrix MisMatch (MM) Probes: </br> Useful After All</h1>
+  <h2 class="author">Robert M Flight</h2>
+  <h2 class="author">Abdallah Eteleeb</h2>
+  <h2 class="author">Eric C Rouchka</h2>
+  <h3 class="date">17/10/12</h3>
+</section>
+<section class="titleslide slide level1" id="affymetrix-genechips"><h1>Affymetrix GeneChips</h1></section><section class="slide level2" id="genechip">
+<h1>GeneChip</h1>
+<ul>
+<li>solid support with attached 25 mer oligonucleotides</li>
+<li>oligonucleotides organized into <strong>probesets</strong></li>
+<li><strong>probeset</strong> consists of 11, 16, 20, 25 probe pairs</li>
+<li>each probe pair consists of a perfect match (PM) and mis-match (MM) probe</li>
+</ul>
+</section><section class="slide level2" id="genechip-probeset">
+<h1>GeneChip &amp; ProbeSet</h1>
+<img src="figure/insertChipImage.png"  height="450"  alt="chip" title="chip" />
+<img src="figure/insertProbeSet1.svg" width="300"   alt="probeset" title="probeset" />
+</section><section class="slide level2" id="perfect-match-mismatch">
+<h1>Perfect Match &amp; MisMatch</h1>
+<ul>
+<li>Perfect Match (PM)
+<ul>
+<li>supposed to perfectly match the sequence of interest</li>
+<li>has exact complementarity</li>
+<li>binds <strong>perfectly</strong></li>
+</ul></li>
+<li>MisMatch (MM)
+<ul>
+<li>13th base is reverse complement of <strong>PM</strong> sequence</li>
+<li>supposed to account for non-specific binding in the <strong>PM</strong></li>
+<li>therefore should have lower signal</li>
+<li>useful for <strong>PM</strong> signal correction</li>
+</ul></li>
+</ul>
+</section><section class="slide level2" id="section">
+<h1></h1>
+<pre><code>                            
+pm CACCCAGCTGGTCCTGTGGATGGGA
+mm CACCCAGCTGGTGCTGTGGATGGGA</code></pre>
+</section><section class="slide level2" id="perfect-match-mismatch-1">
+<h1>Perfect Match &amp; MisMatch</h1>
+<ul>
+<li>True Signal
+<ul>
+<li>therefore true signal should be PMi - MMi</li>
+</ul></li>
+<li>Problems
+<ul>
+<li>MM may have higher signal than PM</li>
+<li>most modern summarization methods ignore it</li>
+</ul></li>
+</ul>
+</section><section class="slide level2" id="cdf-chip-definition-file">
+<h1>CDF: Chip Definition File</h1>
+<ul>
+<li>Defines organization of probes into probesets
+<ul>
+<li>genes</li>
+<li>gene families</li>
+<li>transcripts</li>
+</ul></li>
+</ul>
+<h3 id="defined-by-affymetrix-based-on-available-annotations">Defined by Affymetrix based on available annotations</h3>
+</section>
+<section class="titleslide slide level1" id="custom-cdf"><h1>Custom CDF</h1></section><section class="slide level2" id="custom">
+<h1>Custom??</h1>
+<ul>
+<li>Reorganize probes
+<ul>
+<li>available probe sequences &amp; chip locations</li>
+<li>available target genome sequences</li>
+<li>available genome annotations (genes, transcripts, exons, etc)</li>
+</ul></li>
+</ul>
+</section><section class="slide level2" id="better-results">
+<h1>Better Results</h1>
+<ul>
+<li>Reorganization gives results that are:
+<ul>
+<li>more reproducible</li>
+<li>more consistent</li>
+</ul></li>
+<li>Dai et al, 2005, NAR 33(20):e175</li>
+<li>Sandberg &amp; Larsson, 2007, BMC Bioin. 8:48</li>
+</ul>
+</section><section class="slide level2" id="but">
+<h1>But …</h1>
+<ul>
+<li><p>only uses perfect match probes!</p></li>
+<li>can we use mismatch probes in custom probesets??
+<ul>
+<li>why not?</li>
+<li>have sequences</li>
+<li>matter of aligning to genome</li>
+</ul></li>
+</ul>
+</section>
+<section class="titleslide slide level1" id="mismatch-probes-in-custom-probesets"><h1>Mismatch Probes in Custom Probesets</h1></section><section class="slide level2" id="organisms">
+<h1>Organisms</h1>
+<!-- html table generated in R 2.15.0 by xtable 1.7-0 package -->
+<!-- Mon Oct 15 12:23:33 2012 -->
+<TABLE >
+<TR> <TH> 
+Organism
+</TH> <TH> 
+Reference Assembly
+</TH> <TH> 
+Build Date
+</TH>  </TR>
+  <TR> <TD> 
+C elegans
+</TD> <TD> 
+ce6
+</TD> <TD> 
+May 2008
+</TD> </TR>
+  <TR> <TD> 
+D melanogaster
+</TD> <TD> 
+dm3
+</TD> <TD> 
+Apr. 2006
+</TD> </TR>
+  <TR> <TD> 
+S cerevisiae
+</TD> <TD> 
+sc3
+</TD> <TD> 
+Apr. 2011
+</TD> </TR>
+  <TR> <TD> 
+X tropicalis
+</TD> <TD> 
+xt3
+</TD> <TD> 
+Nov 2009
+</TD> </TR>
+  <TR> <TD> 
+D rerio
+</TD> <TD> 
+dr6
+</TD> <TD> 
+Dec. 2008
+</TD> </TR>
+  <TR> <TD> 
+M musculus
+</TD> <TD> 
+mm10
+</TD> <TD> 
+Dec. 2011
+</TD> </TR>
+  <TR> <TD> 
+R norvegicus
+</TD> <TD> 
+rn4
+</TD> <TD> 
+Nov 2004
+</TD> </TR>
+  <TR> <TD> 
+H sapiens
+</TD> <TD> 
+hg19
+</TD> <TD> 
+Feb. 2009
+</TD> </TR>
+   </TABLE>
+
+
+</section><section class="slide level2" id="genechips">
+<h1>GeneChips</h1>
+<!-- html table generated in R 2.15.0 by xtable 1.7-0 package -->
+<!-- Mon Oct 15 12:23:33 2012 -->
+<TABLE >
+<TR> <TH> 
+Organism
+</TH> <TH> 
+GeneChip
+</TH>  </TR>
+  <TR> <TD> 
+C elegans
+</TD> <TD> 
+C. elegans Genome
+</TD> </TR>
+  <TR> <TD> 
+D melanogaster
+</TD> <TD> 
+Drosophila Genome 2.0
+</TD> </TR>
+  <TR> <TD> 
+S cerevisiae
+</TD> <TD> 
+Yeast Genome 2.0
+</TD> </TR>
+  <TR> <TD> 
+X tropicalis
+</TD> <TD> 
+X. tropicalus Genome
+</TD> </TR>
+  <TR> <TD> 
+D rerio
+</TD> <TD> 
+Zebrafish Genome
+</TD> </TR>
+  <TR> <TD> 
+M musculus
+</TD> <TD> 
+Mouse Genome 430 2.0
+</TD> </TR>
+  <TR> <TD> 
+R norvegicus
+</TD> <TD> 
+Rat Genome 230 2.0
+</TD> </TR>
+  <TR> <TD> 
+H sapiens
+</TD> <TD> 
+Human Genome U133 Plus 2.0
+</TD> </TR>
+   </TABLE>
+
+
+</section><section class="slide level2" id="microarray-data">
+<h1>Microarray Data</h1>
+<ul>
+<li>random data from gene expression omnibus (GEO)</li>
+<li>20 random CEL files for each organism
+<ul>
+<li>Only 4 for X. tropicalis, 12 for Yeast</li>
+</ul></li>
+</ul>
+</section><section class="slide level2" id="probe-sequences-alignment">
+<h1>Probe Sequences &amp; Alignment</h1>
+<ul>
+<li>Sequences:
+<ul>
+<li>from <strong>Bioconductor</strong> <code>probe</code> packages</li>
+<li>MM sequences generated from PM sequences</li>
+</ul></li>
+<li>Alignments:
+<ul>
+<li>align both PM and MM to reference using <code>bowtie v0.12.8</code></li>
+<li>report only alignments with <strong>0</strong> mismatches</li>
+</ul></li>
+</ul>
+</section>
+<section class="titleslide slide level1" id="results"><h1>Results</h1></section><section class="slide level2" id="number-of-alignments">
+<h1>Number of Alignments</h1>
+<!-- html table generated in R 2.15.0 by xtable 1.7-0 package -->
+<!-- Mon Oct 15 12:23:34 2012 -->
+<TABLE style="font-size:70%; text-align:left">
+<TR> <TH> 
+Organism
+</TH> <TH> 
+Number of Probe Pairs
+</TH> <TH> 
+PM Mapped to Reference
+</TH> <TH> 
+MM Mapped to Reference
+</TH> <TH> 
+PM Unique
+</TH> <TH> 
+MM Unique
+</TH>  </TR>
+  <TR> <TD> 
+<em>Ce</em>
+</TD> <TD align="right"> 
+249165
+</TD> <TD align="right"> 
+226856
+</TD> <TD align="right"> 
+143
+</TD> <TD align="right"> 
+213745
+</TD> <TD align="right">  
+96
+</TD> </TR>
+  <TR> <TD> 
+<em>Dm</em>
+</TD> <TD align="right"> 
+265400
+</TD> <TD align="right"> 
+251602
+</TD> <TD align="right">  
+89
+</TD> <TD align="right"> 
+245712
+</TD> <TD align="right">  
+54
+</TD> </TR>
+  <TR> <TD> 
+<em>Dr</em>
+</TD> <TD align="right"> 
+249752
+</TD> <TD align="right"> 
+200608
+</TD> <TD align="right"> 
+1282
+</TD> <TD align="right"> 
+171282
+</TD> <TD align="right"> 
+726
+</TD> </TR>
+  <TR> <TD> 
+<em>Hs</em>
+</TD> <TD align="right"> 
+604258
+</TD> <TD align="right"> 
+562673
+</TD> <TD align="right"> 
+1094
+</TD> <TD align="right"> 
+521642
+</TD> <TD align="right"> 
+608
+</TD> </TR>
+  <TR> <TD> 
+<em>Mm</em>
+</TD> <TD align="right"> 
+496468
+</TD> <TD align="right"> 
+456674
+</TD> <TD align="right"> 
+557
+</TD> <TD align="right"> 
+427920
+</TD> <TD align="right"> 
+394
+</TD> </TR>
+  <TR> <TD> 
+<em>Rn</em>
+</TD> <TD align="right"> 
+342410
+</TD> <TD align="right"> 
+304646
+</TD> <TD align="right"> 
+391
+</TD> <TD align="right"> 
+286784
+</TD> <TD align="right"> 
+282
+</TD> </TR>
+  <TR> <TD> 
+<em>Sc</em>
+</TD> <TD align="right"> 
+120855
+</TD> <TD align="right"> 
+63731
+</TD> <TD align="right">   
+1
+</TD> <TD align="right"> 
+61942
+</TD> <TD align="right">   
+1
+</TD> </TR>
+  <TR> <TD> 
+<em>Xt</em>
+</TD> <TD align="right"> 
+648548
+</TD> <TD align="right"> 
+519177
+</TD> <TD align="right"> 
+1884
+</TD> <TD align="right"> 
+426237
+</TD> <TD align="right"> 
+1014
+</TD> </TR>
+   </TABLE>
+
+
+
+</section><section class="slide level2" id="types-of-alignments">
+<h1>Types of Alignments</h1>
+<p>Which types of probes align to multiple locations?</p>
+<!-- html table generated in R 2.15.0 by xtable 1.7-0 package -->
+<!-- Mon Oct 15 12:23:37 2012 -->
+<TABLE style="font-size:70%; text-align:left">
+<TR> <TH> 
+Organism
+</TH> <TH> 
+_x_at
+</TH> <TH> 
+_s_at
+</TH> <TH> 
+_a_at
+</TH> <TH> 
+_at
+</TH> <TH> 
+other
+</TH>  </TR>
+  <TR> <TD> 
+Ce
+</TD> <TD> 
+4064 (31%)
+</TD> <TD> 
+6552 (50%)
+</TD> <TD> 
+0 (0%)
+</TD> <TD> 
+2495 (19%)
+</TD> <TD> 
+0 (0%)
+</TD> </TR>
+  <TR> <TD> 
+Dm
+</TD> <TD> 
+361 (6.1%)
+</TD> <TD> 
+2742 (47%)
+</TD> <TD> 
+224 (3.8%)
+</TD> <TD> 
+2563 (44%)
+</TD> <TD> 
+0 (0%)
+</TD> </TR>
+  <TR> <TD> 
+Dr
+</TD> <TD> 
+1390 (4.7%)
+</TD> <TD> 
+404 (1.4%)
+</TD> <TD> 
+1203 (4.1%)
+</TD> <TD> 
+26329 (90%)
+</TD> <TD> 
+0 (0%)
+</TD> </TR>
+  <TR> <TD> 
+Hs
+</TD> <TD> 
+9402 (23%)
+</TD> <TD> 
+10634 (26%)
+</TD> <TD> 
+803 (2%)
+</TD> <TD> 
+20192 (49%)
+</TD> <TD> 
+0 (0%)
+</TD> </TR>
+  <TR> <TD> 
+Mm
+</TD> <TD> 
+4075 (14%)
+</TD> <TD> 
+2920 (10%)
+</TD> <TD> 
+4893 (17%)
+</TD> <TD> 
+16866 (59%)
+</TD> <TD> 
+0 (0%)
+</TD> </TR>
+  <TR> <TD> 
+Rn
+</TD> <TD> 
+440 (2.5%)
+</TD> <TD> 
+394 (2.2%)
+</TD> <TD> 
+805 (4.5%)
+</TD> <TD> 
+16223 (91%)
+</TD> <TD> 
+0 (0%)
+</TD> </TR>
+  <TR> <TD> 
+Sc
+</TD> <TD> 
+81 (4.5%)
+</TD> <TD> 
+1137 (64%)
+</TD> <TD> 
+0 (0%)
+</TD> <TD> 
+571 (32%)
+</TD> <TD> 
+0 (0%)
+</TD> </TR>
+  <TR> <TD> 
+Xt
+</TD> <TD> 
+14092 (15%)
+</TD> <TD> 
+12154 (13%)
+</TD> <TD> 
+34877 (38%)
+</TD> <TD> 
+31817 (34%)
+</TD> <TD> 
+0 (0%)
+</TD> </TR>
+   </TABLE>
+
+
+</section><section class="slide level2" id="comparison-of-pm-and-mm-signals">
+<h1>Comparison of PM and MM Signals</h1>
+<p>Signal density for all probes and those that align to known exons.</p>
+<img src="figure/insertDensity.svg"  height="325"  alt="plot of chunk insertDensity" title="plot of chunk insertDensity" />
+</section><section class="slide level2" id="comparison-of-pm-and-mm-signals-1">
+<h1>Comparison of PM and MM Signals</h1>
+<ul>
+<li>MM probes generally show lower signal intensity</li>
+<li>MM probes in exons tend toward the signal of PM probes in exons</li>
+<li>Although few in number, these would confound any analysis depending on PM - MM</li>
+</ul>
+</section><section class="slide level2" id="pm-mm-negative-difference">
+<h1>PM MM Negative Difference</h1>
+<img src="figure/pmmmDensity.svg"  height="325"  alt="Probe Set Density" title="Probe Set Density" />
+<img src="figure/pmmmIntensity.svg" width="300"   alt="Probe Set Intensity" title="Probe Set Intensity" />
+</section><section class="slide level2" id="tm-signal">
+<h1>TM Signal</h1>
+<ul>
+<li>compare signal of exon matching MM with other probes in that exon</li>
+<li>matches much better than with the other MM probes</li>
+<li>call these <q>true match</q> probes, because they are based on alignment</li>
+<li>is this a general phenomenom?</li>
+</ul>
+<img src="figure/tmIntensity.svg" width="400"   alt="True Match Intensity Comparison" title="True Match Intensity Comparison" />
+</section><section class="slide level2" id="mm-vs-tm-correlation">
+<h1>MM vs TM Correlation</h1>
+<ul>
+<li>compare the correlation of TM with other MM or with TM on same exon</li>
+</ul>
+<img src="figure/correlationBoxPlot.svg"  height="350"  alt="Correlation of TM with MM or other TM" title="Correlation of TM with MM or other TM" />
+</section><section class="slide level2" id="different-transcripts">
+<h1>Different Transcripts?</h1>
+<!-- html table generated in R 2.15.0 by xtable 1.7-0 package -->
+<!-- Mon Oct 15 12:24:15 2012 -->
+<TABLE style="font-size:50%; text-align:left; td.padding: 0.5em;">
+<TR> <TH> 
+tm
+</TH> <TH> 
+mm
+</TH> <TH> 
+Annotated RefSeq
+</TH> <TH> 
+Exon RefSeq
+</TH> <TH> 
+Annotated Symbol
+</TH> <TH> 
+Exon Symbol
+</TH>  </TR>
+  <TR> <TD align="right"> 
+0.87
+</TD> <TD align="right"> 
+0.53
+</TD> <TD> 
+NM_001164750, NM_001164751, NM_001164752, NM_001164753, NM_001164754, NM_001164755, NM_001164756, NM_004318, NM_020164, NM_032466, NM_032467, NM_032468
+</TD> <TD> 
+NM_032466, NM_032468, NM_001164755, NM_001164754, NM_001164753, NM_001164752, NM_001164751
+</TD> <TD> 
+ASPH
+</TD> <TD> 
+ASPH
+</TD> </TR>
+  <TR> <TD align="right"> 
+0.86
+</TD> <TD align="right"> 
+0.61
+</TD> <TD> 
+NM_000898
+</TD> <TD> 
+NM_000898
+</TD> <TD> 
+MAOB
+</TD> <TD> 
+MAOB
+</TD> </TR>
+  <TR> <TD align="right"> 
+0.84
+</TD> <TD align="right"> 
+0.60
+</TD> <TD> 
+NM_005328
+</TD> <TD> 
+NM_005328
+</TD> <TD> 
+HAS2
+</TD> <TD> 
+HAS2
+</TD> </TR>
+  <TR> <TD align="right"> 
+0.81
+</TD> <TD align="right"> 
+0.55
+</TD> <TD> 
+NM_001173487, NM_001173488, NM_017544
+</TD> <TD> 
+NM_001173488, NM_001173487, NM_017544
+</TD> <TD> 
+NKRF
+</TD> <TD> 
+NKRF
+</TD> </TR>
+  <TR> <TD align="right"> 
+0.81
+</TD> <TD align="right"> 
+0.78
+</TD> <TD> 
+NM_014390
+</TD> <TD> 
+NM_014390
+</TD> <TD> 
+SND1
+</TD> <TD> 
+SND1
+</TD> </TR>
+  <TR> <TD align="right"> 
+0.79
+</TD> <TD align="right"> 
+0.82
+</TD> <TD> 
+NM_213600, NR_033151
+</TD> <TD> 
+NM_213600, NR_033151
+</TD> <TD> 
+PLA2G4F
+</TD> <TD> 
+PLA2G4F
+</TD> </TR>
+   </TABLE>
+
+
+<ul>
+<li>Is the MM annotated transcript different than the mapped TM transcript (hg19)?
+<ul>
+<li>MM and TM map to the same transcript!</li>
+<li>MM actually perfectly matches its transcript!</li>
+</ul></li>
+</ul>
+</section>
+<section class="titleslide slide level1" id="variation"><h1>Variation</h1></section><section class="slide level2" id="data">
+<h1>Data</h1>
+<ul>
+<li>Five human genome assemblies</li>
+</ul>
+<!-- html table generated in R 2.15.0 by xtable 1.7-0 package -->
+<!-- Mon Oct 15 12:24:15 2012 -->
+<TABLE style="text-align:left">
+<TR> <TH> 
+Name
+</TH> <TH> 
+Abbr
+</TH> <TH> 
+Assembly
+</TH> <TH> 
+Bioproject
+</TH> <TH> 
+Race
+</TH>  </TR>
+  <TR> <TD> 
+GRCh37
+</TD> <TD> 
+Hg19
+</TD> <TD> 
+420368
+</TD> <TD> 
+31257
+</TD> <TD> 
+Mixed
+</TD> </TR>
+  <TR> <TD> 
+HS_Celera_WGSA
+</TD> <TD> 
+Celera
+</TD> <TD> 
+281338
+</TD> <TD> 
+1431
+</TD> <TD> 
+Mixed
+</TD> </TR>
+  <TR> <TD> 
+HuRefPrime
+</TD> <TD> 
+JCVI
+</TD> <TD> 
+281188
+</TD> <TD> 
+19621
+</TD> <TD> 
+Caucasian
+</TD> </TR>
+  <TR> <TD> 
+BIGAF
+</TD> <TD> 
+BGI
+</TD> <TD> 
+165398
+</TD> <TD> 
+42201
+</TD> <TD> 
+African
+</TD> </TR>
+  <TR> <TD> 
+HsapALLPATHS1
+</TD> <TD> 
+HSAP1
+</TD> <TD> 
+238948
+</TD> <TD> 
+59877
+</TD> <TD> 
+Caucasian
+</TD> </TR>
+   </TABLE>
+
+
+</section><section class="slide level2" id="mapping-differences">
+<h1>Mapping Differences</h1>
+<!-- html table generated in R 2.15.0 by xtable 1.7-0 package -->
+<!-- Mon Oct 15 12:24:42 2012 -->
+<TABLE border=1>
+<TR> <TH> 
+Assembly
+</TH> <TH> 
+Total
+</TH> <TH> 
+Perfect Match
+</TH> <TH> 
+Mismatch
+</TH>  </TR>
+  <TR> <TD> 
+Hg19
+</TD> <TD align="right"> 
+522250
+</TD> <TD align="right"> 
+521642
+</TD> <TD align="right"> 
+608
+</TD> </TR>
+  <TR> <TD> 
+Celera
+</TD> <TD align="right"> 
+515111
+</TD> <TD align="right"> 
+514518
+</TD> <TD align="right"> 
+593
+</TD> </TR>
+  <TR> <TD> 
+JCVI
+</TD> <TD align="right"> 
+530213
+</TD> <TD align="right"> 
+529569
+</TD> <TD align="right"> 
+644
+</TD> </TR>
+  <TR> <TD> 
+BGI
+</TD> <TD align="right"> 
+469973
+</TD> <TD align="right"> 
+469714
+</TD> <TD align="right"> 
+259
+</TD> </TR>
+  <TR> <TD> 
+HSAP1
+</TD> <TD align="right"> 
+522480
+</TD> <TD align="right"> 
+521922
+</TD> <TD align="right"> 
+558
+</TD> </TR>
+   </TABLE>
+
+
+
+</section><section class="slide level2" id="mapping-differences-1">
+<h1>Mapping Differences</h1>
+<img src="figure/vennFigureDiffs.svg"  height="350"  alt="plot of chunk vennFigureDiffs" title="plot of chunk vennFigureDiffs" />
+<ul>
+<li>161 shared MM probes</li>
+<li>24 fall within RefSeq annotated exonic regions</li>
+<li>16 show higher correlation with TM than MM</li>
+</ul>
+</section><section class="slide level2" id="useful">
+<h1>Useful!!</h1>
+<ul>
+<li>MM probes <strong>theoretically</strong> capture non-specific binding</li>
+<li>Small percentage appear able to capture true transcriptional events</li>
+<li>Therefore, custom CDF workflows should include the MM probe sequences
+<ul>
+<li><code>Bowtie</code> makes this lightning fast compared to <code>Blat</code></li>
+</ul></li>
+</ul>
+</section><section class="slide level2" id="tools-used">
+<h1>Tools Used</h1>
+<ul>
+<li>Produced using:
+<ul>
+<li><code>knitr</code></li>
+<li><code>pandoc</code></li>
+<li><code>bzslides</code></li>
+</ul></li>
+<li>Source code on Github
+<ul>
+<li>github.com/rmflight/affyMM</li>
+</ul></li>
+<li>Draft publication on Github
+<ul>
+<li>rmflight.github.com/affyMM</li>
+</ul></li>
+</ul>
+</section><section class="slide level2" id="questions">
+<h1>Questions??</h1>
+</section><section class="slide level2" id="session-info">
+<h1>Session Info</h1>
+<p>R version 2.15.0 (2012-03-30) Platform: x86_64-pc-mingw32/x64 (64-bit)</p>
+<p>locale: [1] LC_COLLATE=English_United States.1252 [2] LC_CTYPE=English_United States.1252<br>[3] LC_MONETARY=English_United States.1252 [4] LC_NUMERIC=C<br>[5] LC_TIME=English_United States.1252</p>
+<p>attached base packages: [1] grid stats graphics grDevices utils datasets methods<br>[8] base</p>
+<p>other attached packages: [1] knitr_0.8.1 xtable_1.7-0<br> [3] hgu133plus2probe_2.10.0 hgu133plus2cdf_2.10.0<br> [5] hgu133plus2.db_2.7.1 org.Hs.eg.db_2.7.1<br> [7] RSQLite_0.11.2 DBI_0.2-5<br> [9] AnnotationDbi_1.18.3 VennDiagram_1.5.1<br>[11] plyr_1.7.1 markdown_0.5.2<br>[13] Rsamtools_1.8.6 Biostrings_2.24.1<br>[15] affy_1.34.0 Biobase_2.16.0<br>[17] ggplot2_0.9.2.1 GenomicRanges_1.8.13<br>[19] IRanges_1.14.4 BiocGenerics_0.2.0</p>
+<p>loaded via a namespace (and not attached): [1] affyio_1.24.0 BiocInstaller_1.4.7 bitops_1.0-4.1<br> [4] colorspace_1.1-1 dichromat_1.2-4 digest_0.5.2<br> [7] evaluate_0.4.2 formatR_0.6 gtable_0.1.1<br>[10] labeling_0.1 MASS_7.3-21 memoise_0.1<br>[13] munsell_0.4 preprocessCore_1.18.0 proto_0.3-9.2<br>[16] RColorBrewer_1.0-5 reshape2_1.2.1 scales_0.2.2<br>[19] stats4_2.15.0 stringr_0.6.1 tools_2.15.0<br>[22] zlibbioc_1.2.0</p>
+</section><section class="slide level2" id="section-1">
+<h1></h1>
+<p>system(<q>pandoc -s -S -t dzslides –slide-level=2 –mathjax affymm_jcPresentation_141012.md -o affymm_slides.html</q>)</p>
+</section>
+<!-- {{{{ dzslides core
+#
+#
+#     __  __  __       .  __   ___  __
+#    |  \  / /__` |    | |  \ |__  /__`
+#    |__/ /_ .__/ |___ | |__/ |___ .__/ core :€
+#
+#
+# The following block of code is not supposed to be edited.
+# But if you want to change the behavior of these slides,
+# feel free to hack it!
+#
+-->
+
+<div id="progress-bar"></div>
+
+<!-- Default Style -->
+<style>
+  * { margin: 0; padding: 0; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+  details { display: none; }
+  body {
+    width: 800px; height: 600px;
+    margin-left: -400px; margin-top: -300px;
+    position: absolute; top: 50%; left: 50%;
+    overflow: hidden;
+  }
+  section {
+    position: absolute;
+    pointer-events: none;
+    width: 100%; height: 100%;
+  }
+  section[aria-selected] { pointer-events: auto; }
+  html { overflow: hidden; }
+  body { display: none; }
+  body.loaded { display: block; }
+  .incremental {visibility: hidden; }
+  .incremental[active] {visibility: visible; }
+  #progress-bar{
+    bottom: 0;
+    position: absolute;
+    -moz-transition: width 400ms linear 0s;
+    -webkit-transition: width 400ms linear 0s;
+    -ms-transition: width 400ms linear 0s;
+    transition: width 400ms linear 0s;
+  }
+  figure {
+    width: 100%;
+    height: 100%;
+  }
+  figure > * {
+    position: absolute;
+  }
+  figure > img, figure > video {
+    width: 100%; height: 100%;
+  }
+</style>
+
+<script>
+  var Dz = {
+    remoteWindows: [],
+    idx: -1,
+    step: 0,
+    slides: null,
+    progressBar : null,
+    params: {
+      autoplay: "1"
+    }
+  };
+
+  Dz.init = function() {
+    document.body.className = "loaded";
+    this.slides = $$("body > section");
+    this.progressBar = $("#progress-bar");
+    this.setupParams();
+    this.onhashchange();
+    this.setupTouchEvents();
+    this.onresize();
+  }
+  
+  Dz.setupParams = function() {
+    var p = window.location.search.substr(1).split('&');
+    p.forEach(function(e, i, a) {
+      var keyVal = e.split('=');
+      Dz.params[keyVal[0]] = decodeURIComponent(keyVal[1]);
+    });
+  // Specific params handling
+    if (!+this.params.autoplay)
+      $$.forEach($$("video"), function(v){ v.controls = true });
+  }
+
+  Dz.onkeydown = function(aEvent) {
+    // Don't intercept keyboard shortcuts
+    if (aEvent.altKey
+      || aEvent.ctrlKey
+      || aEvent.metaKey
+      || aEvent.shiftKey) {
+      return;
+    }
+    if ( aEvent.keyCode == 37 // left arrow
+      || aEvent.keyCode == 38 // up arrow
+      || aEvent.keyCode == 33 // page up
+    ) {
+      aEvent.preventDefault();
+      this.back();
+    }
+    if ( aEvent.keyCode == 39 // right arrow
+      || aEvent.keyCode == 40 // down arrow
+      || aEvent.keyCode == 34 // page down
+    ) {
+      aEvent.preventDefault();
+      this.forward();
+    }
+    if (aEvent.keyCode == 35) { // end
+      aEvent.preventDefault();
+      this.goEnd();
+    }
+    if (aEvent.keyCode == 36) { // home
+      aEvent.preventDefault();
+      this.goStart();
+    }
+    if (aEvent.keyCode == 32) { // space
+      aEvent.preventDefault();
+      this.toggleContent();
+    }
+    if (aEvent.keyCode == 70) { // f
+      aEvent.preventDefault();
+      this.goFullscreen();
+    }
+  }
+
+  /* Touch Events */
+
+  Dz.setupTouchEvents = function() {
+    var orgX, newX;
+    var tracking = false;
+
+    var db = document.body;
+    db.addEventListener("touchstart", start.bind(this), false);
+    db.addEventListener("touchmove", move.bind(this), false);
+
+    function start(aEvent) {
+      aEvent.preventDefault();
+      tracking = true;
+      orgX = aEvent.changedTouches[0].pageX;
+    }
+
+    function move(aEvent) {
+      if (!tracking) return;
+      newX = aEvent.changedTouches[0].pageX;
+      if (orgX - newX > 100) {
+        tracking = false;
+        this.forward();
+      } else {
+        if (orgX - newX < -100) {
+          tracking = false;
+          this.back();
+        }
+      }
+    }
+  }
+
+  /* Adapt the size of the slides to the window */
+
+  Dz.onresize = function() {
+    var db = document.body;
+    var sx = db.clientWidth / window.innerWidth;
+    var sy = db.clientHeight / window.innerHeight;
+    var transform = "scale(" + (1/Math.max(sx, sy)) + ")";
+
+    db.style.MozTransform = transform;
+    db.style.WebkitTransform = transform;
+    db.style.OTransform = transform;
+    db.style.msTransform = transform;
+    db.style.transform = transform;
+  }
+
+
+  Dz.getDetails = function(aIdx) {
+    var s = $("section:nth-of-type(" + aIdx + ")");
+    var d = s.$("details");
+    return d ? d.innerHTML : "";
+  }
+
+  Dz.onmessage = function(aEvent) {
+    var argv = aEvent.data.split(" "), argc = argv.length;
+    argv.forEach(function(e, i, a) { a[i] = decodeURIComponent(e) });
+    var win = aEvent.source;
+    if (argv[0] === "REGISTER" && argc === 1) {
+      this.remoteWindows.push(win);
+      this.postMsg(win, "REGISTERED", document.title, this.slides.length);
+      this.postMsg(win, "CURSOR", this.idx + "." + this.step);
+      return;
+    }
+    if (argv[0] === "BACK" && argc === 1)
+      this.back();
+    if (argv[0] === "FORWARD" && argc === 1)
+      this.forward();
+    if (argv[0] === "START" && argc === 1)
+      this.goStart();
+    if (argv[0] === "END" && argc === 1)
+      this.goEnd();
+    if (argv[0] === "TOGGLE_CONTENT" && argc === 1)
+      this.toggleContent();
+    if (argv[0] === "SET_CURSOR" && argc === 2)
+      window.location.hash = "#" + argv[1];
+    if (argv[0] === "GET_CURSOR" && argc === 1)
+      this.postMsg(win, "CURSOR", this.idx + "." + this.step);
+    if (argv[0] === "GET_NOTES" && argc === 1)
+      this.postMsg(win, "NOTES", this.getDetails(this.idx));
+  }
+
+  Dz.toggleContent = function() {
+    // If a Video is present in this new slide, play it.
+    // If a Video is present in the previous slide, stop it.
+    var s = $("section[aria-selected]");
+    if (s) {
+      var video = s.$("video");
+      if (video) {
+        if (video.ended || video.paused) {
+          video.play();
+        } else {
+          video.pause();
+        }
+      }
+    }
+  }
+
+  Dz.setCursor = function(aIdx, aStep) {
+    // If the user change the slide number in the URL bar, jump
+    // to this slide.
+    aStep = (aStep != 0 && typeof aStep !== "undefined") ? "." + aStep : ".0";
+    window.location.hash = "#" + aIdx + aStep;
+  }
+
+  Dz.onhashchange = function() {
+    var cursor = window.location.hash.split("#"),
+        newidx = 1,
+        newstep = 0;
+    if (cursor.length == 2) {
+      newidx = ~~cursor[1].split(".")[0];
+      newstep = ~~cursor[1].split(".")[1];
+      if (newstep > Dz.slides[newidx - 1].$$('.incremental > *').length) {
+        newstep = 0;
+        newidx++;
+      }
+    }
+    this.setProgress(newidx, newstep);
+    if (newidx != this.idx) {
+      this.setSlide(newidx);
+    }
+    if (newstep != this.step) {
+      this.setIncremental(newstep);
+    }
+    for (var i = 0; i < this.remoteWindows.length; i++) {
+      this.postMsg(this.remoteWindows[i], "CURSOR", this.idx + "." + this.step);
+    }
+  }
+
+  Dz.back = function() {
+    if (this.idx == 1 && this.step == 0) {
+      return;
+    }
+    if (this.step == 0) {
+      this.setCursor(this.idx - 1,
+                     this.slides[this.idx - 2].$$('.incremental > *').length);
+    } else {
+      this.setCursor(this.idx, this.step - 1);
+    }
+  }
+
+  Dz.forward = function() {
+    if (this.idx >= this.slides.length &&
+        this.step >= this.slides[this.idx - 1].$$('.incremental > *').length) {
+        return;
+    }
+    if (this.step >= this.slides[this.idx - 1].$$('.incremental > *').length) {
+      this.setCursor(this.idx + 1, 0);
+    } else {
+      this.setCursor(this.idx, this.step + 1);
+    }
+  }
+
+  Dz.goStart = function() {
+    this.setCursor(1, 0);
+  }
+
+  Dz.goEnd = function() {
+    var lastIdx = this.slides.length;
+    var lastStep = this.slides[lastIdx - 1].$$('.incremental > *').length;
+    this.setCursor(lastIdx, lastStep);
+  }
+
+  Dz.setSlide = function(aIdx) {
+    this.idx = aIdx;
+    var old = $("section[aria-selected]");
+    var next = $("section:nth-of-type("+ this.idx +")");
+    if (old) {
+      old.removeAttribute("aria-selected");
+      var video = old.$("video");
+      if (video) {
+        video.pause();
+      }
+    }
+    if (next) {
+      next.setAttribute("aria-selected", "true");
+      var video = next.$("video");
+      if (video && !!+this.params.autoplay) {
+        video.play();
+      }
+    } else {
+      // That should not happen
+      this.idx = -1;
+      // console.warn("Slide doesn't exist.");
+    }
+  }
+
+  Dz.setIncremental = function(aStep) {
+    this.step = aStep;
+    var old = this.slides[this.idx - 1].$('.incremental > *[aria-selected]');
+    if (old) {
+      old.removeAttribute('aria-selected');
+    }
+    var incrementals = $$('.incremental');
+    if (this.step <= 0) {
+      $$.forEach(incrementals, function(aNode) {
+        aNode.removeAttribute('active');
+      });
+      return;
+    }
+    var next = this.slides[this.idx - 1].$$('.incremental > *')[this.step - 1];
+    if (next) {
+      next.setAttribute('aria-selected', true);
+      next.parentNode.setAttribute('active', true);
+      var found = false;
+      $$.forEach(incrementals, function(aNode) {
+        if (aNode != next.parentNode)
+          if (found)
+            aNode.removeAttribute('active');
+          else
+            aNode.setAttribute('active', true);
+        else
+          found = true;
+      });
+    } else {
+      setCursor(this.idx, 0);
+    }
+    return next;
+  }
+
+  Dz.goFullscreen = function() {
+    var html = $('html'),
+        requestFullscreen = html.requestFullscreen || html.requestFullScreen || html.mozRequestFullScreen || html.webkitRequestFullScreen;
+    if (requestFullscreen) {
+      requestFullscreen.apply(html);
+    }
+  }
+  
+  Dz.setProgress = function(aIdx, aStep) {
+    var slide = $("section:nth-of-type("+ aIdx +")");
+    if (!slide)
+      return;
+    var steps = slide.$$('.incremental > *').length + 1,
+        slideSize = 100 / (this.slides.length - 1),
+        stepSize = slideSize / steps;
+    this.progressBar.style.width = ((aIdx - 1) * slideSize + aStep * stepSize) + '%';
+  }
+  
+  Dz.postMsg = function(aWin, aMsg) { // [arg0, [arg1...]]
+    aMsg = [aMsg];
+    for (var i = 2; i < arguments.length; i++)
+      aMsg.push(encodeURIComponent(arguments[i]));
+    aWin.postMessage(aMsg.join(" "), "*");
+  }
+  
+  function init() {
+    Dz.init();
+    window.onkeydown = Dz.onkeydown.bind(Dz);
+    window.onresize = Dz.onresize.bind(Dz);
+    window.onhashchange = Dz.onhashchange.bind(Dz);
+    window.onmessage = Dz.onmessage.bind(Dz);
+  }
+
+  window.onload = init;
+</script>
+
+
+<script> // Helpers
+  if (!Function.prototype.bind) {
+    Function.prototype.bind = function (oThis) {
+
+      // closest thing possible to the ECMAScript 5 internal IsCallable
+      // function 
+      if (typeof this !== "function")
+      throw new TypeError(
+        "Function.prototype.bind - what is trying to be fBound is not callable"
+      );
+
+      var aArgs = Array.prototype.slice.call(arguments, 1),
+          fToBind = this,
+          fNOP = function () {},
+          fBound = function () {
+            return fToBind.apply( this instanceof fNOP ? this : oThis || window,
+                   aArgs.concat(Array.prototype.slice.call(arguments)));
+          };
+
+      fNOP.prototype = this.prototype;
+      fBound.prototype = new fNOP();
+
+      return fBound;
+    };
+  }
+
+  var $ = (HTMLElement.prototype.$ = function(aQuery) {
+    return this.querySelector(aQuery);
+  }).bind(document);
+
+  var $$ = (HTMLElement.prototype.$$ = function(aQuery) {
+    return this.querySelectorAll(aQuery);
+  }).bind(document);
+
+  $$.forEach = function(nodeList, fun) {
+    Array.prototype.forEach.call(nodeList, fun);
+  }
+
+</script>
+<!-- vim: set fdm=marker: }}} -->
+</body>
+</html>

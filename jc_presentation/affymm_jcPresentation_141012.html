@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<title>Affymetrix GeneChips</title>
+
+<base target="_blank"/>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<p>% Affymetrix MisMatch (MM) Probes: </br> Useful After All
+% Robert M Flight </br> Abdallah Eteleeb and Eric C Rouchka
+% 14/10/12</p>
+
+<h1>Affymetrix GeneChips</h1>
+
+<h2>GeneChip</h2>
+
+<ul>
+<li>solid support with attached 25 mer oligonucleotides</li>
+<li>oligonucleotides organized into <strong>probesets</strong></li>
+<li><strong>probeset</strong> consists of 11, 16, 20, 25 probe pairs</li>
+<li>each probe pair consists of a perfect match (PM) and mis-match (MM) probe</li>
+</ul>
+
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANgAAAH4CAMAAAAfJdNdAAAAmVBMVEUKCgoLCwsMDAwUFBQWFhYXFxcYGBgaGhodHR0fHx8lJSUoKCgpKSkrKyssLCwwMDAyMjIzMzM5OTk7Ozs9PT1AQEBBQUFGRkZISEhJSUlQUFBRUVFTU1NZWVlra2t/f39/lcF/q9aVf6uVq6uVq9aVweurf3+r1v/BlavWq3/W///l5eXr///y8vL/1qv/68H//9b//+v////g4hr9AAAACXBIWXMAAAsSAAALEgHS3X78AAAC/0lEQVR4nO3X104bQQBAUdJJ772QBgTS/f8fFyfM5MHwAEhROOaeh5FnNbL3yrs72o3Fmtr43yfwrxSmKUxTmKYwTWGawjSFaQrTFKYpTFOYpjBNYZrCNIVpCtMUpilMU5imME1hmsI0hWkK0xSmKUxTmKYwTWGawjSFaQrTFKYpTFOYpjBNYZrCNIVpCtMUpilMU5imME1hmsI0hWkK0xSmKUxTmKYwTWGawjSFaQrTFKYpTFOYpjBNYZrCNIVpCtMUpilMU5imME1hmsI0hWkK0xSmKUxTmKYwTWGawjSFaQrTFKYpTFOYpjBNYZrCNIVpCtMUpilMU5imME1hmsI0hWkK0xSmKUxTmKYwTWGawjSFaQrTFKYpTFOYpjBNYZrCNIVpCtMUpilMU5imME1hmsI05z7s84qvqweWDi06ycKj1h174e91pwx7MtwcXgwvh6fT/eHxcGO4NzwYHg1z/nCY8+fTq+HO8Hp4M2wOhRWmhH3/sLP17s+4vbf19ssahb3fX+ztLscfO7vLD2sU9nGx+La9HH9+2l+vsIN/bA3DDu6xlbDbw5Vhzuf5zK/fvDRcGOb86nBtuD7M45eHu8Otaf7SxWEGPhs2hmNdiocVdnbDjqaH/d2+VvcxPmxuX6v7GB82H4br9lQ8f2GnfX888y+anMI0hWkK0xSmKUxTmKYwTWGawjSFaQrTFKYpTFOYpjBNYZrCNIVpCtMUpilMU5imME1hmsI0hWkK0xSmKUxTmKYwTWGawjSFaQrTFKYpTFOYpjBNYZrCNIVpCtMUpilMU5imME1hmsI0hWkK0xSmKUxTmKYwTWGawjSFaQrTFKYpTFOYpjBNYZrCNIVpCtMUpilMU5imME1hmsI0hWkK0xSmKUxTmKYwTWGawjSFaQrTFKYpTFOYpjBNYZrCNIVpCtMUpilMU5imME1hmsI0hWkK0xSmKUxTmKYwTWGawjSFaQrTFKYpTFOYpjBNYZrCNIVpCtMUpilMU5imME1hmsI0hWkK0/wCUc2dgJni1H4AAAAASUVORK5CYII=" alt="probeset"/> </p>
+
+<h2>Perfect Match &amp; MisMatch</h2>
+
+<h3>Perfect Match</h3>
+
+<ul>
+<li>supposed to perfectly match the sequence of interest</li>
+<li>has exact complementarity</li>
+<li>binds <strong>perfectly</strong></li>
+</ul>
+
+<h3>MisMatch</h3>
+
+<ul>
+<li>13th base is reverse complement of <strong>PM</strong> sequence</li>
+<li>supposed to account for non-specific binding in the <strong>PM</strong></li>
+<li>therefore should have lower signal</li>
+<li>useful for <strong>PM</strong> signal correction</li>
+</ul>
+
+<h2>Perfect Match &amp; MisMatch</h2>
+
+<h3>True Signal</h3>
+
+<ul>
+<li>therefore true signal should be PMi - MMi</li>
+</ul>
+
+<h3>Problems</h3>
+
+<ul>
+<li>MM may have higher signal than PM</li>
+<li>most modern summarization methods ignore it</li>
+</ul>
+
+<h2>CDF: Chip Definition File</h2>
+
+<h3>Defines organization of probes into probesets</h3>
+
+<ul>
+<li>genes</li>
+<li>gene families</li>
+<li>transcripts</li>
+</ul>
+
+<h3>Defined by Affymetrix based on available annotations</h3>
+
+<h1>Custom CDF</h1>
+
+<h2>Custom??</h2>
+
+<h3>Reorganize probes</h3>
+
+<ul>
+<li>available probe sequences &amp; chip locations</li>
+<li>available target genome sequences</li>
+<li>available genome annotations (genes, transcripts, exons, etc)</li>
+</ul>
+
+<h2>Better Results</h2>
+
+<h3>Reorganization gives</h3>
+
+<ul>
+<li>more reproducible</li>
+<li>more consistent</li>
+</ul>
+
+</body>
+
+</html>
