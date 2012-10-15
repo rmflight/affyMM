@@ -1,9 +1,9 @@
 % Affymetrix MisMatch (MM) Probes: </br> Useful After All
 % Robert M Flight; Abdallah Eteleeb; Eric C Rouchka
-% 14/10/12
+% 17/10/12
 
 ```{r knitrSetup, include=FALSE}
-opts_chunk$set(cache=TRUE)
+#opts_chunk$set(cache=TRUE)
 knit_hooks$set(error = function(x, options) stop(x)) 
 ```
 
@@ -540,14 +540,165 @@ corInfo$pSym <- sapply(tmpGene, function(x){paste(unique(x$pRef), collapse=", ")
 corOut <- corInfo
 names(corOut) <- c("tm", "mm", "ProbeSet", "Probe ID", "Annotated RefSeq", "Exon RefSeq", "Annotated Symbol", "Exon Symbol")
 corOut <- corOut[order(corOut$tm, decreasing=T),]
-tmpCor <- xtable(head(corOut))
+corOut2 <- corOut[,c("tm", "mm", "Annotated RefSeq", "Exon RefSeq", "Annotated Symbol", "Exon Symbol")]
+tmpCor <- xtable(head(corOut2))
 ```
 
 ```{r printCorTable, echo=FALSE, results='asis', comment=""}
-print(tmpCor, type='html', html.table.attributes = 'style="font-size:50%; text-align:left"', include.rownames=FALSE)
+print(tmpCor, type='html', html.table.attributes = 'style="font-size:50%; text-align:left; td.padding: 0.5em;"', include.rownames=FALSE)
+```
+
+- Is the MM annotated transcript different than the mapped TM transcript (hg19)?
+    - MM and TM map to the same transcript!
+    - MM actually perfectly matches its transcript!
+    
+
+# Variation
+
+## Data
+
+- Five human genome assemblies
+
+```{r humanGenomes, echo=FALSE, results='asis'}
+hNames <- c("GRCh37", "HS_Celera_WGSA", "HuRefPrime", "BIGAF", "HsapALLPATHS1")
+hAbbr <- c("Hg19", "Celera", "JCVI", "BGI", "HSAP1")
+hAssembly <- c("420368", "281338", "281188", "165398", "238948")
+hProj <- c("31257", "1431", "19621", "42201", "59877")
+hRace <- c("Mixed", "Mixed", "Caucasian", "African", "Caucasian")
+
+hData <- data.frame(Name=hNames, Abbr=hAbbr, Assembly=hAssembly, Bioproject=hProj, Race=hRace)
+
+print(xtable(hData), type='html', html.table.attributes = 'style="text-align:left"', include.rownames=FALSE)
+```
+
+## Mapping Differences
+
+```{r humanMappingResults, echo=FALSE, results='asis'}
+hgVariationFiles <- c(Hg19="hg.txt", Celera="celera.txt", JCVI="jcvi.txt", BGI="bgi.txt", HSAP1="hsapl.txt")
+
+hgAlignRes <- alply(hgVariationFiles, 1, function(x){
+	scan(file=file.path("..", "hgs_uniquelyMapped_probes", x), what=character())
+})
+
+probeCounts <- ldply(hgAlignRes, function(x){
+	nTot <- length(x)
+	tmpClass <- probeClass(x)
+	nPM <- sum(tmpClass == "pm")
+	nMM <- sum(tmpClass == "mm")
+	return(c(nTot, nPM, nMM))
+})
+
+names(probeCounts) <- c("Assembly", "Total", "Perfect Match", "Mismatch")
+print(xtable(probeCounts), type='html', include.rownames=FALSE)
 ```
 
 
-##
+## Mapping Differences
+
+```{r vennFigureDiffs, echo=FALSE, fig.width=8, out.height=350, dev='svg', fig.align='center'}
+qVennArgs <- list()
+
+count <- 1
+for (iVal in 1:length(hgAlignRes)){
+	useName <- paste("area", iVal, sep="", collapse="")
+	qVennArgs[[iVal]] <- length(hgAlignRes[[iVal]])
+	names(qVennArgs)[iVal] <- useName
+	count <- count + 1
+}
+
+# get the intersection of each 2, 3, 4, and 5 way combination
+allIntersection <- function(listIndices){
+	nIntersect <- length(listIndices)
+	foundIntersection <- hgAlignRes[[listIndices[1]]]
+	for (iI in 2:nIntersect){
+		foundIntersection <- intersect(foundIntersection, hgAlignRes[[listIndices[iI]]])
+	}
+	return(foundIntersection)
+}
+
+getIntersection <- combn(seq(1,5), 2, simplify=F)
+getIntersection <- c(getIntersection, combn(seq(1,5), 3, simplify=F))
+getIntersection <- c(getIntersection, combn(seq(1,5), 4, simplify=F))
+getIntersection <- c(getIntersection, combn(seq(1,5), 5, simplify=F))
+
+whichIntersect <- lapply(getIntersection, allIntersection)
+sumIntersect <- lapply(whichIntersect, length)
+
+intersectLabels <- sapply(getIntersection, function(x){
+	paste("n", paste(x, sep="", collapse=""), sep="", collapse="")
+})
+
+names(sumIntersect) <- intersectLabels
+names(whichIntersect) <- intersectLabels
+
+qVennArgs <- c(qVennArgs, sumIntersect)
+qVennArgs$category <- probeCounts$Assembly
+qVennArgs$fill <- c("dodgerblue", "goldenrod1", "darkorange1", "seagreen3", "orchid3")
+#qVennArgs$cat.col <- c("dodgerblue", "goldenrod1", "darkorange1", "seagreen3", "orchid3")
+qVennArgs$cat.cex <- 2
+qVennArgs$margin <- 0.1
+qVennArgs$cex <- c(1.5, 1.5, 1.5, 1.5, 1.5, 1, 0.8, 1, 0.8, 1, 0.8, 1, 0.8, 1, 0.8, 1, 0.55, 1, 0.55, 1, 0.55, 1, 0.55, 1, 0.55, 1, 1, 1, 1, 1, 1.5)
+qVennArgs$ind <- TRUE
+
+venPlot <- do.call("draw.quintuple.venn", qVennArgs) 
+```
+
+```{r intersectStats, include=FALSE}
+all5Intersect <- whichIntersect$n12345
+all5Class <- probeClass(all5Intersect)
+
+data(hgu133plus2probe)
+nPM <- nrow(hgu133plus2probe)
+
+goodPM <- sum(all5Class == "pm")
+percPM <- goodPM / nPM * 100
+
+goodMM <- all5Intersect[all5Class == "mm"]
+
+# which mm fall within exonic regions? This is not the best because it only
+# uses the exons that overlapped singleAnnot originally
+probeAlign <- allData$hg19$probeAlign
+probeAlign <- probeAlign[(elementMetadata(probeAlign)$probeNames %in% goodMM)]
+isExon <- subsetByOverlaps(probeAlign, exonIntervals, minoverlap=23)
+
+isExonNames <- elementMetadata(isExon)$probeNames
+tmVmm <- corOut[(corOut$'Probe ID' %in% isExonNames), c('tm','mm')]
+```
+
+- `r I(length(goodMM))` shared MM probes
+- `r I(length(isExon))` fall within RefSeq annotated exonic regions
+- `r I(sum(tmVmm["tm"] >= tmVmm["mm"]))` show higher correlation with TM than MM
+
+
+## Useful!!
+
+- MM probes **theoretically** capture non-specific binding
+- Small percentage appear able to capture true transcriptional events
+- Therefore, custom CDF workflows should include the MM probe sequences
+    - `Bowtie` makes this lightning fast compared to `Blat`
+
+## Tools Used
+
+- Produced using:
+    - `knitr`
+    - `pandoc`
+    - `bzslides`
+    
+- Source code on Github
+    - github.com/rmflight/affyMM
+
+- Draft publication on Github
+    - rmflight.github.com/affyMM
+    
+    
+## Questions??
+    
+## Session Info
+
+```{r sessionInfo, echo=FALSE, results='asis'}
+sessionInfo()
+```
+
+## 
 
 system("pandoc -s -S -t dzslides --slide-level=2 --mathjax affymm_jcPresentation_141012.md -o affymm_slides.html")
