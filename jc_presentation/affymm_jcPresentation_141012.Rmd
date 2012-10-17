@@ -149,6 +149,10 @@ outSeq
     - available probe sequences & chip locations
     - available target genome sequences
     - available genome annotations (genes, transcripts, exons, etc)
+- Generate probe sets
+    - have perfect alignment
+    - all probes bind the same genomic element (exon, transcript, gene)
+    - binding region does not encompass a lot of SNPs
 
 ## Better Results
 
@@ -158,12 +162,14 @@ outSeq
     
 - Dai et al, 2005, NAR 33(20):e175 
 - Sandberg & Larsson, 2007, BMC Bioin. 8:48
+- 41 `BrainArray` platforms on GEO
+    - http://brainarray.mbni.med.umich.edu/Brainarray/Database/CustomCDF/genomic_curated_CDF.asp
 
 ## But ...
 
-- only uses perfect match probes!
+- Only uses perfect match probes!
 
-- can we use mismatch probes in custom probesets??
+- Can we use mismatch probes in custom probesets??
     - why not?
     - have sequences
     - matter of aligning to genome
@@ -203,7 +209,8 @@ names(organismTable) <- c("Organism", "Reference Assembly", "Build Date")
 ```
 
 ```{r insertOrganism, echo=FALSE, results='asis'}
-print(xtable(organismTable), type = 'html', html.table.attributes = '', include.rownames=FALSE)
+organismTable$Organism <- paste("*", organismTable$Organism, "*", sep="")
+print(xtable(organismTable), type = 'html', html.table.attributes = 'style="border-spacing:20px 5px;"', include.rownames=FALSE)
 ```
 
 ## GeneChips
@@ -229,7 +236,8 @@ names(chipTable) <- c("Organism", "GeneChip")
 ```
 
 ```{r insertChips, echo=FALSE, results='asis'}
-print(xtable(chipTable), type = 'html', html.table.attributes = '', include.rownames=FALSE)
+chipTable$Organism <- paste("*", chipTable$Organism, "*", sep="")
+print(xtable(chipTable), type = 'html', html.table.attributes = 'style="border-spacing:20px 5px;"', include.rownames=FALSE)
 ```
 
 ## Microarray Data
@@ -245,7 +253,7 @@ print(xtable(chipTable), type = 'html', html.table.attributes = '', include.rown
     - MM sequences generated from PM sequences
 - Alignments:
     - align both PM and MM to reference using `bowtie v0.12.8`
-    - report only alignments with **0** mismatches
+    - report **all** alignments with **0** mismatches
     
 # Results
 
@@ -260,7 +268,7 @@ names(cntTable) <- c("Organism", "Number of Probe Pairs", "PM Mapped to Referenc
 ```
 
 ```{r insertCounts, echo=FALSE, results='asis'}
-print(xtable(cntTable), type = 'html', html.table.attributes = 'style="font-size:70%; text-align:left"', include.rownames=FALSE)
+print(xtable(cntTable), type = 'html', html.table.attributes = 'style="font-size:70%; text-align:left; border-spacing:20px 5px;"', include.rownames=FALSE)
 ```
 
 
@@ -282,14 +290,20 @@ colnames(translationTable) <- c("short", "Organism", "array")
 multFiles <- file.path("../seqData", paste("multMatch_", translationTable[,"short"], ".txt", sep=""))
 nOrg <- nrow(translationTable)
 typeCounts <- matrix("", nrow=nOrg, ncol=5)
-colnames(typeCounts) <- c("_x_at", "_s_at", "_a_at", "_at", "other")
+colnames(typeCounts) <- c("_x_at", "_s_at", "_a_at", "_at", "control")
 rownames(typeCounts) <- translationTable[,"Organism"]
-probeType <- c("_x_at", "_s_at", "_at", "_a_at")
+#probeType <- c("_x_at", "_s_at", "_at", "_a_at", "affx")
 for (iOrg in 1:nOrg){
 	multProbes <- scan(file=multFiles[iOrg], what=character())
 	pClass <- probeClass(multProbes)
 	multProbes <- multProbes[pClass == "pm"]
 	totMult <- length(multProbes)
+	
+	cntrl <- grep("affx", multProbes, ignore.case=T)
+	n_cntrl <- length(cntrl)
+	p_cntrl <- format(n_cntrl / totMult * 100, digits=2)
+	multProbes <- multProbes[-1*cntrl]
+	
 	x_at <- grep("_x_at", multProbes)
 	n_xat <- length(x_at)
 	p_xat <- format(n_xat / totMult * 100, digits=2)
@@ -304,13 +318,14 @@ for (iOrg in 1:nOrg){
 	o_at <- grep("_at", oProbes)
 	n_oat <- length(o_at)
 	p_oat <- format(n_oat / totMult * 100, digits=2)
-	otherProbes <- length(oProbes[-o_at])
+	otherProbes <- length(oProbes[-1*o_at])
 	pOther <- format(otherProbes / totMult * 100, digits=2)
 	typeCounts[iOrg, "_x_at"] <- paste(n_xat, " (", p_xat, "%)", collapse="", sep="") 
 	typeCounts[iOrg, "_s_at"] <- paste(n_sat, " (", p_sat, "%)", collapse="", sep="") 
 	typeCounts[iOrg, "_a_at"] <- paste(n_aat, " (", p_aat, "%)", collapse="", sep="") 
 	typeCounts[iOrg, "_at"] <- paste(n_oat, " (", p_oat, "%)", collapse="", sep="") 
-	typeCounts[iOrg, "other"] <- paste(otherProbes, " (", pOther, "%)", collapse="", sep="") 
+	#typeCounts[iOrg, "other"] <- paste(otherProbes, " (", pOther, "%)", collapse="", sep="") 
+	typeCounts[iOrg, "control"] <- paste(n_cntrl, " (", p_cntrl, "%)", collapse="", sep="")
 }
 
 typeCounts <- cbind(translationTable[,"Organism"], typeCounts)
@@ -320,7 +335,8 @@ names(typeCounts)[1] <- "Organism"
 ```
 
 ```{r insertTypeCounts, echo=FALSE, results='asis'}
-print(xtable(typeCounts), type = 'html', html.table.attributes = 'style="font-size:70%; text-align:left"', include.rownames=FALSE)
+typeCounts$Organism <- paste("*", typeCounts$Organism, "*", sep="")
+print(xtable(typeCounts), type = 'html', html.table.attributes = 'style="font-size:70%; text-align:left; border-spacing:20px 5px;"', include.rownames=FALSE)
 ```
 
 ## Comparison of PM and MM Signals
@@ -545,7 +561,7 @@ tmpCor <- xtable(head(corOut2))
 ```
 
 ```{r printCorTable, echo=FALSE, results='asis', comment=""}
-print(tmpCor, type='html', html.table.attributes = 'style="font-size:50%; text-align:left; td.padding: 0.5em;"', include.rownames=FALSE)
+print(tmpCor, type='html', html.table.attributes = 'style="font-size:50%; text-align:left; border-spacing:20px 5px;"', include.rownames=FALSE)
 ```
 
 - Is the MM annotated transcript different than the mapped TM transcript (hg19)?
@@ -568,7 +584,7 @@ hRace <- c("Mixed", "Mixed", "Caucasian", "African", "Caucasian")
 
 hData <- data.frame(Name=hNames, Abbr=hAbbr, Assembly=hAssembly, Bioproject=hProj, Race=hRace)
 
-print(xtable(hData), type='html', html.table.attributes = 'style="text-align:left"', include.rownames=FALSE)
+print(xtable(hData), type='html', html.table.attributes = 'style="text-align:left; border-spacing:20px 5px;"', include.rownames=FALSE)
 ```
 
 ## Mapping Differences
@@ -589,7 +605,7 @@ probeCounts <- ldply(hgAlignRes, function(x){
 })
 
 names(probeCounts) <- c("Assembly", "Total", "Perfect Match", "Mismatch")
-print(xtable(probeCounts), type='html', include.rownames=FALSE)
+print(xtable(probeCounts), type='html', html.table.attributes='style="border-spacing:20px 5px;"', include.rownames=FALSE)
 ```
 
 
