@@ -1,0 +1,1338 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<title>Affymetrix&reg; Mismatch (MM) Probes: Useful After All</title>
+
+<base target=""/>
+
+<style type="text/css">
+body {
+	box-sizing: border-box;
+	font-size: 16px;
+	font-family: 'Myriad Pro', Calibri, Helvetica, Arial, sans-serif;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+	width:800px;
+	margin: auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin: 10px 0;
+	font-weight: 700;
+	color:#222222;
+		font-family: 'Lucida Grande', 'Calibri', Helvetica, Arial, sans-serif;
+	letter-spacing: -1px;
+}
+
+h1 {
+	font-size: 36px;
+	font-weight: 700;
+}
+
+h2 {
+	padding-bottom: 10px;
+	font-size: 32px;
+	background: url('../images/bg_hr.png') repeat-x bottom;
+}
+
+h3 {
+	font-size: 24px;
+}
+
+h4 {
+	font-size: 21px;
+}
+
+h5 {
+	font-size: 18px;
+}
+
+h6 {
+	font-size: 16px;
+}
+
+p {
+	margin: 10px 0 15px 0;
+	text-align: justify;
+}
+
+tt, code, pre {
+	font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+
+
+a:visited {
+	color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+	margin-top: 0;
+	max-width: 95%;
+	border: 1px solid #ccc;
+}
+
+pre code {
+	display: block; padding: 0.5em;
+}
+
+code.r {
+	background-color: #F8F8F8;
+}
+
+table, td, th {
+	border: none;
+	border-spacing:20px; 5px;
+}
+
+blockquote {
+	color:#666666;
+		margin:0;
+	padding-left: 1em;
+	border-left: 0.5em #EEE solid;
+}
+
+hr {
+	height: 0px;
+	border-bottom: none;
+	border-top-width: thin;
+	border-top-style: dotted;
+	border-top-color: #999999;
+}
+
+@media print {
+	* { 
+		background: transparent !important; 
+		color: black !important; 
+		filter:none !important; 
+		-ms-filter: none !important; 
+	}
+	
+	body { 
+		font-size:12pt; 
+		max-width:100%; 
+	}
+	
+	a, a:visited { 
+		text-decoration: underline; 
+	}
+	
+	hr { 
+		visibility: hidden;
+		page-break-before: always;
+	}
+	
+	pre, blockquote { 
+		padding-right: 1em; 
+		page-break-inside: avoid; 
+	}
+	
+	tr, img { 
+		page-break-inside: avoid; 
+	}
+	
+	img { 
+		max-width: 100% !important; 
+	}
+	
+	@page :left { 
+		margin: 15mm 20mm 15mm 10mm; 
+	}
+	
+	@page :right { 
+		margin: 15mm 10mm 15mm 20mm; 
+	}
+	
+	p, h2, h3 { 
+		orphans: 3; widows: 3; 
+	}
+	
+	h2, h3 { 
+		page-break-after: avoid; 
+	}
+}
+</style>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: rgb(88, 72, 246)
+   }
+
+   pre .number {
+     color: rgb(0, 0, 205);
+   }
+
+   pre .comment {
+     color: rgb(76, 136, 107);
+   }
+
+   pre .keyword {
+     color: rgb(0, 0, 255);
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: rgb(3, 106, 7);
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+</head>
+
+<body>
+<h1>Affymetrix&reg; Mismatch (MM) Probes: Useful After All</h1>
+
+<p>Robert M Flight, Abdallah M Eteleeb, Eric C Rouchka</p>
+
+<h2>ABSTRACT</h2>
+
+<p>Affymetrix&reg; GeneChip&reg; microarray design define probe sets consisting of 11, 16, or 20 distinct 25 base pair (BP) probes
+for determining mRNA expression for a specific gene, which may be covered by one or more probe sets.  Each probe has a
+corresponding perfect match (PM) and mismatch (MM) set.  Traditional analytical techniques have either used the MM probes
+to determine the level of cross-hybridization or reliability of the PM probe, or have been completely ignored.  Given the
+availability of reference genome sequences, we have reanalyzed the mapping of both PM and MM probes to reference genomes
+in transcript regions.  Our results suggest that depending of the species of interest, 66%-93% of the PM probes can be 
+used reliably in terms of single unique matches to the genome, while a small number of the MM probes (typically less 
+than 1%) could be incorporated into the analysis.  In addition, we have examined the mapping of PM and MM probes to five
+different human genome projects, resulting in approximately a 70% overlap of uniquely mapping PM probes, and a subset of
+51 uniquely mapping MM probes commonly found in all five projects, 24 of which are found within annotated exonic regions. 
+These results suggest that individual variation in transcriptome regions provides an additional complexity to microarray
+data analysis. Given these results, we conclude that the development of custom chip definition files (CDFs) should
+include MM probe sequences to provide the most effective means of transcriptome analysis of Affymetrix&reg; GeneChip&reg; 
+arrays.</p>
+
+<p><strong>Categories and Subject Descriptors</strong>: J.3 [Life and Medical Sciences]: Biology and Genetics</p>
+
+<p><strong>General Terms</strong>: Algorithms, Measurement, Theory</p>
+
+<p><strong>Keywords</strong>: Bioinformatics, microarray, probe set, custom definition files.</p>
+
+<h2>INTRODUCTION</h2>
+
+<p>Oligonucleotide-based microarray technologies provide a methodology whereby a researcher can indirectly measure the
+expression level of an mRNA molecule being actively transcribed under a set of conditions by labeling a cDNA fragment
+that hybridizes to a complementary probe sequence specific to a particular transcript.  Since their first use on
+customized cDNA arrays [1] in the mid-1990s, they have been used as the de-facto standard for measuring global 
+transcriptional changes under differing conditions.  While RNA-Seq [2] may eventually supplant microarrays as the 
+method of choice, a large number of microarray experiments exist that have been deposited into publicly available
+repositories such as NCBI’s Gene Expression Omnibus (GEO) [3] and EBI’s ArrayExpress [4].  As a case in point, GEO
+contains 32,471 series as of 9/6/2012.  The majority of the entries in GEO were performed on arrays designed by
+companies such as Affymetrix&reg;, Inc. (Santa Clara, CA), Agilent Technologies, Inc. (Santa Clara, CA), Illumina&reg;, Inc.
+(San Diego, CA), and GE Healthcare Lifesciences (Piscataway, NJ), with nearly half of the series (16,181) being
+performed on various Affymetrix® arrays. </p>
+
+<p>The design of Affymetrix® GeneChip&reg; arrays in particular provides for probe sets consisting of 11, 16, or 20 distinct
+25 base pair (BP) probes, with each probe having a corresponding perfect match (PM) and mismatch (MM) probe.  The PM
+and MM differ by the exchange of the complementary base at the 13th position in the probe.  While MM probes were
+originally designed to account for signal in the PM resulting from non-specific cross-hybridization, they are often
+underutilized or completely ignored. Mismatch probes have been explored for use in long oligonucleotide arrays as well
+[5], but their utilization is limited to the Affymetrix&reg; platform. </p>
+
+<p>Affymetrix® provides a default GeneChip® analysis package known as the Micro Array Suite 5.0 (MAS 5.0) [6] that measures the signal intensity for a particular probe pair as: </p>
+
+<p>signal = TukeyBiweight{log(PMj - MM*j)} (1)</p>
+
+<p>Where MM<code>*</code> is a modified version of MM that is never bigger than the intensity value of the PM.  The motivation behind
+the modified mismatch intensity MM* is to report all probe-level intensities as positive values, and to remove the
+influence of the minority of probes where the MM intensity value is significantly higher than the corresponding PM
+intensity.  In addition to the intensity signal, MAS 5.0 also produces a detection p-value which flags a transcript as
+&ldquo;P&rdquo;&ldquo; (present), &quot;M&rdquo;&ldquo; (marginal), or &quot;A&rdquo;&ldquo; (absent) based on the reliability of the probe set based on differences between
+PM and MM intensities.</p>
+
+<p>Known issues in the use of PM and MM probe intensities to generate a single probe set intensity values led to the
+development of other approaches, including RMA [7] and GCRMA [8]  which completely ignore the MM probes. </p>
+
+<p>With the availability of individual probe and reference genome sequences, it is possible to re-map probes based on new
+sources of genome annotations. This allows custom Chip Description Files (CDFs) wherein probes are grouped into novel
+probe sets based on exon, transcript, and gene level annotation [9-22]. Most notable is the effort of the BrainArray
+group [10] which updates custom CDFs for a large number of Affymetrix&reg; GeneChips&reg; by creating probe sets based on
+annotated features such as Entrez Gene [23], Ensembl transcript, Ensembl gene, and RefSeq Gene [24].  Using custom CDFs
+has been shown to impact the reliability of expression analysis [10, 20-22, 25]. However, to the authors’ knowledge,
+only the PM probe sequences are used when generating custom CDFs.</p>
+
+<p>Based on the observation that a small, yet significant number of PM-MM probe pairs exist where the MM intensity is
+significantly increased over the PM intensity, our initial inclination was that these differences in intensities were
+not due to cross-hybridization or rogue probes alone.  Therefore, keeping in mind that Affymetrix&reg; probes have been
+designed according to continually evolving genome assemblies, we proceeded to analyze PM and MM probes across eight
+commonly studied species (<a href="#t.genomeAssemblies">Table 1</a>) by looking at PM and MM probes that uniquely map to the respective genome.</p>
+
+<p>In addition to changing functional annotations, one potential problem area for microarray probe design is the presence
+of single nucleotide polymorphisms (SNPs) within a population.  As the probes are designed using a reference genome or
+transcriptome, a “one-size fits all” approach has been taken for the probes on a particular array.  However, SNPs are
+known to occur relatively frequently throughout the genome, with build 137 of dbSNP [26] containing over 53.5 million
+reference SNPs for the human genome. We have previously studied the effects of SNPs on Affymetrix&reg; GeneChips&reg; [27]
+showing that a large number of SNPs lie in the areas where microarray probes have been designed.  This has been taken
+into account in the BrainArray’s custom CDF files which incorporate SNP information.  To study the effects that
+individual variation can play in microarray analysis, we looked at the mappings of PM and MM probes within five
+distinct publicly available assemblies of human genomes.</p>
+
+<h2>METHODS</h2>
+
+<h3>Mapping of PM and MM Probes</h3>
+
+<p>Chromosomal-based genome assemblies were downloaded from the UCSC Goldenpath Genomes ftp server using an anonymous
+login (<a href="ftp://hgdownload.cse.ucsc.edu/goldenPath/">ftp://hgdownload.cse.ucsc.edu/goldenPath/</a>) [28] for eight commonly studied species, including <em>C. elegans</em>
+(roundworm), <em>D. melanogaster</em> (fruit fly), <em>S. cerevisiae</em> (baker’s yeast), <em>X. tropicalis</em> (western clawed frog), <em>D. rerio</em>
+(zebrafish), <em>M. musculus</em> (house mouse), <em>R. norvegicus</em> (brown Norway rat), and <em>H. sapiens</em> (human) (<a href="#t.genomeAssemblies">Table 1</a>).  Genome
+indices were created using <code>bowtie-build</code> version 0.12.8 [29] with the default parameters.  Perfect match (PM) probe
+sequences for Affymetrix&reg; GeneChips&reg; were obtained from Bioconductor (v 2.10) probe packages, which are constructed
+from data available in NetAffx (<a href="#t.affyGenechips">Table 2</a>) with each new Bioconductor release. Mismatch (MM) probe sequences were
+constructed by replacing the 13th base in the supplied PM probe sequence with the complementary base. PM and MM probes
+were aligned to the indexed genomes using <code>bowtie</code> version 0.12.8 [29] with the parameters –v 0 and –a which used
+together will report all valid probes matching with 100% identity.</p>
+
+<p><a id="t.genomeAssemblies"></a></p>
+
+<p><strong>Table 1. Genome assemblies used</strong></p>
+
+<table><thead>
+<tr>
+<th>Organism</th>
+<th>Reference Assembly</th>
+<th>Build Date</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><em>Caenorhabditis elegans</em></td>
+<td>ce6</td>
+<td>May 2008</td>
+</tr>
+<tr>
+<td><em>Drosophila melanogaster</em></td>
+<td>dm3</td>
+<td>Apr. 2006</td>
+</tr>
+<tr>
+<td><em>Saccaromyces cerevisiae</em></td>
+<td>sc3</td>
+<td>Apr. 2011</td>
+</tr>
+<tr>
+<td><em>Xenopus tropicalis</em></td>
+<td>xt3</td>
+<td>Nov. 2009</td>
+</tr>
+<tr>
+<td><em>Danio rerio</em></td>
+<td>dr6</td>
+<td>Dec. 2008</td>
+</tr>
+<tr>
+<td><em>Mus musculus</em></td>
+<td>mm10</td>
+<td>Dec. 2011</td>
+</tr>
+<tr>
+<td><em>Rattus norvegicus</em></td>
+<td>rn4</td>
+<td>Nov. 2004</td>
+</tr>
+<tr>
+<td><em>Homo sapiens</em></td>
+<td>hg19</td>
+<td>Feb. 2009</td>
+</tr>
+</tbody></table>
+
+<p><a id="t.affyGenechips"></a></p>
+
+<p><strong>Table 2. Affymetrix&reg; GeneChips&reg; used</strong></p>
+
+<table><thead>
+<tr>
+<th>Organism</th>
+<th>GeneChip&reg; Name</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><em>Caenorhabditis elegans</em></td>
+<td><em>C. elegans</em> Genome</td>
+</tr>
+<tr>
+<td><em>Drosophila melanogaster</em></td>
+<td><em>Drosophila</em> Genome 2.0</td>
+</tr>
+<tr>
+<td><em>Saccaromyces cerevisiae</em></td>
+<td>Yeast Genome 2.0</td>
+</tr>
+<tr>
+<td><em>Xenopus tropicalis</em></td>
+<td><em>Xenopus tropicalis</em> Genome</td>
+</tr>
+<tr>
+<td><em>Danio rerio</em></td>
+<td>Zebrafish Genome</td>
+</tr>
+<tr>
+<td><em>Mus musculus</em></td>
+<td>Mouse Genome 430 2.0</td>
+</tr>
+<tr>
+<td><em>Rattus norvegicus</em></td>
+<td>Rat Genome 230 2.0</td>
+</tr>
+<tr>
+<td><em>Homo sapiens</em></td>
+<td>Human Genome U133 Plus 2.0</td>
+</tr>
+</tbody></table>
+
+<h3>Generation of Exons and Overlap</h3>
+
+<p>Exon regions were obtained from the UCSC genome browser as <code>BED</code> files with an entry for each exon. <code>mergeBed</code> from the
+<code>bedTools</code> suite was used to merge overlapping exons from multiple transcripts into single contiguous exons. These
+merged exons were used when defining overlaps of probe alignments with an exon. Probe and exon overlaps were defined
+as any type of overlap with at least 23 bases overlapping on the same strand. Overlaps were determined using <code>Genomic Ranges</code> version 1.8.7 [31].</p>
+
+<h3>DNA Microarray Data</h3>
+
+<p>For each GeneChip&reg;, CEL files were downloaded from GEO for 20 random samples (with the exception of <em>S. cerevisiae</em> (12)
+and <em>X. tropicalis</em> (4), the GSMs are listed in <a href="gsmFiles.txt">gsmFiles.txt</a>). Probe intensities were background
+corrected using the MAS background correction method implemented in Bioconductor. Depending on the application,
+intensities were log (base 2), square root transformed, or used as is. </p>
+
+<h3>Negative PM-MM Set</h3>
+
+<p>A PM-MM set of probes was considered to be negative if nine (two for <em>S. cerevisiae</em> and six for <em>X. tropicalis</em>) or more
+samples had a negative value for the difference in the PM-MM intensities. For examination of intensity distribution,
+any PM-MM pair with a negative different greater than 1000 in one or more samples was considered and examined. </p>
+
+<h3>Probe Correlations</h3>
+
+<p>For each MM probe that uniquely overlapped one merged exon (designated as a true-match MM, (TM<sup>mm</sup>)), the correlation
+with all other MM probes in the probe set (mm) and the correlation with all other TM probes that also mapped uniquely
+to the same exon (if there were three or more other probes also mapped to the exon) was calculated &trade;. </p>
+
+<h3>Human Variation</h3>
+
+<p>To gain an understanding of individual variation and the unique mapping of microarray probes, five whole genome
+assemblies were downloaded for the human genome <a href="%5BTable%203%5D(#t.humanAssemblies">32-36</a>).   Probes from the HGU133APlus2.0 Affymetrix®
+GeneChip® were aligned to each of these genomes using the methods previously described for mapping PM and MM probes.</p>
+
+<p><a id="t.humanAssemblies"></a></p>
+
+<p><strong>Table 3. Whole human genome sequencing projects</strong></p>
+
+<table><thead>
+<tr>
+<th>Name</th>
+<th>Abbr.</th>
+<th>Assembly Identifier</th>
+<th>Bioproject</th>
+<th>Number</th>
+<th>Race</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>GRCh37</td>
+<td>Hg19</td>
+<td>420368</td>
+<td>31257</td>
+<td>Mixed</td>
+<td></td>
+</tr>
+<tr>
+<td>Hs<code>_</code>Celera<code>_</code>WGSA</td>
+<td>Celera</td>
+<td>281338</td>
+<td>1431</td>
+<td>Mixed<sup>1</sup></td>
+<td></td>
+</tr>
+<tr>
+<td>HuRefPrime</td>
+<td>JCVI</td>
+<td>281188</td>
+<td>19621</td>
+<td>Caucasian</td>
+<td></td>
+</tr>
+<tr>
+<td>BGIAF</td>
+<td>BGI</td>
+<td>165398</td>
+<td>42201</td>
+<td>African</td>
+<td></td>
+</tr>
+<tr>
+<td>HsapALLPATHS1</td>
+<td>HSAP1</td>
+<td>238948</td>
+<td>59877</td>
+<td>Caucasian</td>
+<td></td>
+</tr>
+</tbody></table>
+
+<p><sup>1</sup>Celera assembly consists of one African-American, one Asian-Chinese, one Hispanic-Mexican, and two Caucasians.</p>
+
+<h2>RESULTS</h2>
+
+<h3>Probes Matching Genomic Locations</h3>
+
+<p>Given the PM probe sequences and the inferred MM sequences, individual probes were mapped to the corresponding genome
+assembly as outlined in Methods.  The percentage of perfect match probes mapping to the genome ranged from a low of
+80% (<em>X. tropicalis</em>) to a high of 95% (<em>D. melanogaster</em>), with the exception of <em>S. cerevisiae</em> (<a href="#t.probeMatches">Table 4</a>).  It must be
+noted that the lower percentage of <em>S. cerevisiae</em> matches (53%) is expected, as the Yeast Genome 2.0 GeneChip&reg; contains
+probes for two yeast species, <em>S. cerevisiae</em> and <em>S. pombe</em>. </p>
+
+<p><a id="t.probeMatches"></a></p>
+
+<p><strong>Table 4. GeneChip&reg; probes mapping to reference genomes</strong></p>
+
+<table><thead>
+<tr>
+<th>Organism</th>
+<th>Number of Probe Pairs</th>
+<th>PM Mapped to Reference</th>
+<th>MM Mapped to Reference</th>
+<th>PM Unique</th>
+<th>MM Unique</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><em>Ce</em></td>
+<td>249165</td>
+<td>226856</td>
+<td>143</td>
+<td>213745</td>
+<td>96</td>
+</tr>
+<tr>
+<td><em>Dm</em></td>
+<td>265400</td>
+<td>251602</td>
+<td>89</td>
+<td>245712</td>
+<td>54</td>
+</tr>
+<tr>
+<td><em>Dr</em></td>
+<td>249752</td>
+<td>200608</td>
+<td>1282</td>
+<td>171282</td>
+<td>726</td>
+</tr>
+<tr>
+<td><em>Hs</em></td>
+<td>604258</td>
+<td>562673</td>
+<td>1094</td>
+<td>521642</td>
+<td>608</td>
+</tr>
+<tr>
+<td><em>Mm</em></td>
+<td>496468</td>
+<td>456674</td>
+<td>557</td>
+<td>427920</td>
+<td>394</td>
+</tr>
+<tr>
+<td><em>Rn</em></td>
+<td>342410</td>
+<td>304646</td>
+<td>391</td>
+<td>286784</td>
+<td>282</td>
+</tr>
+<tr>
+<td><em>Sc</em></td>
+<td>120855</td>
+<td>63731</td>
+<td>1</td>
+<td>61942</td>
+<td>1</td>
+</tr>
+<tr>
+<td><em>Xt</em></td>
+<td>648548</td>
+<td>519177</td>
+<td>1884</td>
+<td>426237</td>
+<td>1014</td>
+</tr>
+</tbody></table>
+
+<p>Affymetrix&reg; probesets are given suffix definitions depending upon the uniqueness of the exemplar sequence used to
+design a probe set.  A designation of <code>_</code>at indicates the probe set perfectly matches a single transcript; <code>_</code>a<code>_</code>at
+probe sets only perfectly match transcripts of the same gene; <code>_</code>s<code>_</code>at perfectly match multiple transcripts for the same
+gene family; and <code>_</code>x<code>_</code>at indicates the probe set is identical or highly similar to other genes.  One of the
+difficulties with these designations is that it relies upon a set of annotations at a particular point in time.  </p>
+
+<p>Analysis of the probes that map to the genome (<a href="#t.probeMatches">Table 4</a>) indicates that 82% to 98% of the mapped probes map uniquely to
+a single genomic location.  The fact that a number of probes map to multiple locations is not to be unexpected due to
+the restrictions placed on probe set design.  However, it is expected that those probes mapping to multiple locations
+would not be from the <code>_</code>at class of probes.  </p>
+
+<p>To determine the reliability of these probes with the fluctuation of unknown transcripts, those probes that map with
+100% identity to two or more locations in the genome were considered.  While these probes typically represent less
+than 10% of the total number of probes for a given GeneChip&reg;, their classification could be important in detecting
+cross hybridization.  One might expect that the greatest percentage of these would be within the <code>_</code>x<code>_</code>at and
+<code>_</code>s<code>_</code>at classes.  However, as <a href="#t.probeType">Table 5</a> shows, the larger genomes actually contain the greatest percentage in the
+<code>_</code>at and <code>_</code>a<code>_</code>at classes, with anywhere from 18% (S. cerevisiae) to 91% (R. norvegicus) of the probes matching
+multiple locations belonging to the <code>_</code>at class.  In addition, a small number of MM probes map to the genome as well. 
+To better understand the effects this small set of MM probes might have on gene expression, we further reduced this to
+a smaller subset where the mapping was within exon regions.  For these probes, we analyzed their signal intensities
+from random samples compared to the overall distribution of PM and MM intensities, and the distribution of PM and MM
+intensities within the corresponding exonic sequences (<a href="#f.allPlots">Figure 1</a>).  As these plots indicate, MM probes mapping within
+exonic regions closely follow the expression density of PM probes mapping within exonic regions, and are significantly 
+shifted from the overall expression profiles of MM probes.  These results suggest that while the number of these
+probes is small, they offer significant information that should not be ignored, and furthermore, can confound analyses
+where MM data is incorporated.</p>
+
+<p><a id="t.probeType"></a></p>
+
+<p><strong>Table 5. Probe set classification of probes perfectly matching multiple genomic locations.</strong> </p>
+
+<table><thead>
+<tr>
+<th>Organism</th>
+<th>_x_at</th>
+<th>_s_at</th>
+<th>_a_at</th>
+<th>_at</th>
+<th>control</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><em>Ce</em></td>
+<td>4040 (31%)</td>
+<td>6416 (49%)</td>
+<td>0 (0%)</td>
+<td>2465 (19%)</td>
+<td>190 (1.4%)</td>
+</tr>
+<tr>
+<td><em>Dm</em></td>
+<td>361 (6.1%)</td>
+<td>2742 (47%)</td>
+<td>224 (3.8%)</td>
+<td>2520 (43%)</td>
+<td>43 (0.73%)</td>
+</tr>
+<tr>
+<td><em>Dr</em></td>
+<td>1376 (4.7%)</td>
+<td>374 (1.3%)</td>
+<td>1203 (4.1%)</td>
+<td>25879 (88%)</td>
+<td>494 (1.7%)</td>
+</tr>
+<tr>
+<td><em>Hs</em></td>
+<td>9402 (23%)</td>
+<td>10634 (26%)</td>
+<td>803 (2%)</td>
+<td>19961 (49%)</td>
+<td>231 (0.56%)</td>
+</tr>
+<tr>
+<td><em>Mm</em></td>
+<td>4075 (14%)</td>
+<td>2920 (10%)</td>
+<td>4893 (17%)</td>
+<td>16703 (58%)</td>
+<td>163 (0.57%)</td>
+</tr>
+<tr>
+<td><em>Rn</em></td>
+<td>440 (2.5%)</td>
+<td>394 (2.2%)</td>
+<td>805 (4.5%)</td>
+<td>16127 (90%)</td>
+<td>96 (0.54%)</td>
+</tr>
+<tr>
+<td><em>Sc</em></td>
+<td>81 (4.5%)</td>
+<td>1126 (63%)</td>
+<td>0 (0%)</td>
+<td>271 (15%)</td>
+<td>311 (17%)</td>
+</tr>
+<tr>
+<td><em>Xt</em></td>
+<td>14092 (15%)</td>
+<td>12086 (13%)</td>
+<td>34877 (38%)</td>
+<td>31754 (34%)</td>
+<td>131 (0.14%)</td>
+</tr>
+</tbody></table>
+
+<p><a id="f.allPlots"></a></p>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk allPlots"/> </p>
+
+<p><strong>Figure 1. Density profile of probe intensities (log2).</strong>  PM: perfect match, MM: mismatch.  mm.all: background MM intensities; pm.all: background PM intensities; mm.exon: intensities of MM probes in exonic regions; pm.exon: intensities of PM probes in exonic regions.</p>
+
+<p>As some of these MM probes may bind to transcripts, we further considered those MM probes that uniquely mapped to
+exons (irrespective of whether the corresponding PM probe mapped zero, one or multiple times to exons or the full
+genome), examining the differences in signal intensity between the MM and its associated PM.  In many cases there is a
+significant negative difference in the expression level of the PM-MM pair (an example is shown in Figures <a href="#f.pmmmDensityPlot"> 2</a> and <a href="#f.pmmmIntensityPlot"> 3</a>). </p>
+
+<p><a id="f.pmmmDensityPlot"></a></p>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk pmmmDensity"/> </p>
+
+<p><strong>Figure 2. Density of MM and PM probe set intensities not including the PM-MM pair that had a large negative difference.</strong> Intensities from zebrafish probeset Dr.5545.1.S1_at, in GEO sample
+GSM604808.CEL.gz.</p>
+
+<p><a id="f.pmmmIntensityPlot"></a></p>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk pmmmIntensity"/> </p>
+
+<p><strong>Figure 3. Square root transformed intensities for each PM-MM pair.</strong> The negative difference pair is at the extreme right end of the figure. Intensities from zebrafish probeset Dr.5545.1.S1_at, in GEO sample GSM604808.CEL.gz.</p>
+
+<p>If these MM probes are grouped instead with the other probes within the transcriptional region for which they uniquely
+match  (we have renamed these probes as “true match” &trade; probes since they truly match the region in the genome),
+there is a much better association between the probe intensities, as shown in <a href="#f.tmIntensityPlot">Figure 4</a>.</p>
+
+<p><a id="f.tmIntensity"></a></p>
+
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfgAAAH4CAMAAACR9g9NAAABaFBMVEUAAAAAADoAAGYAOpAAZrYCAgIGBgYLCwsPDw8REREUFBQWFhYZGRkcHBweHh4gICAiIiIkJCQnJycpKSksLCwvLy8xMTE0NDQ2NjY5OTk6AAA6ADo6AGY6ZmY6ZrY6kNs8PDw+Pj5BQUFCQkJDQ0NGRkZJSUlMTExPT09RUVFUVFRXV1dZWVlcXFxfX19iYmJkZGRlZWVmAABmAGZmOjpmOpBmtv9oaGhra2ttbW1xcXFzc3N2dnZ5eXl8fHx/f3+AgICDg4OGhoaIiIiLi4uPj4+QOgCQOjqQOmaQkLaQtpCQ2/+SkpKVlZWYmJibm5uenp6ioqKlpaWpqamsrKyvr6+ysrK1tbW2ZgC2kJC2//+4uLi8vLy/v7/CwsLFxcXIyMjLy8vPz8/T09PW1tbZ2dnbkDrb25Db///c3Nzf39/j4+Pm5ubp6ent7e3w8PD09PT39/f4+Pj/tmb/25D//7b//9v////WxaVmAAAACXBIWXMAAAsSAAALEgHS3X78AAAHjklEQVR4nO3cB1Pd2BmA4eu103uvG6f36iSk92RTNr0Spzdn04sN/P1ccQGzx8lyIewY6X3eYeyZD4/M8IyQrOOj1YGSrR72F6CHE/ho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvho4KOBjwY+Gvg5tndr9ejrHr93+HHBQ4CfYxtv8LX2H1td+4YzPti9Y3XwrcBHAx8NvC7a2fCf0xXoYcB/8DL75KX2lkvtvZfZmy818OD/Z+t/3a+uP3Gwu1pde3z967WnvvqDnyP8v8em4d0bBwe7O/tfncDvXn9i/QF+afBPsj89vbOz95HXrm4c3Ll5sPfh2+CXBv+vsaP5+qS/+8jtNf+dnYP9r4FfHPw/xzbj3RtH/jed8cuE/8fYNNx/bOcQffqB7xq/TPi/j03D9e38anVz+u3mgbv6ZcL/bexMRfCLgP/rGPgG/F/GwDfg/zwGvgH/pzHwDfg/jIFvwP9+DHwD/ndj4Bvwvx0D34D/zdg0PFmPn57ZeXK3SPhfj03DzXr85im9Z/XLhF/3q5NOT+/sbNblrM4tE/6XY0fz9Um/WYm3Hr9M+F+MbcbTerwzfsnwPx+bhkfr8a7xC4b/2dg0PFmPd1e/WPifjJ2pCH4R8D8eA9+A/9EY+Ab8D8fAN+B/MAa+Af/9MfAN+O+NgW/Af3cMfAP+O2PgG/DfHgPfgP/W2GZ8uC7jxQgLhv/m2OH07uqR2wcXfTHCTx/40+CvHvy6r5x0PNn/+rQEf8EXI+x9FPwM4L88dkS/hr/gixF2VzfuPXprdXN3dfKDAvzVg//S2H34qQu8GGF9xt97/e29WzsHuzvgryz8F8dOnfEXezHCBP+GwwOAv8LwXxg7dcZf7MUI4GcB//mxpzTeCv7W9T+Cv/Lwnx37v+H/S+CvHvxnxsA34D89Br4B/6kx8A34B74R4BvwnxgD34D/+Bj4BvzHxsA34D80thkfrcfbQrVY+A+MHU4P1+Ntmlwy/Lr3n3Q82azH2ya9ZPj3jR3RT/BejLBg+Af+tlPwzvgFw79n7D68a/yS4d89dh/eXf2S4d81dqYi+EXAv3MMfAP+HWPgG/BvHwPfgH/bGPgG/FvHwDfgH/g8+Ab8m8bAN+DfOAa+Af+ascPpljvjwc8X/tVj03DbnfHg5wu/7lUnHU+23RkPfr7wrxybhtvujAc/X/hXjB1/Ypud8eDnC//ysQ36djvjwc8X/mVjh9Mtd8aDny/8S8e2kAa/APiXjIFvwL94DHwD/kVjTwu8rkBPNnnh2NMBr6vXC8bOfwjwc+z5Y+c/BPg59ryx8x8C/Bx77tj5DwF+jj1n7PyHAD/Hnj12ON3yYe0m8HPsWWPTcNvlmU3gZ9ozTzqebLsguwn8HHvG2DTc9r9gbAI/x1Zj09AZH801vpq7ep0d+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo4GPBj4a+Gjgo/0HOrR7SUl7c3UAAAAASUVORK5CYII=" alt="plot of chunk tmIntensity"/> </p>
+
+<p><strong>Figure 4. Plot of probe set intensities for zebrafish where the TM probes overlap with the same TMmm probe in <a href="#f.pmmmIntensityPlot">Figure 3</a></strong> Intensities from zebrafish probeset Dr.5545.1.S1_at, in GEO sample GSM604808.CEL.gz.</p>
+
+<p>Further analysis was performed to test the correlation of the TM probes with the expression levels of both the
+annotated probe group MM probes and with the TM-mapped transcript probes (<a href="#f.correlationBox">Figure 5</a>).  The box plot in <a href="#f.correlationBox">Figure 5</a> clearly
+indicates that the TM intensities more closely correlate with those from the group based on mapping to the same exon.</p>
+
+<p><a id="f.correlationBox"></a></p>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk correlationBoxPlot"/> </p>
+
+<p><strong>Figure 5. Box plot of correlations of the TMmm with MM intensities of annotated probe set (red, MM) and TM intensities of custom probe sets based on shared mapping to exons (blue, TM)</strong></p>
+
+<p>To determine if the observed difference in the correlations from <a href="#f.correlationBox">Figure 5</a> is due to measurement of different mRNA
+entities, we considered the MM probe both within its annotated location as well as within the new mapped location
+(TMmm). The intensity of the MM probe was compared with the intensity of its corresponding neighbor probes (MM probes
+for the annotated location; PM probes for the new mapped location).  An average correlation value between intensities
+was calculated on a per-exon probe basis.  The resulting correlations are summarized in <a href="#t.corrTable">Table 6</a>.</p>
+
+<p><a id="t.corrTable"></a></p>
+
+<table><thead>
+<tr>
+<th>tm</th>
+<th>mm</th>
+<th>ProbeSet</th>
+<th>Probe ID</th>
+<th>Annotated RefSeq</th>
+<th>Exon RefSeq</th>
+<th>Annotated Symbol</th>
+<th>Exon Symbol</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>0.8654</td>
+<td>0.53475</td>
+<td>209135_at</td>
+<td>mm.209135_at.763.274</td>
+<td>NM_001164750, NM_001164751, NM_001164752, NM_001164753, NM_001164754, NM_001164755, NM_001164756, NM_004318, NM_020164, NM_032466, NM_032467, NM_032468</td>
+<td>NM_032466, NM_032468, NM_001164755, NM_001164754, NM_001164753, NM_001164752, NM_001164751</td>
+<td>ASPH</td>
+<td>ASPH</td>
+</tr>
+<tr>
+<td>0.8602</td>
+<td>0.61192</td>
+<td>204041_at</td>
+<td>mm.204041_at.895.14</td>
+<td>NM_000898</td>
+<td>NM_000898</td>
+<td>MAOB</td>
+<td>MAOB</td>
+</tr>
+<tr>
+<td>0.8444</td>
+<td>0.59839</td>
+<td>206432_at</td>
+<td>mm.206432_at.534.594</td>
+<td>NM_005328</td>
+<td>NM_005328</td>
+<td>HAS2</td>
+<td>HAS2</td>
+</tr>
+<tr>
+<td>0.8080</td>
+<td>0.54951</td>
+<td>205004_at</td>
+<td>mm.205004_at.1030.1044</td>
+<td>NM_001173487, NM_001173488, NM_017544</td>
+<td>NM_001173488, NM_001173487, NM_017544</td>
+<td>NKRF</td>
+<td>NKRF</td>
+</tr>
+<tr>
+<td>0.8059</td>
+<td>0.78041</td>
+<td>201622_at</td>
+<td>mm.201622_at.1129.72</td>
+<td>NM_014390</td>
+<td>NM_014390</td>
+<td>SND1</td>
+<td>SND1</td>
+</tr>
+<tr>
+<td>0.7922</td>
+<td>0.81628</td>
+<td>235958_at</td>
+<td>mm.235958_at.810.810</td>
+<td>NM_213600, NR_033151</td>
+<td>NM_213600, NR_033151</td>
+<td>PLA2G4F</td>
+<td>PLA2G4F</td>
+</tr>
+<tr>
+<td>0.7890</td>
+<td>0.74357</td>
+<td>233052_at</td>
+<td>mm.233052_at.882.6</td>
+<td>NM_001206927, NM_001371</td>
+<td>NM_001206927</td>
+<td>DNAH8</td>
+<td>DNAH8</td>
+</tr>
+<tr>
+<td>0.7728</td>
+<td>0.36086</td>
+<td>206084_at</td>
+<td>mm.206084_at.139.1104</td>
+<td>NM_001207015, NM_001207016, NM_002849, NM_130846</td>
+<td>NM_002849, NM_001207015, NM_130846, NM_001207016</td>
+<td>PTPRR</td>
+<td>PTPRR</td>
+</tr>
+<tr>
+<td>0.7546</td>
+<td>0.39994</td>
+<td>217416_x_at</td>
+<td>mm.217416_x_at.747.452</td>
+<td></td>
+<td>NM_152924, NM_007011</td>
+<td></td>
+<td>ABHD2</td>
+</tr>
+<tr>
+<td>0.7474</td>
+<td>0.55101</td>
+<td>203646_at</td>
+<td>mm.203646_at.468.274</td>
+<td>NM_004109</td>
+<td>NM_004109</td>
+<td>FDX1</td>
+<td>FDX1</td>
+</tr>
+<tr>
+<td>0.7416</td>
+<td>0.60912</td>
+<td>210467_x_at</td>
+<td>mm.210467_x_at.1162.450</td>
+<td>NM_001166386, NM_001166387, NM_005367</td>
+<td>NM_004988</td>
+<td>MAGEA12</td>
+<td>MAGEA1</td>
+</tr>
+<tr>
+<td>0.7221</td>
+<td>0.64148</td>
+<td>207687_at</td>
+<td>mm.207687_at.947.968</td>
+<td>NM_005538</td>
+<td>NM_005538</td>
+<td>INHBC</td>
+<td>INHBC</td>
+</tr>
+<tr>
+<td>0.7125</td>
+<td>0.48949</td>
+<td>211741_x_at</td>
+<td>mm.211741_x_at.916.1066</td>
+<td>NM_021016</td>
+<td>NM_002781, NM_001130014</td>
+<td>PSG3</td>
+<td>PSG5</td>
+</tr>
+<tr>
+<td>0.6724</td>
+<td>0.40608</td>
+<td>211493_x_at</td>
+<td>mm.211493_x_at.351.512</td>
+<td>NM_001128175, NM_001198938, NM_001198939, NM_001198940, NM_001198941, NM_001198942, NM_001198943, NM_001198944, NM_001198945, NM_001390, NM_001391, NM_001392, NM_032975, NM_032978, NM_032979, NM_032980, NM_032981</td>
+<td>NM_001198939, NM_001198940, NM_001390, NM_032975, NM_001198938, NM_001198944, NM_001198943, NM_001198942, NM_032980</td>
+<td>DTNA</td>
+<td>DTNA</td>
+</tr>
+<tr>
+<td>0.6605</td>
+<td>0.55326</td>
+<td>219337_at</td>
+<td>mm.219337_at.935.290</td>
+<td>NM_017891</td>
+<td>NM_017891</td>
+<td>C1orf159</td>
+<td>C1orf159</td>
+</tr>
+<tr>
+<td>0.6565</td>
+<td>0.65743</td>
+<td>221351_at</td>
+<td>mm.221351_at.390.354</td>
+<td>NM_000524</td>
+<td>NM_000524</td>
+<td>HTR1A</td>
+<td>HTR1A</td>
+</tr>
+<tr>
+<td>0.6487</td>
+<td>0.54945</td>
+<td>238916_at</td>
+<td>mm.238916_at.697.790</td>
+<td>NR_028408</td>
+<td>NR_028408</td>
+<td>LOC400027</td>
+<td>LOC400027</td>
+</tr>
+<tr>
+<td>0.6463</td>
+<td>0.49228</td>
+<td>222221_x_at</td>
+<td>mm.222221_x_at.912.300</td>
+<td>NM_006795</td>
+<td>NM_014600</td>
+<td>EHD1</td>
+<td>EHD3</td>
+</tr>
+<tr>
+<td>0.6446</td>
+<td>0.41951</td>
+<td>203399_x_at</td>
+<td>mm.203399_x_at.917.1066</td>
+<td>NM_021016</td>
+<td>NM_002781, NM_001130014</td>
+<td>PSG3</td>
+<td>PSG5</td>
+</tr>
+<tr>
+<td>0.6403</td>
+<td>0.77766</td>
+<td>201844_s_at</td>
+<td>mm.201844_s_at.803.352</td>
+<td>NM_012234</td>
+<td>NM_012234</td>
+<td>RYBP</td>
+<td>RYBP</td>
+</tr>
+<tr>
+<td>0.6367</td>
+<td>0.34014</td>
+<td>240239_at</td>
+<td>mm.240239_at.132.1114</td>
+<td>NM_001145343, NM_001145344, NM_001145345, NM_032838</td>
+<td>NM_001145344, NM_001145343, NM_032838, NM_001145345</td>
+<td>ZNF566</td>
+<td>ZNF566</td>
+</tr>
+<tr>
+<td>0.6315</td>
+<td>0.37627</td>
+<td>201220_x_at</td>
+<td>mm.201220_x_at.905.256</td>
+<td>NM_001083914, NM_001329, NM_022802</td>
+<td>NR_003682</td>
+<td>CTBP2</td>
+<td>MGC70870</td>
+</tr>
+<tr>
+<td>0.6299</td>
+<td>0.23979</td>
+<td>210835_s_at</td>
+<td>mm.210835_s_at.906.256</td>
+<td>NM_001083914, NM_001329, NM_022802</td>
+<td>NR_003682</td>
+<td>CTBP2</td>
+<td>MGC70870</td>
+</tr>
+<tr>
+<td>0.5943</td>
+<td>0.55241</td>
+<td>223485_at</td>
+<td>mm.223485_at.745.316</td>
+<td>NM_032304, NM_207112</td>
+<td>NM_032304</td>
+<td>HAGHL</td>
+<td>HAGHL</td>
+</tr>
+<tr>
+<td>0.5930</td>
+<td>0.45395</td>
+<td>206281_at</td>
+<td>mm.206281_at.529.784</td>
+<td>NM_001099733, NM_001117</td>
+<td>NM_001117, NM_001099733</td>
+<td>ADCYAP1</td>
+<td>ADCYAP1</td>
+</tr>
+<tr>
+<td>0.5866</td>
+<td>0.55602</td>
+<td>1562659_at</td>
+<td>mm.1562659_at.440.914</td>
+<td>NR_033984</td>
+<td>NR_033984</td>
+<td>LOC400548</td>
+<td>LOC400548</td>
+</tr>
+<tr>
+<td>0.5845</td>
+<td>0.51707</td>
+<td>229852_at</td>
+<td>mm.229852_at.330.998</td>
+<td>NM_022787</td>
+<td>NM_022787</td>
+<td>NMNAT1</td>
+<td>NMNAT1</td>
+</tr>
+<tr>
+<td>0.5725</td>
+<td>0.24840</td>
+<td>1553901_x_at</td>
+<td>mm.1553901_x_at.258.150</td>
+<td>NM_052852</td>
+<td>NM_178558</td>
+<td>ZNF486</td>
+<td>ZNF680</td>
+</tr>
+<tr>
+<td>0.5597</td>
+<td>0.53161</td>
+<td>220547_s_at</td>
+<td>mm.220547_s_at.462.628</td>
+<td>NM_019054</td>
+<td>NM_019054</td>
+<td>FAM35A</td>
+<td>FAM35A</td>
+</tr>
+<tr>
+<td>0.5565</td>
+<td>0.56330</td>
+<td>209811_at</td>
+<td>mm.209811_at.257.468</td>
+<td>NM_001224, NM_032982, NM_032983</td>
+<td>NM_032982, NM_032983, NM_001224</td>
+<td>CASP2</td>
+<td>CASP2</td>
+</tr>
+<tr>
+<td>0.5440</td>
+<td>0.60341</td>
+<td>219710_at</td>
+<td>mm.219710_at.1132.106</td>
+<td>NM_024577</td>
+<td>NM_024577</td>
+<td>SH3TC2</td>
+<td>SH3TC2</td>
+</tr>
+<tr>
+<td>0.4971</td>
+<td>0.38237</td>
+<td>223838_at</td>
+<td>mm.223838_at.145.282</td>
+<td>NM_025244, NM_182911</td>
+<td>NM_182911, NM_025244</td>
+<td>TSGA10</td>
+<td>TSGA10</td>
+</tr>
+<tr>
+<td>0.4883</td>
+<td>0.63939</td>
+<td>221691_x_at</td>
+<td>mm.221691_x_at.746.320</td>
+<td>NM_001037738, NM_002520, NM_199185</td>
+<td>NR_036693, NM_001004419, NM_001197317, NM_001197318, NM_001197319, NM_013269</td>
+<td>NPM1</td>
+<td>CLEC2D</td>
+</tr>
+<tr>
+<td>0.4527</td>
+<td>0.62369</td>
+<td>200724_at</td>
+<td>mm.200724_at.575.1144</td>
+<td>NM_001256577, NM_001256580, NM_006013, NR_026898</td>
+<td>NM_001256580, NM_001256577, NM_006013</td>
+<td>RPL10</td>
+<td>RPL10</td>
+</tr>
+<tr>
+<td>0.4048</td>
+<td>0.51515</td>
+<td>204431_at</td>
+<td>mm.204431_at.1040.48</td>
+<td>NM_001144761, NM_001144762, NM_003260</td>
+<td>NM_003260, NM_001144761, NM_001144762</td>
+<td>TLE2</td>
+<td>TLE2</td>
+</tr>
+<tr>
+<td>0.3851</td>
+<td>0.09551</td>
+<td>217547_x_at</td>
+<td>mm.217547_x_at.860.982</td>
+<td>NM_138330</td>
+<td>NM_016220, NM_001013746</td>
+<td>ZNF675</td>
+<td>ZNF107</td>
+</tr>
+<tr>
+<td>0.3284</td>
+<td>0.44156</td>
+<td>228128_x_at</td>
+<td>mm.228128_x_at.1075.350</td>
+<td>NM_002581</td>
+<td>NM_002581</td>
+<td>PAPPA</td>
+<td>PAPPA</td>
+</tr>
+</tbody></table>
+
+<p>What is interesting is that with few exceptions, the transcripts and genes being measured by the probe sets are the
+same, implying that the TMmm probe aligns to the same gene as its complimentary PM probe. Upon further examination it
+appears that many of the PM complements of the TMmm do not align to the genome at all (data not shown). One possibility
+is that these probes are in regions that have seen changes in the reference sequence over the years, or that the
+original sequencing of the ESTs used to design the probe sets was of poor quality. </p>
+
+<h3>Effects of Individual Variation</h3>
+
+<p>To gain an understanding of the effect of individual variation, the unique mapping of PM and MM probes to five
+distinct human genome assemblies was analyzed (<a href="#t.humanMapping">Table 7</a>).  Four of the five projects have roughly the same number of
+uniquely mapped PM probes (within 2% variation).  The fifth project (BGI) provides an exception to this trend.  While
+there are a number of potential explanations for this (including sequence and assembly quality and coverage of the
+sequencing), one potential feature to be considered is the fact that this sequencing project involves the sequencing
+of an African individual, and it is the only project not to have a large component of the library consisting of
+Caucasian individuals.</p>
+
+<p><a id="t.humanMapping"></a></p>
+
+<p><strong>Table 7. Number of probes mapping uniquely to individual human genomes.</strong></p>
+
+<table><thead>
+<tr>
+<th>Assembly</th>
+<th>Total</th>
+<th>Perfect Match</th>
+<th>Mismatch</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>Hg19</td>
+<td>522250</td>
+<td>521642</td>
+<td>608</td>
+</tr>
+<tr>
+<td>Celera</td>
+<td>515111</td>
+<td>514518</td>
+<td>593</td>
+</tr>
+<tr>
+<td>JCVI</td>
+<td>530213</td>
+<td>529569</td>
+<td>644</td>
+</tr>
+<tr>
+<td>BGI</td>
+<td>469973</td>
+<td>469714</td>
+<td>259</td>
+</tr>
+<tr>
+<td>HSAP1</td>
+<td>522480</td>
+<td>521922</td>
+<td>558</td>
+</tr>
+</tbody></table>
+
+<p>While there is a large agreement for the number of probes, we also checked if the probes represented were consistent
+among all of the projects.  A Venn diagram depicting the number of overlapping perfectly matching probes is given in
+<a href="#f.vennHumanVariation">Figure 6</a>.  As can be seen from this figure, a total of 422279 probes uniquely map for all five assemblies.  Of these,
+422118 are perfect match probes, indicating that 70% of the HGU133APlus2.0 perfect match probes are reliable in terms
+of their mapping to the genome for these assemblies.  One of the interesting results is that there are 161 shared
+perfectly matching mismatch probes.  Of these, 24 fall within RefSeq annotated exonic regions (results not shown),
+with 16 of the 24 showing higher correlation in the TMmm assignments calculated in <a href="#t.corrTable">Table 6</a>.</p>
+
+<p><a id="f.vennHumanVariation"></a></p>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk insertVenn"/> </p>
+
+<p><strong>Figure 6. Venn diagram of overlapping perfectly matching Affymetrix&reg; HGU133A Plus2 probes to each of the five human genome assemblies.</strong></p>
+
+<h2>Conclusion</h2>
+
+<p>MM probes are theoretically designed to capture background and non-specific binding. Alignment of the MM probes to the
+genome shows that in a very small percentage of cases, MM probes align uniquely to the genome in transcribed regions.
+Signal from these probes should be useful for quantifying true transcriptional events rather than for PM signal
+adjustment.</p>
+
+<p>In addition, current custom CDF generation workflows ignore the MM probes during the probe alignment process. Given
+that some MM probes align to reference genomes, they should be considered for inclusion when creating custom CDFs. The
+utility of the probes may be limited due to variation among individuals. </p>
+
+<h2>ACKNOWLEDGEMENTS</h2>
+
+<p>This work was partially funded by National Institutes of Health (NIH) grant 8P20GM103436-12.  Its contents are solely
+the responsibility of the authors and do not represent the official views of NIH or the National Institute of General
+Medical Sciences.</p>
+
+<h2>REFERENCES</h2>
+
+<p>[1] Schena, M., Shalon, D., Davis, R. W. and Brown, P. O. Quantitative monitoring of gene expression patterns with a complementary DNA microarray. Science, 270, 5235 (Oct 20 1995), 467-470.</p>
+
+<p>[2] Nagalakshmi, U., Wang, Z., Waern, K., Shou, C., Raha, D., Gerstein, M. and Snyder, M. The transcriptional landscape of the yeast genome defined by RNA sequencing. Science, 320, 5881 (Jun 6 2008), 1344-1349.</p>
+
+<p>[3] Barrett, T., Troup, D. B., Wilhite, S. E., Ledoux, P., Evangelista, C., Kim, I. F., Tomashevsky, M., Marshall, K. A., Phillippy, K. H., Sherman, P. M., Muertter, R. N., Holko, M., Ayanbule, O., Yefanov, A. and Soboleva, A. NCBI GEO: archive for functional genomics data sets&ndash;10 years on. Nucleic acids research, 39, Database issue (Jan 2011), D1005-1010.</p>
+
+<p>[4] Parkinson, H., Sarkans, U., Kolesnikov, N., Abeygunawardena, N., Burdett, T., Dylag, M., Emam, I., Farne, A., Hastings, E., Holloway, E., Kurbatova, N., Lukk, M., Malone, J., Mani, R., Pilicheva, E., Rustici, G., Sharma, A., Williams, E., Adamusiak, T., Brandizi, M., Sklyar, N. and Brazma, A. ArrayExpress update&ndash;an archive of microarray and high-throughput sequencing-based functional genomics experiments. Nucleic acids research, 39, Database issue (Jan 2011), D1002-1004.</p>
+
+<p>[5] Deng, Y., He, Z., Van Nostrand, J. D. and Zhou, J. Design and analysis of mismatch probes for long oligonucleotide microarrays. BMC genomics, 92008), 491.</p>
+
+<p>[6] Hubbell, E., Liu, W. M. and Mei, R. Robust estimators for expression analysis. Bioinformatics, 18, 12 (Dec 2002), 1585-1592.</p>
+
+<p>[7] Irizarry, R. A., Bolstad, B. M., Collin, F., Cope, L. M., Hobbs, B. and Speed, T. P. Summaries of Affymetrix GeneChip probe level data. Nucleic acids research, 31, 4 (Feb 15 2003), e15.</p>
+
+<p>[8] Wu, Z. and Irizarry, R. A. Stochastic models inspired by hybridization theory for short oligonucleotide arrays. Journal of computational biology : a journal of computational molecular cell biology, 12, 6 (Jul-Aug 2005), 882-893.</p>
+
+<p>[9] Carter, S. L., Eklund, A. C., Mecham, B. H., Kohane, I. S. and Szallasi, Z. Redefinition of Affymetrix probe sets by sequence overlap with cDNA microarray probes reduces cross-platform inconsistencies in cancer-associated gene expression measurements. BMC bioinformatics, 62005), 107.</p>
+
+<p>[10] Dai, M., Wang, P., Boyd, A. D., Kostov, G., Athey, B., Jones, E. G., Bunney, W. E., Myers, R. M., Speed, T. P., Akil, H., Watson, S. J. and Meng, F. Evolving gene/transcript definitions significantly alter the interpretation of GeneChip data. Nucleic acids research, 33, 20 2005), e175.</p>
+
+<p>[11] de Leeuw, W. C., Rauwerda, H., Jonker, M. J. and Breit, T. M. Salvaging Affymetrix probes after probe-level re-annotation. BMC research notes, 12008), 66.</p>
+
+<p>[12] Ferrari, F., Bortoluzzi, S., Coppe, A., Sirota, A., Safran, M., Shmoish, M., Ferrari, S., Lancet, D., Danieli, G. A. and Bicciato, S. Novel definition files for human GeneChips based on GeneAnnot. BMC bioinformatics, 82007), 446.</p>
+
+<p>[13] Langer, W., Sohler, F., Leder, G., Beckmann, G., Seidel, H., Grone, J., Hummel, M. and Sommer, A. Exon array analysis using re-defined probe sets results in reliable identification of alternatively spliced genes in non-small cell lung cancer. BMC genomics, 112010), 676.</p>
+
+<p>[14] Liu, H., Zeeberg, B. R., Qu, G., Koru, A. G., Ferrucci, A., Kahn, A., Ryan, M. C., Nuhanovic, A., Munson, P. J., Reinhold, W. C., Kane, D. W. and Weinstein, J. N. AffyProbeMiner: a web resource for computing or retrieving accurately redefined Affymetrix probe sets. Bioinformatics, 23, 18 (Sep 15 2007), 2385-2390.</p>
+
+<p>[15] Lu, J., Lee, J. C., Salit, M. L. and Cam, M. C. Transcript-based redefinition of grouped oligonucleotide probe sets using AceView: high-resolution annotation for microarrays. BMC bioinformatics, 82007), 108.</p>
+
+<p>[16] Moll, A. G., Lindenmeyer, M. T., Kretzler, M., Nelson, P. J., Zimmer, R. and Cohen, C. D. Transcript-specific expression profiles derived from sequence-based analysis of standard microarrays. PloS one, 4, 3 2009), e4702.</p>
+
+<p>[17] Moreews, F., Rauffet, G., Dehais, P. and Klopp, C. SigReannot-mart: a query environment for expression microarray probe re-annotations. Database : the journal of biological databases and curation, 20112011), bar025.</p>
+
+<p>[18] Neerincx, P. B., Rauwerda, H., Nie, H., Groenen, M. A., Breit, T. M. and Leunissen, J. A. OligoRAP - an Oligo Re-Annotation Pipeline to improve annotation and estimate target specificity. BMC proceedings, 3 Suppl 42009), S4.</p>
+
+<p>[19] Risueno, A., Fontanillo, C., Dinger, M. E. and De Las Rivas, J. GATExplorer: genomic and transcriptomic explorer; mapping expression probes to gene loci, transcripts, exons and ncRNAs. BMC bioinformatics, 112010), 221.</p>
+
+<p>[20] Sandberg, R. and Larsson, O. Improved precision and accuracy for microarrays using updated probe set definitions. BMC bioinformatics, 82007), 48.</p>
+
+<p>[21] Yin, J., McLoughlin, S., Jeffery, I. B., Glaviano, A., Kennedy, B. and Higgins, D. G. Integrating multiple genome annotation databases improves the interpretation of microarray gene expression data. BMC genomics, 112010), 50.</p>
+
+<p>[22] Yu, H., Wang, F., Tu, K., Xie, L., Li, Y. Y. and Li, Y. X. Transcript-level annotation of Affymetrix probesets improves the interpretation of gene expression data. BMC bioinformatics, 82007), 194.</p>
+
+<p>[23] Maglott, D., Ostell, J., Pruitt, K. D. and Tatusova, T. Entrez Gene: gene-centered information at NCBI. Nucleic acids research, 39, Database issue (Jan 2011), D52-57.</p>
+
+<p>[24] Pruitt, K. D., Tatusova, T., Brown, G. R. and Maglott, D. R. NCBI Reference Sequences (RefSeq): current status, new features and genome annotation policy. Nucleic acids research, 40, Database issue (Jan 2012), D130-135.</p>
+
+<p>[25] Lu, X. and Zhang, X. The effect of GeneChip gene definitions on the microarray study of cancers. BioEssays : news and reviews in molecular, cellular and developmental biology, 28, 7 (Jul 2006), 739-746.</p>
+
+<p>[26] Sayers, E. W., Barrett, T., Benson, D. A., Bolton, E., Bryant, S. H., Canese, K., Chetvernin, V., Church, D. M., Dicuccio, M., Federhen, S., Feolo, M., Fingerman, I. M., Geer, L. Y., Helmberg, W., Kapustin, Y., Krasnov, S., Landsman, D., Lipman, D. J., Lu, Z., Madden, T. L., Madej, T., Maglott, D. R., Marchler-Bauer, A., Miller, V., Karsch-Mizrachi, I., Ostell, J., Panchenko, A., Phan, L., Pruitt, K. D., Schuler, G. D., Sequeira, E., Sherry, S. T., Shumway, M., Sirotkin, K., Slotta, D., Souvorov, A., Starchenko, G., Tatusova, T. A., Wagner, L., Wang, Y., Wilbur, W. J., Yaschenko, E. and Ye, J. Database resources of the National Center for Biotechnology Information. Nucleic acids research, 40, Database issue (Jan 2012), D13-25.</p>
+
+<p>[27] Rouchka, E. C., Phatak, A. W. and Singh, A. V. Effect of single nucleotide polymorphisms on Affymetrix match-mismatch probe pairs. Bioinformation, 2, 9 2008), 405-411.</p>
+
+<p>[28] Dreszer, T. R., Karolchik, D., Zweig, A. S., Hinrichs, A. S., Raney, B. J., Kuhn, R. M., Meyer, L. R., Wong, M., Sloan, C. A., Rosenbloom, K. R., Roe, G., Rhead, B., Pohl, A., Malladi, V. S., Li, C. H., Learned, K., Kirkup, V., Hsu, F., Harte, R. A., Guruvadoo, L., Goldman, M., Giardine, B. M., Fujita, P. A., Diekhans, M., Cline, M. S., Clawson, H., Barber, G. P., Haussler, D. and James Kent, W. The UCSC Genome Browser database: extensions and updates 2011. Nucleic acids research, 40, Database issue (Jan 2012), D918-923.</p>
+
+<p>[29] Langmead, B., Trapnell, C., Pop, M. and Salzberg, S. L. Ultrafast and memory-efficient alignment of short DNA sequences to the human genome. Genome biology, 10, 3 2009), R25.</p>
+
+<p>[30] Liu, G., Loraine, A. E., Shigeta, R., Cline, M., Cheng, J., Valmeekam, V., Sun, S., Kulp, D. and Siani-Rose, M. A. NetAffx: Affymetrix probesets and annotations. Nucleic acids research, 31, 1 (Jan 1 2003), 82-86.</p>
+
+<p>[31] Aboyoun, H., Pages, H. and Lawrence, M. GenomicRanges: Representation and manipulation of genomic intervals. . City.</p>
+
+<p>[32] Gnerre, S., Maccallum, I., Przybylski, D., Ribeiro, F. J., Burton, J. N., Walker, B. J., Sharpe, T., Hall, G., Shea, T. P., Sykes, S., Berlin, A. M., Aird, D., Costello, M., Daza, R., Williams, L., Nicol, R., Gnirke, A., Nusbaum, C., Lander, E. S. and Jaffe, D. B. High-quality draft assemblies of mammalian genomes from massively parallel sequence data. Proceedings of the National Academy of Sciences of the United States of America, 108, 4 (Jan 25 2011), 1513-1518.</p>
+
+<p>[33] Istrail, S., Sutton, G. G., Florea, L., Halpern, A. L., Mobarry, C. M., Lippert, R., Walenz, B., Shatkay, H., Dew, I., Miller, J. R., Flanigan, M. J., Edwards, N. J., Bolanos, R., Fasulo, D., Halldorsson, B. V., Hannenhalli, S., Turner, R., Yooseph, S., Lu, F., Nusskern, D. R., Shue, B. C., Zheng, X. H., Zhong, F., Delcher, A. L., Huson, D. H., Kravitz, S. A., Mouchard, L., Reinert, K., Remington, K. A., Clark, A. G., Waterman, M. S., Eichler, E. E., Adams, M. D., Hunkapiller, M. W., Myers, E. W. and Venter, J. C. Whole-genome shotgun assembly and comparison of human genome assemblies. Proceedings of the National Academy of Sciences of the United States of America, 101, 7 (Feb 17 2004), 1916-1921.</p>
+
+<p>[34] Lander, E. S., Linton, L. M., Birren, B., Nusbaum, C., Zody, M. C., Baldwin, J., Devon, K., Dewar, K., Doyle, M., FitzHugh, W., Funke, R., Gage, D., Harris, K., Heaford, A., Howland, J., Kann, L., Lehoczky, J., LeVine, R., McEwan, P., McKernan, K., Meldrim, J., Mesirov, J. P., Miranda, C., Morris, W., Naylor, J., Raymond, C., Rosetti, M., Santos, R., Sheridan, A., Sougnez, C., Stange-Thomann, N., Stojanovic, N., Subramanian, A., Wyman, D., Rogers, J., Sulston, J., Ainscough, R., Beck, S., Bentley, D., Burton, J., Clee, C., Carter, N., Coulson, A., Deadman, R., Deloukas, P., Dunham, A., Dunham, I., Durbin, R., French, L., Grafham, D., Gregory, S., Hubbard, T., Humphray, S., Hunt, A., Jones, M., Lloyd, C., McMurray, A., Matthews, L., Mercer, S., Milne, S., Mullikin, J. C., Mungall, A., Plumb, R., Ross, M., Shownkeen, R., Sims, S., Waterston, R. H., Wilson, R. K., Hillier, L. W., McPherson, J. D., Marra, M. A., Mardis, E. R., Fulton, L. A., Chinwalla, A. T., Pepin, K. H., Gish, W. R., Chissoe, S. L., Wendl, M. C., Delehaunty, K. D., Miner, T. L., Delehaunty, A., Kramer, J. B., Cook, L. L., Fulton, R. S., Johnson, D. L., Minx, P. J., Clifton, S. W., Hawkins, T., Branscomb, E., Predki, P., Richardson, P., Wenning, S., Slezak, T., Doggett, N., Cheng, J. F., Olsen, A., Lucas, S., Elkin, C., Uberbacher, E., Frazier, M., Gibbs, R. A., Muzny, D. M., Scherer, S. E., Bouck, J. B., Sodergren, E. J., Worley, K. C., Rives, C. M., Gorrell, J. H., Metzker, M. L., Naylor, S. L., Kucherlapati, R. S., Nelson, D. L., Weinstock, G. M., Sakaki, Y., Fujiyama, A., Hattori, M., Yada, T., Toyoda, A., Itoh, T., Kawagoe, C., Watanabe, H., Totoki, Y., Taylor, T., Weissenbach, J., Heilig, R., Saurin, W., Artiguenave, F., Brottier, P., Bruls, T., Pelletier, E., Robert, C., Wincker, P., Smith, D. R., Doucette-Stamm, L., Rubenfield, M., Weinstock, K., Lee, H. M., Dubois, J., Rosenthal, A., Platzer, M., Nyakatura, G., Taudien, S., Rump, A., Yang, H., Yu, J., Wang, J., Huang, G., Gu, J., Hood, L., Rowen, L., Madan, A., Qin, S., Davis, R. W., Federspiel, N. A., Abola, A. P., Proctor, M. J., Myers, R. M., Schmutz, J., Dickson, M., Grimwood, J., Cox, D. R., Olson, M. V., Kaul, R., Shimizu, N., Kawasaki, K., Minoshima, S., Evans, G. A., Athanasiou, M., Schultz, R., Roe, B. A., Chen, F., Pan, H., Ramser, J., Lehrach, H., Reinhardt, R., McCombie, W. R., de la Bastide, M., Dedhia, N., Blocker, H., Hornischer, K., Nordsiek, G., Agarwala, R., Aravind, L., Bailey, J. A., Bateman, A., Batzoglou, S., Birney, E., Bork, P., Brown, D. G., Burge, C. B., Cerutti, L., Chen, H. C., Church, D., Clamp, M., Copley, R. R., Doerks, T., Eddy, S. R., Eichler, E. E., Furey, T. S., Galagan, J., Gilbert, J. G., Harmon, C., Hayashizaki, Y., Haussler, D., Hermjakob, H., Hokamp, K., Jang, W., Johnson, L. S., Jones, T. A., Kasif, S., Kaspryzk, A., Kennedy, S., Kent, W. J., Kitts, P., Koonin, E. V., Korf, I., Kulp, D., Lancet, D., Lowe, T. M., McLysaght, A., Mikkelsen, T., Moran, J. V., Mulder, N., Pollara, V. J., Ponting, C. P., Schuler, G., Schultz, J., Slater, G., Smit, A. F., Stupka, E., Szustakowski, J., Thierry-Mieg, D., Thierry-Mieg, J., Wagner, L., Wallis, J., Wheeler, R., Williams, A., Wolf, Y. I., Wolfe, K. H., Yang, S. P., Yeh, R. F., Collins, F., Guyer, M. S., Peterson, J., Felsenfeld, A., Wetterstrand, K. A., Patrinos, A., Morgan, M. J., de Jong, P., Catanese, J. J., Osoegawa, K., Shizuya, H., Choi, S. and Chen, Y. J. Initial sequencing and analysis of the human genome. Nature, 409, 6822 (Feb 15 2001), 860-921.</p>
+
+<p>[35] Levy, S., Sutton, G., Ng, P. C., Feuk, L., Halpern, A. L., Walenz, B. P., Axelrod, N., Huang, J., Kirkness, E. F., Denisov, G., Lin, Y., MacDonald, J. R., Pang, A. W., Shago, M., Stockwell, T. B., Tsiamouri, A., Bafna, V., Bansal, V., Kravitz, S. A., Busam, D. A., Beeson, K. Y., McIntosh, T. C., Remington, K. A., Abril, J. F., Gill, J., Borman, J., Rogers, Y. H., Frazier, M. E., Scherer, S. W., Strausberg, R. L. and Venter, J. C. The diploid genome sequence of an individual human. PLoS biology, 5, 10 (Sep 4 2007), e254.</p>
+
+<p>[36] Li, R., Li, Y., Zheng, H., Luo, R., Zhu, H., Li, Q., Qian, W., Ren, Y., Tian, G., Li, J., Zhou, G., Zhu, X., Wu, H., Qin, J., Jin, X., Li, D., Cao, H., Hu, X., Blanche, H., Cann, H., Zhang, X., Li, S., Bolund, L., Kristiansen, K., Yang, H. and Wang, J. Building the sequence map of the human pan-genome. Nature biotechnology, 28, 1 (Jan 2010), 57-63.</p>
+
+<h2>RECREATION OF RESULTS</h2>
+
+<p>All of the necessary code to regenerate this work is hosted at <a href="https://github.com/rmflight/affymm">https://github.com/rmflight/affymm</a>. To recreate this html document, you need to run:</p>
+
+<p><code>knit2html(&quot;flightetal_draft.Rmd&quot;, &quot;flightetal_draft.html&quot;)</code></p>
+
+<p>Alternatively use the <code>Knit HTML</code> button in <code>RStudio v0.97</code> or newer. This document was
+generated using R version 2.15.0 (2012-03-30). The following information about packages used is also supplied:</p>
+
+<pre><code class="r">sessionInfo()
+</code></pre>
+
+<pre><code>R version 2.15.0 (2012-03-30)
+Platform: x86_64-pc-mingw32/x64 (64-bit)
+
+locale:
+[1] LC_COLLATE=English_United States.1252 
+[2] LC_CTYPE=English_United States.1252   
+[3] LC_MONETARY=English_United States.1252
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.1252    
+
+attached base packages:
+[1] grid      stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] GenomicRanges_1.8.13    IRanges_1.14.4         
+ [3] hgu133plus2probe_2.10.0 hgu133plus2.db_2.7.1   
+ [5] org.Hs.eg.db_2.7.1      RSQLite_0.11.2         
+ [7] DBI_0.2-5               AnnotationDbi_1.18.3   
+ [9] Biobase_2.16.0          BiocGenerics_0.2.0     
+[11] VennDiagram_1.5.1       plyr_1.7.1             
+[13] ggplot2_0.9.2.1         knitr_0.8.1            
+
+loaded via a namespace (and not attached):
+ [1] colorspace_1.1-1   dichromat_1.2-4    digest_0.5.2      
+ [4] evaluate_0.4.2     formatR_0.6        gtable_0.1.1      
+ [7] labeling_0.1       MASS_7.3-21        memoise_0.1       
+[10] munsell_0.4        proto_0.3-9.2      RColorBrewer_1.0-5
+[13] reshape2_1.2.1     scales_0.2.2       stats4_2.15.0     
+[16] stringr_0.6.1      tools_2.15.0      
+</code></pre>
+
+</body>
+
+</html>
