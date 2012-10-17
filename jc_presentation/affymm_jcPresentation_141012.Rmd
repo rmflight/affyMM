@@ -111,15 +111,22 @@ data(hgu133plus2probe)
 pmSeq <- DNAString(x=hgu133plus2probe[1,1])
 mmSeq <- pmSeq
 subseq(mmSeq, start=13, end=13) <- complement(subseq(mmSeq, start=13, end=13))
-outSeq <- data.frame(sequence=c(as.character(pmSeq), as.character(mmSeq)))
+pmSeq <- as.character(pmSeq)
+
+pmSeq <- paste(substr(pmSeq, 1, 12), '<font color="#0000FF">', substr(pmSeq, 13,13), '</font>', substr(pmSeq, 14, nchar(pmSeq)), sep="", collapse="")
+
+mmSeq <- as.character(mmSeq)
+mmSeq <- paste(substr(mmSeq, 1, 12), '<font color="#0000FF">', substr(mmSeq, 13,13), '</font>', substr(mmSeq, 14, nchar(mmSeq)), sep="", collapse="")
+outSeq <- data.frame(sequence=c(pmSeq, mmSeq))
 rownames(outSeq) <- c("pm", "mm")
 colnames(outSeq) <- ""
 ```
 
-```{r insertSequence, comment="", echo=FALSE}
-outSeq
+<pre><code>
+```{r insertSequence, results='asis', echo=FALSE}
+cat(paste("pm ", pmSeq, sep="", collapse=""), paste("mm ", mmSeq, sep="", collapse=""), sep="</br>")
 ```
-
+</pre></code>
 
 
 ## Perfect Match & MisMatch
@@ -141,6 +148,41 @@ outSeq
 ### Defined by Affymetrix based on available annotations
 
 
+## 
+
+<pre><code style="font-size:10pt">
+[Unit43914_Block1]
+Name=243114_at
+BlockNumber=1
+NumAtoms=11
+NumCells=22
+StartPosition=0
+StopPosition=10
+CellHeader=X	Y	PROBE	FEAT	QUAL	EXPOS	POS	CBASE	PBASE	TBASE	ATOM	INDEX	CODONIND	CODON	REGIONTYPE	REGION
+Cell1=928	614	N	control	243114_at	0	13	C	C	C	0	715624	-1	-1	99	
+Cell2=928	613	N	control	243114_at	0	13	C	G	C	0	714460	-1	-1	99	
+Cell3=185	304	N	control	243114_at	1	13	A	A	A	1	354041	-1	-1	99	
+Cell4=185	303	N	control	243114_at	1	13	A	T	A	1	352877	-1	-1	99	
+Cell5=1102	372	N	control	243114_at	2	13	A	A	A	2	434110	-1	-1	99	
+Cell6=1102	371	N	control	243114_at	2	13	A	T	A	2	432946	-1	-1	99	
+Cell7=129	770	N	control	243114_at	3	13	C	C	C	3	896409	-1	-1	99	
+Cell8=129	769	N	control	243114_at	3	13	C	G	C	3	895245	-1	-1	99	
+Cell9=375	556	N	control	243114_at	4	13	A	A	A	4	647559	-1	-1	99	
+Cell10=375	555	N	control	243114_at	4	13	A	T	A	4	646395	-1	-1	99	
+Cell11=526	364	N	control	243114_at	5	13	C	C	C	5	424222	-1	-1	99	
+Cell12=526	363	N	control	243114_at	5	13	C	G	C	5	423058	-1	-1	99	
+Cell13=1059	92	N	control	243114_at	6	13	A	A	A	6	108147	-1	-1	99	
+Cell14=1059	91	N	control	243114_at	6	13	A	T	A	6	106983	-1	-1	99	
+Cell15=1098	186	N	control	243114_at	7	13	C	C	C	7	217602	-1	-1	99	
+Cell16=1098	185	N	control	243114_at	7	13	C	G	C	7	216438	-1	-1	99	
+Cell17=399	565	N	control	243114_at	8	13	G	C	G	8	658059	-1	-1	99	
+Cell18=399	566	N	control	243114_at	8	13	G	G	G	8	659223	-1	-1	99	
+Cell19=1062	242	N	control	243114_at	9	13	A	A	A	9	282750	-1	-1	99	
+Cell20=1062	241	N	control	243114_at	9	13	A	T	A	9	281586	-1	-1	99	
+Cell21=511	580	N	control	243114_at	10	13	A	A	A	10	675631	-1	-1	99	
+Cell22=511	579	N	control	243114_at	10	13	A	T	A	10	674467	-1	-1	99	
+</code></pre>
+
 # Custom CDF
 
 ## Custom??
@@ -161,16 +203,16 @@ outSeq
     - more consistent
     
 - Dai et al, 2005, NAR 33(20):e175 
-- Sandberg & Larsson, 2007, BMC Bioin. 8:48
+- Sandberg & Larsson, 2007, BMC Bioinf. 8:48
 - 41 `BrainArray` platforms on GEO
     - http://brainarray.mbni.med.umich.edu/Brainarray/Database/CustomCDF/genomic_curated_CDF.asp
 
-## But ...
+
+## But...
 
 - Only uses perfect match probes!
-
 - Can we use mismatch probes in custom probesets??
-    - why not?
+- why not?
     - have sequences
     - matter of aligning to genome
 
@@ -244,7 +286,7 @@ print(xtable(chipTable), type = 'html', html.table.attributes = 'style="border-s
 
 - random data from gene expression omnibus (GEO)
 - 20 random CEL files for each organism
-    - Only 4 for X. tropicalis, 12 for Yeast
+    - Only 4 for *X. tropicalis*, 12 for Yeast
     
 ## Probe Sequences & Alignment
 
@@ -274,7 +316,7 @@ print(xtable(cntTable), type = 'html', html.table.attributes = 'style="font-size
 
 ## Types of Alignments
 
-Which types of probes align to multiple locations?
+Which types of PM probes align to multiple locations?
 
 ```{r probeTypeAnalysis, include=FALSE}
 translationTable <- matrix(ncol=3, byrow=T, data=c("ce6", "Ce", "celegans",
@@ -584,7 +626,7 @@ hRace <- c("Mixed", "Mixed", "Caucasian", "African", "Caucasian")
 
 hData <- data.frame(Name=hNames, Abbr=hAbbr, Assembly=hAssembly, Bioproject=hProj, Race=hRace)
 
-print(xtable(hData), type='html', html.table.attributes = 'style="text-align:left; border-spacing:20px 5px;"', include.rownames=FALSE)
+print(xtable(hData), type='html', html.table.attributes = 'style="font-size:90%; text-align:left; border-spacing:20px 5px;"', include.rownames=FALSE)
 ```
 
 ## Mapping Differences
