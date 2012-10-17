@@ -319,14 +319,20 @@ colnames(translationTable) <- c("short", "Organism", "array")
 multFiles <- file.path("seqData", paste("multMatch_", translationTable[,"short"], ".txt", sep=""))
 nOrg <- nrow(translationTable)
 typeCounts <- matrix("", nrow=nOrg, ncol=5)
-colnames(typeCounts) <- c("_x_at", "_s_at", "_a_at", "_at", "other")
+colnames(typeCounts) <- c("_x_at", "_s_at", "_a_at", "_at", "control")
 rownames(typeCounts) <- translationTable[,"Organism"]
-probeType <- c("_x_at", "_s_at", "_at", "_a_at")
+#probeType <- c("_x_at", "_s_at", "_at", "_a_at", "affx")
 for (iOrg in 1:nOrg){
 	multProbes <- scan(file=multFiles[iOrg], what=character())
 	pClass <- probeClass(multProbes)
 	multProbes <- multProbes[pClass == "pm"]
 	totMult <- length(multProbes)
+	
+	cntrl <- grep("affx", multProbes, ignore.case=T)
+	n_cntrl <- length(cntrl)
+	p_cntrl <- format(n_cntrl / totMult * 100, digits=2)
+	multProbes <- multProbes[-1*cntrl]
+	
 	x_at <- grep("_x_at", multProbes)
 	n_xat <- length(x_at)
 	p_xat <- format(n_xat / totMult * 100, digits=2)
@@ -341,13 +347,14 @@ for (iOrg in 1:nOrg){
 	o_at <- grep("_at", oProbes)
 	n_oat <- length(o_at)
 	p_oat <- format(n_oat / totMult * 100, digits=2)
-	otherProbes <- length(oProbes[-o_at])
+	otherProbes <- length(oProbes[-1*o_at])
 	pOther <- format(otherProbes / totMult * 100, digits=2)
 	typeCounts[iOrg, "_x_at"] <- paste(n_xat, " (", p_xat, "%)", collapse="", sep="") 
 	typeCounts[iOrg, "_s_at"] <- paste(n_sat, " (", p_sat, "%)", collapse="", sep="") 
 	typeCounts[iOrg, "_a_at"] <- paste(n_aat, " (", p_aat, "%)", collapse="", sep="") 
 	typeCounts[iOrg, "_at"] <- paste(n_oat, " (", p_oat, "%)", collapse="", sep="") 
-	typeCounts[iOrg, "other"] <- paste(otherProbes, " (", pOther, "%)", collapse="", sep="") 
+	#typeCounts[iOrg, "other"] <- paste(otherProbes, " (", pOther, "%)", collapse="", sep="") 
+	typeCounts[iOrg, "control"] <- paste(n_cntrl, " (", p_cntrl, "%)", collapse="", sep="")
 }
 
 typeCounts <- cbind(translationTable[,"Organism"], typeCounts)
