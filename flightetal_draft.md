@@ -12,7 +12,20 @@
 
 # Affymetrix(r) Mismatch (MM) Probes: Useful After All
 
-Robert M Flight, Abdallah M Eteleeb, Eric C Rouchka
+Robert M Flight^(1), Abdallah M Eteleeb^(2) and Eric C Rouchka^(2)
+
+^(1) Department of Anatomical Sciences and Neurobiology, University of Louisville, Louisville, Kentucky, USA 40292
+
+^(2) Department of Computer Engineering and Computer Science, University of Louisville, Louisville, Kentucky, USA 40292
+
+### Email Contacts
+
+robert dot flight near louisville dot edu
+
+ametel01 near louisville dot edu
+
+eric dot rouchka near louisville dot edu
+
 
 ## ABSTRACT
 
@@ -25,7 +38,7 @@ in transcript regions.  Our results suggest that depending of the species of int
 used reliably in terms of single unique matches to the genome, while a small number of the MM probes (typically less 
 than 1%) could be incorporated into the analysis.  In addition, we have examined the mapping of PM and MM probes to five
 different human genome projects, resulting in approximately a 70% overlap of uniquely mapping PM probes, and a subset of
-51 uniquely mapping MM probes commonly found in all five projects, 24 of which are found within annotated exonic regions. 
+161 uniquely mapping MM probes commonly found in all five projects, 24 of which are found within annotated exonic regions. 
 These results suggest that individual variation in transcriptome regions provides an additional complexity to microarray
 data analysis. Given these results, we conclude that the development of custom chip definition files (CDFs) should
 include MM probe sequences to provide the most effective means of transcriptome analysis of Affymetrix(r) GeneChip(r) 
@@ -51,7 +64,7 @@ companies such as Affymetrix(r), Inc. (Santa Clara, CA), Agilent Technologies, I
 (San Diego, CA), and GE Healthcare Lifesciences (Piscataway, NJ), with nearly half of the series (16,181) being
 performed on various Affymetrix® arrays. 
 
-The design of Affymetrix® GeneChip(r) arrays in particular provides for probe sets consisting of 11, 16, or 20 distinct
+The design of Affymetrix(r) GeneChip(r) arrays in particular provides for probe sets consisting of 11, 16, or 20 distinct
 25 base pair (BP) probes, with each probe having a corresponding perfect match (PM) and mismatch (MM) probe.  The PM
 and MM differ by the exchange of the complementary base at the 13th position in the probe.  While MM probes were
 originally designed to account for signal in the PM resulting from non-specific cross-hybridization, they are often
@@ -60,13 +73,17 @@ underutilized or completely ignored. Mismatch probes have been explored for use 
 
 Affymetrix® provides a default GeneChip® analysis package known as the Micro Array Suite 5.0 (MAS 5.0) [6] that measures the signal intensity for a particular probe pair as: 
 
-signal = TukeyBiweight{log(PMj - MM*j)} (1)
+$$
+	\begin{aligned}
+	\text{signal} = TukeyBiweight ( \log (PM_{j} - MM^{*}_{j}) )
+	\end{aligned}
+$$
 
 Where MM`*` is a modified version of MM that is never bigger than the intensity value of the PM.  The motivation behind
 the modified mismatch intensity MM* is to report all probe-level intensities as positive values, and to remove the
 influence of the minority of probes where the MM intensity value is significantly higher than the corresponding PM
 intensity.  In addition to the intensity signal, MAS 5.0 also produces a detection p-value which flags a transcript as
-"P"" (present), "M"" (marginal), or "A"" (absent) based on the reliability of the probe set based on differences between
+"P" (present), "M" (marginal), or "A" (absent) based on the reliability of the probe set based on differences between
 PM and MM intensities.
 
 Known issues in the use of PM and MM probe intensities to generate a single probe set intensity values led to the
@@ -158,7 +175,7 @@ as any type of overlap with at least 23 bases overlapping on the same strand. Ov
 ###	DNA Microarray Data
 
 For each GeneChip(r), CEL files were downloaded from GEO for 20 random samples (with the exception of *S. cerevisiae* (12)
-and *X. tropicalis* (4), the GSMs are listed in [gsmFiles.txt](gsmFiles.txt)). Probe intensities were background
+and *X. tropicalis* (4), the GSMs are listed in [gsmFiles.txt](https://raw.github.com/rmflight/affyMM/master/gsmFiles.txt)). Probe intensities were background
 corrected using the MAS background correction method implemented in Bioconductor. Depending on the application,
 intensities were log (base 2), square root transformed, or used as is. 
 
