@@ -409,7 +409,7 @@ cat(typeTable, sep="\n")
 
 <a id="f.allPlots"></a>
 
-```{r allPlots, echo=FALSE, fig.width=10}
+```{r allPlots, echo=FALSE, fig.width=7, dpi=300}
 theme_set(theme_bw())
 allData <- allData[!(names(allData) %in% "mm9")]
 
