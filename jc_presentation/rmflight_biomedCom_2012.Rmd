@@ -1,0 +1,767 @@
+% Affymetrix MisMatch (MM) Probes: </br> Useful After All
+% Robert M Flight; Abdallah Eteleeb; Eric C Rouchka
+% 14/12/12
+
+```{r knitrSetup, include=FALSE}
+#opts_chunk$set(cache=TRUE)
+knit_hooks$set(error = function(x, options) stop(x)) 
+```
+
+
+```{r functionDefs, include=FALSE}
+tableCat <- function(inFrame){
+	outText <- paste(names(inFrame), collapse=" | ")
+	outText <- c(outText, paste(rep("---", ncol(inFrame)), collapse=" | "))
+	invisible(apply(inFrame, 1, function(inRow){
+		outText <<- c(outText, paste(inRow, collapse=" | "))
+	}))
+	return(outText)
+}
+
+probeClass <- function(probeIDs){
+	sapply(strsplit(probeIDs, ".", fixed=T), function(y){y[1]})
+}
+
+probeSetName <- function(probeID){
+	splitName <- strsplit(probeID, ".", fixed=T)[[1]]
+	nSplit <- length(splitName)
+	rmSplit <- -1 * c(1, nSplit-1, nSplit)
+	paste(splitName[rmSplit], sep=".", collapse=".")
+}
+
+sortProbes <- function(probeIDs){
+	splitIDs <- strsplit(probeIDs, ".", fixed=T)
+	endIndx <- sapply(splitIDs, function(x){
+		nEnt <- length(x)
+		as.numeric(x[c(nEnt-1, nEnt)])
+	})
+	endIndx <- t(endIndx)
+	order(endIndx[,1], endIndx[,2])
+}
+```
+
+```{r loadPackagesData, include=FALSE, cache=FALSE}
+options(stringsAsFactors=FALSE)
+require(ggplot2)
+require(plyr)
+require(VennDiagram)
+require(hgu133plus2.db)
+require(hgu133plus2cdf)
+require(hgu133plus2probe)
+require(org.Hs.eg.db)
+require(affy)
+require(Biostrings)
+
+require(xtable)
+load("../counts_Plots_etc_allOrgs.RData")
+```
+
+# Transcriptomics
+
+
+
+# Affymetrix GeneChips
+
+
+## GeneChip
+
+- measures abundance of RNA transcripts
+- solid support with attached 25 mer oligonucleotides
+- oligonucleotides organized into **probesets**
+- **probeset** consists of 11, 16, 20, 25 probe pairs
+- each probe pair consists of a perfect match (PM) and mis-match (MM) probe
+
+## GeneChip & ProbeSet
+
+```{r insertChipImage, echo=FALSE, fig.cap="chip", out.height=450, dev='png'}
+celFile <- "../randomCels/hs/GSM259617.CEL.gz"
+celInt <- ReadAffy(filenames=celFile)
+image(celInt)
+```
+
+```{r insertProbeSet1, echo=FALSE, fig.cap="probeset", fig.align='center', fig.width=10, out.width=300, dev='svg'}
+cdfDat <- as.list(hgu133plus2cdf)
+allIntensity <- intensity(celInt)
+tmpQ <- cdfDat[["AFFX-HUMGAPDH/M33197_3_at"]]
+
+mmInt <- data.frame(probeIntensity=allIntensity[tmpQ[,"mm"]], x=seq(1,nrow(tmpQ)), class="mm", yloc=2)
+pmInt <- data.frame(probeIntensity=allIntensity[tmpQ[,"pm"]], x=seq(1,nrow(tmpQ)), class="pm", yloc=1)
+
+pm.mm.Int <- rbind(pmInt, mmInt)
+pm.mm.Int$fill <- sqrt(pm.mm.Int$probeIntensity)
+xlim <- 0.5 + c(0, nrow(pm.mm.Int)/2)
+
+tm.image <- ggplot(pm.mm.Int, aes(x=x, y=class, fill=fill)) + geom_tile() + scale_fill_gradient(low="black", high="white", limits=c(0, 256)) + theme(axis.text.x=element_blank(), axis.ticks=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank()) + coord_equal(ratio=1, xlim=xlim) + theme(legend.position = "none", plot.margin = unit(c(0, 0, 0, 0), "lines"))
+print(tm.image)
+```
+
+
+## Perfect Match & MisMatch
+
+- Perfect Match (PM)
+    - supposed to perfectly match the sequence of interest
+    - has exact complementarity
+    - binds **perfectly**
+- MisMatch (MM)
+    - 13th base is reverse complement of **PM** sequence
+    - supposed to account for non-specific binding in the **PM**
+    - therefore should have lower signal
+    - useful for **PM** signal correction
+
+
+## 
+
+```{r pm.mm.Diff, echo=FALSE}
+data(hgu133plus2probe)
+pmSeq <- DNAString(x=hgu133plus2probe[1,1])
+mmSeq <- pmSeq
+subseq(mmSeq, start=13, end=13) <- complement(subseq(mmSeq, start=13, end=13))
+pmSeq <- as.character(pmSeq)
+
+pmSeq <- paste(substr(pmSeq, 1, 12), '<font color="#0000FF">', substr(pmSeq, 13,13), '</font>', substr(pmSeq, 14, nchar(pmSeq)), sep="", collapse="")
+
+mmSeq <- as.character(mmSeq)
+mmSeq <- paste(substr(mmSeq, 1, 12), '<font color="#0000FF">', substr(mmSeq, 13,13), '</font>', substr(mmSeq, 14, nchar(mmSeq)), sep="", collapse="")
+outSeq <- data.frame(sequence=c(pmSeq, mmSeq))
+rownames(outSeq) <- c("pm", "mm")
+colnames(outSeq) <- ""
+```
+
+<pre><code>
+```{r insertSequence, results='asis', echo=FALSE}
+cat(paste("pm ", pmSeq, sep="", collapse=""), paste("mm ", mmSeq, sep="", collapse=""), sep="</br>")
+```
+</pre></code>
+
+
+## Perfect Match & MisMatch
+
+- True Signal
+    - therefore true signal should be PMi - MMi
+- Problems
+    - MM may have higher signal than PM
+    - most modern summarization methods ignore it
+
+
+## CDF: Chip Definition File
+
+- Defines organization of probes into probesets
+    - genes
+    - gene families
+    - transcripts
+
+### Defined by Affymetrix based on available annotations
+
+
+## 
+
+<pre><code style="font-size:10pt">
+[Unit43914_Block1]
+Name=243114_at
+BlockNumber=1
+NumAtoms=11
+NumCells=22
+StartPosition=0
+StopPosition=10
+CellHeader=X	Y	PROBE	FEAT	QUAL	EXPOS	POS	CBASE	PBASE	TBASE	ATOM	INDEX	CODONIND	CODON	REGIONTYPE	REGION
+Cell1=928	614	N	control	243114_at	0	13	C	C	C	0	715624	-1	-1	99	
+Cell2=928	613	N	control	243114_at	0	13	C	G	C	0	714460	-1	-1	99	
+Cell3=185	304	N	control	243114_at	1	13	A	A	A	1	354041	-1	-1	99	
+Cell4=185	303	N	control	243114_at	1	13	A	T	A	1	352877	-1	-1	99	
+Cell5=1102	372	N	control	243114_at	2	13	A	A	A	2	434110	-1	-1	99	
+Cell6=1102	371	N	control	243114_at	2	13	A	T	A	2	432946	-1	-1	99	
+Cell7=129	770	N	control	243114_at	3	13	C	C	C	3	896409	-1	-1	99	
+Cell8=129	769	N	control	243114_at	3	13	C	G	C	3	895245	-1	-1	99	
+Cell9=375	556	N	control	243114_at	4	13	A	A	A	4	647559	-1	-1	99	
+Cell10=375	555	N	control	243114_at	4	13	A	T	A	4	646395	-1	-1	99	
+Cell11=526	364	N	control	243114_at	5	13	C	C	C	5	424222	-1	-1	99	
+Cell12=526	363	N	control	243114_at	5	13	C	G	C	5	423058	-1	-1	99	
+Cell13=1059	92	N	control	243114_at	6	13	A	A	A	6	108147	-1	-1	99	
+Cell14=1059	91	N	control	243114_at	6	13	A	T	A	6	106983	-1	-1	99	
+Cell15=1098	186	N	control	243114_at	7	13	C	C	C	7	217602	-1	-1	99	
+Cell16=1098	185	N	control	243114_at	7	13	C	G	C	7	216438	-1	-1	99	
+Cell17=399	565	N	control	243114_at	8	13	G	C	G	8	658059	-1	-1	99	
+Cell18=399	566	N	control	243114_at	8	13	G	G	G	8	659223	-1	-1	99	
+Cell19=1062	242	N	control	243114_at	9	13	A	A	A	9	282750	-1	-1	99	
+Cell20=1062	241	N	control	243114_at	9	13	A	T	A	9	281586	-1	-1	99	
+Cell21=511	580	N	control	243114_at	10	13	A	A	A	10	675631	-1	-1	99	
+Cell22=511	579	N	control	243114_at	10	13	A	T	A	10	674467	-1	-1	99	
+</code></pre>
+
+# Custom CDF
+
+## Custom??
+
+- Reorganize probes 
+    - available probe sequences & chip locations
+    - available target genome sequences
+    - available genome annotations (genes, transcripts, exons, etc)
+- Generate probe sets
+    - have perfect alignment
+    - all probes bind the same genomic element (exon, transcript, gene)
+    - binding region does not encompass a lot of SNPs
+
+## Better Results
+
+- Reorganization gives results that are:
+    - more reproducible
+    - more consistent
+    
+- Dai et al, 2005, NAR 33(20):e175 
+- Sandberg & Larsson, 2007, BMC Bioinf. 8:48
+- 41 `BrainArray` platforms on GEO
+    - http://brainarray.mbni.med.umich.edu/Brainarray/Database/CustomCDF/genomic_curated_CDF.asp
+
+
+## But...
+
+- Only uses perfect match probes!
+- Can we use mismatch probes in custom probesets??
+- why not?
+    - have sequences
+    - matter of aligning to genome
+
+
+# Mismatch Probes in Custom Probesets
+
+
+## Organisms
+
+```{r organismTable, echo=FALSE}
+organismTable <- data.frame(Organism=c("C elegans",
+																			 "D melanogaster",
+																			 "S cerevisiae",
+																			 "X tropicalis",
+																			 "D rerio",
+																			 "M musculus",
+																			 "R norvegicus",
+																			 "H sapiens"),
+														'Reference Assembly'=c("ce6",
+																									 "dm3",
+																									 "sc3",
+																									 "xt3",
+																									 "dr6",
+																									 "mm10",
+																									 "rn4",
+																									 "hg19"),
+														'Build date'=c("May 2008",
+																					 "Apr. 2006",
+																					 "Apr. 2011",
+																					 "Nov 2009",
+																					 "Dec. 2008",
+																					 "Dec. 2011",
+																					 "Nov 2004",
+																					 "Feb. 2009"))
+names(organismTable) <- c("Organism", "Reference Assembly", "Build Date")
+```
+
+```{r insertOrganism, echo=FALSE, results='asis'}
+organismTable$Organism <- paste("*", organismTable$Organism, "*", sep="")
+print(xtable(organismTable), type = 'html', html.table.attributes = 'style="border-spacing:20px 5px;"', include.rownames=FALSE)
+```
+
+## GeneChips
+
+```{r chipTable, include=FALSE}
+chipTable <- data.frame(Organism=c("C elegans",
+																			 "D melanogaster",
+																			 "S cerevisiae",
+																			 "X tropicalis",
+																			 "D rerio",
+																			 "M musculus",
+																			 "R norvegicus",
+																			 "H sapiens"),
+												chip=c("C. elegans Genome",
+															 "Drosophila Genome 2.0",
+															 "Yeast Genome 2.0",
+															 "X. tropicalus Genome",
+															 "Zebrafish Genome",
+															 "Mouse Genome 430 2.0",
+															 "Rat Genome 230 2.0",
+															 "Human Genome U133 Plus 2.0"))
+names(chipTable) <- c("Organism", "GeneChip")
+```
+
+```{r insertChips, echo=FALSE, results='asis'}
+chipTable$Organism <- paste("*", chipTable$Organism, "*", sep="")
+print(xtable(chipTable), type = 'html', html.table.attributes = 'style="border-spacing:20px 5px;"', include.rownames=FALSE)
+```
+
+## Microarray Data
+
+- random data from gene expression omnibus (GEO)
+- 20 random CEL files for each organism
+    - Only 4 for *X. tropicalis*, 12 for Yeast
+    
+## Probe Sequences & Alignment
+
+- Sequences:
+    - from **Bioconductor** `probe` packages
+    - MM sequences generated from PM sequences
+- Alignments:
+    - align both PM and MM to reference using `bowtie v0.12.8`
+    - report **all** alignments with **0** mismatches
+    
+# Results
+
+## Number of Alignments
+
+```{r countAlignments, include=FALSE}
+cntTable <- read.table("../alignmentCounts.txt", sep="\t", header=T)
+cntTable$Organism <- paste("*", cntTable$Organism, "*", sep="")
+cntTable <- cntTable[, c("Organism", "nPair", "map.PM", "map.MM", "singPM", "singMM")]
+names(cntTable) <- c("Organism", "Number of Probe Pairs", "PM Mapped to Reference",
+										 "MM Mapped to Reference", "PM Unique", "MM Unique")
+```
+
+```{r insertCounts, echo=FALSE, results='asis'}
+print(xtable(cntTable), type = 'html', html.table.attributes = 'style="font-size:70%; text-align:left; border-spacing:20px 5px;"', include.rownames=FALSE)
+```
+
+
+## Types of Alignments
+
+Which types of PM probes align to multiple locations?
+
+```{r probeTypeAnalysis, include=FALSE}
+translationTable <- matrix(ncol=3, byrow=T, data=c("ce6", "Ce", "celegans",
+																									 "dm3", "Dm", "drosophila2",
+																									 "dr6", "Dr", "zebrafish",
+																									 "hg19", "Hs", "hsa",
+																									 "mm10", "Mm", "mus",
+																									 "rn4", "Rn", "rat",
+																									 "sc3", "Sc", "yeast2",
+																									 "xt3", "Xt", "xtropicalis"))
+colnames(translationTable) <- c("short", "Organism", "array")
+
+multFiles <- file.path("../seqData", paste("multMatch_", translationTable[,"short"], ".txt", sep=""))
+nOrg <- nrow(translationTable)
+typeCounts <- matrix("", nrow=nOrg, ncol=5)
+colnames(typeCounts) <- c("_x_at", "_s_at", "_a_at", "_at", "control")
+rownames(typeCounts) <- translationTable[,"Organism"]
+#probeType <- c("_x_at", "_s_at", "_at", "_a_at", "affx")
+for (iOrg in 1:nOrg){
+	multProbes <- scan(file=multFiles[iOrg], what=character())
+	pClass <- probeClass(multProbes)
+	multProbes <- multProbes[pClass == "pm"]
+	totMult <- length(multProbes)
+	
+	cntrl <- grep("affx", multProbes, ignore.case=T)
+	n_cntrl <- length(cntrl)
+	p_cntrl <- format(n_cntrl / totMult * 100, digits=2)
+	multProbes <- multProbes[-1*cntrl]
+	
+	x_at <- grep("_x_at", multProbes)
+	n_xat <- length(x_at)
+	p_xat <- format(n_xat / totMult * 100, digits=2)
+	s_at <- grep("_s_at", multProbes)
+	n_sat <- length(s_at)
+	p_sat <- format(n_sat / totMult * 100, digits=2)
+	a_at <- grep("_a_at", multProbes)
+	n_aat <- length(a_at)
+	p_aat <- format(n_aat / totMult * 100, digits=2)
+	
+	oProbes <- multProbes[-1*c(x_at, s_at, a_at)]
+	o_at <- grep("_at", oProbes)
+	n_oat <- length(o_at)
+	p_oat <- format(n_oat / totMult * 100, digits=2)
+	otherProbes <- length(oProbes[-1*o_at])
+	pOther <- format(otherProbes / totMult * 100, digits=2)
+	typeCounts[iOrg, "_x_at"] <- paste(n_xat, " (", p_xat, "%)", collapse="", sep="") 
+	typeCounts[iOrg, "_s_at"] <- paste(n_sat, " (", p_sat, "%)", collapse="", sep="") 
+	typeCounts[iOrg, "_a_at"] <- paste(n_aat, " (", p_aat, "%)", collapse="", sep="") 
+	typeCounts[iOrg, "_at"] <- paste(n_oat, " (", p_oat, "%)", collapse="", sep="") 
+	#typeCounts[iOrg, "other"] <- paste(otherProbes, " (", pOther, "%)", collapse="", sep="") 
+	typeCounts[iOrg, "control"] <- paste(n_cntrl, " (", p_cntrl, "%)", collapse="", sep="")
+}
+
+typeCounts <- cbind(translationTable[,"Organism"], typeCounts)
+typeCounts <- as.data.frame(typeCounts)
+names(typeCounts)[1] <- "Organism"
+# note: Eric gets 29 "other" probes for Ce here, and I think it is because he is counting control probes as other
+```
+
+```{r insertTypeCounts, echo=FALSE, results='asis'}
+typeCounts$Organism <- paste("*", typeCounts$Organism, "*", sep="")
+print(xtable(typeCounts), type = 'html', html.table.attributes = 'style="font-size:70%; text-align:left; border-spacing:20px 5px;"', include.rownames=FALSE)
+```
+
+## Comparison of PM and MM Signals
+
+```{r getDensityData, include=FALSE}
+theme_set(theme_bw())
+allData <- allData[!(names(allData) %in% "mm9")]
+
+plotData <- adply(names(allData), 1, function(x){
+	tmpInt <- allData[[x]]$allPlot$plotInt
+	tmpInt$organism <- x
+	return(tmpInt)
+})
+
+g <- ggplot(plotData, aes(x=probeInt, colour=probeType, linetype=probeType)) + geom_density() + facet_wrap(~organism, nrow=2) + labs(x="log2 probe intensity")
+```
+
+Signal density for all probes and those that align to known exons.
+
+```{r insertDensity, echo=FALSE, dev='svg', fig.width=14, out.height=325, fig.align='center'}
+print(g)
+```
+
+## Comparison of PM and MM Signals
+
+- MM probes generally show lower signal intensity
+- MM probes in exons tend toward the signal of PM probes in exons
+- Although few in number, these would confound any analysis depending on PM - MM
+
+## PM MM Negative Difference
+
+```{r pmmmDensity, echo=FALSE, out.height=325, dev='svg', fig.cap="Probe Set Density"}
+# need to get the experiment and probe set ID used for this figure and set it as a variable we can use!
+mmIndx <- 12
+negIndx <- 2
+
+tmpDat <- allData$dr6$pmDifDat[[mmIndx]]
+mmName <- tmpDat$invProbes[negIndx]
+setName <- probeSetName(mmName)
+expName <- tmpDat$probeData$gsmID[negIndx]
+
+denPlot <- tmpDat$plotDat[[negIndx]]$denPlot
+
+denPlot <- denPlot + ggtitle("")
+print(denPlot)
+```
+
+```{r pmmmIntensity, echo=FALSE, out.width=300, dev='svg', fig.cap="Probe Set Intensity"}
+probeSetPlot <- tmpDat$plotDat[[negIndx]]$psImage
+probeSetPlot <- probeSetPlot + ggtitle("") + theme_grey() + theme(legend.position = "none", plot.margin = unit(c(0, 0, 0, 0), "lines"))
+print(probeSetPlot)
+```
+
+
+## TM Signal 
+
+- compare signal of exon matching MM with other probes in that exon
+- matches much better than with the other MM probes
+- call these "true match" probes, because they are based on alignment
+- is this a general phenomenom?
+
+```{r tmIntensity, echo=FALSE, dev='svg', out.width=400, fig.cap="True Match Intensity Comparison"}
+intenPlot <- tmpDat$plotDat[[negIndx]]$exonImage
+intenPlot <- intenPlot + ggtitle("") + theme(legend.position = "none", plot.margin = unit(c(0, 0, 0, 0), "lines"))
+print(intenPlot)
+```
+
+
+
+## MM vs TM Correlation
+
+- compare the correlation of TM with other MM or with TM on same exon
+
+```{r correlationBoxPlot, echo=FALSE, warning=FALSE, dev='svg', out.height=350, fig.width=12, fig.cap="Correlation of TM with MM or other TM", fig.align='center'}
+allData <- allData[!(names(allData) %in% c("mm9", "sc3"))]
+useName <- names(allData)
+
+calcCor <- function(inN){
+	useCor <- allData[[inN]]$mmCor
+	mmProbes <- names(useCor)
+
+	nCor <- length(useCor)
+	
+	mmCor <- data.frame(x=0, y=0, class="", orgName=inN, mmName="")
+	tmCor <- data.frame(x=0, y=0, class="", orgName=inN, mmName="")
+	
+	for (iCor in 1:nCor){
+		mmT <- as.vector(useCor[[iCor]]$mmCor)
+		mmT <- data.frame(x=as.character(iCor), y=mmT, class="mm", orgName=inN, mmName=mmProbes[iCor])
+		mmCor <- rbind(mmCor, mmT)
+		
+		tmT <- as.vector(useCor[[iCor]]$tmCor)
+		if (!(is.na(tmT))){
+			tmT <- data.frame(x=as.character(iCor), y=tmT, class="tm", orgName=inN, mmName=mmProbes[iCor])
+			tmCor <- rbind(tmCor, tmT)
+		}
+	}
+	
+	mmCor <- mmCor[seq(2, nrow(mmCor)),]
+	tmCor <- tmCor[seq(2, nrow(tmCor)),]
+	
+	allCor <- rbind(mmCor, tmCor)
+	hasSame <- unique(mmCor$x[(mmCor$x %in% tmCor$x)])
+	allCorSame <- allCor[(allCor$x %in% hasSame),]
+	return(list(allCor=allCor, allCorSame=allCorSame))
+}
+corDat <- lapply(useName, calcCor)
+names(corDat) <- useName
+
+initCor <- corDat[[1]]$allCorSame
+invisible(sapply(corDat[2:length(corDat)], function(x){
+	initCor <<- rbind(initCor, x$allCorSame)
+}))
+
+initCor$orgName <- as.character(initCor$orgName)
+initCor$orgName[(initCor$orgName == "xtropicalis")] <- "xt3"
+initCor$class.orgName <- paste(initCor$orgName, initCor$class, sep=":")
+
+ggplot(initCor, aes(x=orgName, y=y, colour=class)) + geom_boxplot() + theme_bw() + labs(x="organism", y="correlation")
+```
+
+
+## Different Transcripts?
+
+```{r addCorrTable, echo=FALSE, include=FALSE}
+useCor <- corDat$hg19$allCorSame
+mmProbes <- unique(useCor$mmName)
+
+tmV <- useCor$class == "tm"
+mmV <- useCor$class == "mm"
+tmCor <- sapply(mmProbes, function(x){
+	mean(useCor$y[(tmV & (useCor$mmName %in% x))])
+})
+
+mmCor <- sapply(mmProbes, function(x){
+	mean(useCor$y[(mmV & (useCor$mmName %in% x))])
+})
+
+corInfo <- data.frame(tmCor=tmCor, mmCor=mmCor, mmProbe=mmProbes)
+rownames(corInfo) <- NULL
+
+# what are the annotated refseq for the probeset?
+corInfo$probeSet <- sapply(as.character(corInfo$mmProbe), probeSetName)
+annotRefSeq <- mget(corInfo$probeSet, hgu133plus2REFSEQ, ifnotfound=NA)
+names(annotRefSeq) <- corInfo$mmProbe
+annotRefSeq <- lapply(annotRefSeq, function(x){
+	nmVal <- grep("NM", x, value=T)
+	nrVal <- grep("NR", x, value=T)
+	c(nmVal, nrVal)
+}) # get the NMs back
+
+
+probeAlign <- allData$hg19$probeAlign
+probeAlign <- probeAlign[(elementMetadata(probeAlign)$probeNames %in% corInfo$mmProbe)]
+exonIntervals <- allData$hg19$exonIntervals
+geneExons <- allData$hg19$geneExons
+
+probe2Exons <- as.matrix(findOverlaps(probeAlign, exonIntervals, minoverlap=23, type="any"))
+ref2merge <- as.matrix(findOverlaps(geneExons, exonIntervals, type="within")) # the original exons should be "within" the merged exons
+	
+probeNames <- elementMetadata(probeAlign)$probeNames
+refNames <- elementMetadata(geneExons)$refID	
+probe2Ref <- lapply(seq(1, nrow(probe2Exons)), function(inRow){
+	useExon <- probe2Exons[inRow,2]
+	matchRef <- ref2merge[(ref2merge[,2] == useExon),1]
+	refNames[matchRef]
+})
+names(probe2Ref) <- probeNames[probe2Exons[,1]]
+
+invNames <- names(probe2Ref)
+refComp <- lapply(invNames, function(inName){
+	aRef <- annotRefSeq[[inName]]
+	pRef <- probe2Ref[[inName]]
+	aSpec <- aRef[!(aRef %in% pRef)]
+	pSpec <- pRef[!(pRef %in% aRef)]
+	return(list(aRef=aRef, aSpec=aSpec, pRef=pRef, pSpec=pSpec))
+})
+
+names(refComp) <- invNames
+corInfo <- corInfo[order(corInfo$mmProbe),]
+refComp <- refComp[order(names(refComp))]
+corInfo$annotRef <- sapply(refComp, function(x){paste(x$aRef, collapse=", ")})
+corInfo$exonRef <- sapply(refComp, function(x){paste(x$pRef, collapse=", ")})
+corInfo <- corInfo[,c("tmCor", "mmCor", "probeSet", "mmProbe", "annotRef", "exonRef")]
+
+tmpGene <- vector("list", length(refComp))
+for (iGene in 1:length(refComp)){
+	aRef <- refComp[[iGene]]$aRef
+	if (length(aRef) != 0){
+		tmpEnt <- unlist2(mget(aRef, org.Hs.egREFSEQ2EG, ifnotfound=NA))
+		tmpSym <- unlist2(mget(tmpEnt, org.Hs.egSYMBOL, ifnotfound=NA))
+		useEnt <- unique(names(tmpSym))
+		for (iEnt in 1:length(useEnt)){
+			tEnt <- useEnt[iEnt]
+			names(tmpSym)[names(tmpSym) %in% tEnt] <- unique(names(tmpEnt)[tmpEnt %in% tEnt])
+		}
+		tmpGene[[iGene]]$aRef <- tmpSym
+	}
+	
+	pRef <- refComp[[iGene]]$pRef
+	if (length(pRef) != 0){
+		tmpEnt <- unlist2(mget(pRef, org.Hs.egREFSEQ2EG, ifnotfound=NA))
+		tmpSym <- unlist2(mget(tmpEnt, org.Hs.egSYMBOL, ifnotfound=NA))
+		useEnt <- unique(names(tmpSym))
+		for (iEnt in 1:length(useEnt)){
+			tEnt <- useEnt[iEnt]
+			names(tmpSym)[names(tmpSym) %in% tEnt] <- unique(names(tmpEnt)[tmpEnt %in% tEnt])
+		}
+		tmpGene[[iGene]]$pRef <- tmpSym
+	}
+	
+}
+
+names(tmpGene) <- names(refComp)
+corInfo$aSym <- sapply(tmpGene, function(x){paste(unique(x$aRef), collapse=", ")})
+corInfo$pSym <- sapply(tmpGene, function(x){paste(unique(x$pRef), collapse=", ")})
+corOut <- corInfo
+names(corOut) <- c("tm", "mm", "ProbeSet", "Probe ID", "Annotated RefSeq", "Exon RefSeq", "Annotated Symbol", "Exon Symbol")
+corOut <- corOut[order(corOut$tm, decreasing=T),]
+corOut2 <- corOut[,c("tm", "mm", "Annotated RefSeq", "Exon RefSeq", "Annotated Symbol", "Exon Symbol")]
+tmpCor <- xtable(head(corOut2))
+```
+
+```{r printCorTable, echo=FALSE, results='asis', comment=""}
+print(tmpCor, type='html', html.table.attributes = 'style="font-size:50%; text-align:left; border-spacing:20px 5px;"', include.rownames=FALSE)
+```
+
+- Is the MM annotated transcript different than the mapped TM transcript (hg19)?
+    - MM and TM map to the same transcript!
+    - MM actually perfectly matches its transcript!
+    
+
+# Variation
+
+## Data
+
+- Five human genome assemblies
+
+```{r humanGenomes, echo=FALSE, results='asis'}
+hNames <- c("GRCh37", "HS_Celera_WGSA", "HuRefPrime", "BIGAF", "HsapALLPATHS1")
+hAbbr <- c("Hg19", "Celera", "JCVI", "BGI", "HSAP1")
+hAssembly <- c("420368", "281338", "281188", "165398", "238948")
+hProj <- c("31257", "1431", "19621", "42201", "59877")
+hRace <- c("Mixed", "Mixed", "Caucasian", "African", "Caucasian")
+
+hData <- data.frame(Name=hNames, Abbr=hAbbr, Assembly=hAssembly, Bioproject=hProj, Race=hRace)
+
+print(xtable(hData), type='html', html.table.attributes = 'style="font-size:90%; text-align:left; border-spacing:20px 5px;"', include.rownames=FALSE)
+```
+
+## Mapping Differences
+
+```{r humanMappingResults, echo=FALSE, results='asis'}
+hgVariationFiles <- c(Hg19="hg.txt", Celera="celera.txt", JCVI="jcvi.txt", BGI="bgi.txt", HSAP1="hsapl.txt")
+
+hgAlignRes <- alply(hgVariationFiles, 1, function(x){
+	scan(file=file.path("..", "hgs_uniquelyMapped_probes", x), what=character())
+})
+
+probeCounts <- ldply(hgAlignRes, function(x){
+	nTot <- length(x)
+	tmpClass <- probeClass(x)
+	nPM <- sum(tmpClass == "pm")
+	nMM <- sum(tmpClass == "mm")
+	return(c(nTot, nPM, nMM))
+})
+
+names(probeCounts) <- c("Assembly", "Total", "Perfect Match", "Mismatch")
+print(xtable(probeCounts), type='html', html.table.attributes='style="border-spacing:20px 5px;"', include.rownames=FALSE)
+```
+
+
+## Mapping Differences
+
+```{r vennFigureDiffs, echo=FALSE, fig.width=8, out.height=350, dev='svg', fig.align='center'}
+qVennArgs <- list()
+
+count <- 1
+for (iVal in 1:length(hgAlignRes)){
+	useName <- paste("area", iVal, sep="", collapse="")
+	qVennArgs[[iVal]] <- length(hgAlignRes[[iVal]])
+	names(qVennArgs)[iVal] <- useName
+	count <- count + 1
+}
+
+# get the intersection of each 2, 3, 4, and 5 way combination
+allIntersection <- function(listIndices){
+	nIntersect <- length(listIndices)
+	foundIntersection <- hgAlignRes[[listIndices[1]]]
+	for (iI in 2:nIntersect){
+		foundIntersection <- intersect(foundIntersection, hgAlignRes[[listIndices[iI]]])
+	}
+	return(foundIntersection)
+}
+
+getIntersection <- combn(seq(1,5), 2, simplify=F)
+getIntersection <- c(getIntersection, combn(seq(1,5), 3, simplify=F))
+getIntersection <- c(getIntersection, combn(seq(1,5), 4, simplify=F))
+getIntersection <- c(getIntersection, combn(seq(1,5), 5, simplify=F))
+
+whichIntersect <- lapply(getIntersection, allIntersection)
+sumIntersect <- lapply(whichIntersect, length)
+
+intersectLabels <- sapply(getIntersection, function(x){
+	paste("n", paste(x, sep="", collapse=""), sep="", collapse="")
+})
+
+names(sumIntersect) <- intersectLabels
+names(whichIntersect) <- intersectLabels
+
+qVennArgs <- c(qVennArgs, sumIntersect)
+qVennArgs$category <- probeCounts$Assembly
+qVennArgs$fill <- c("dodgerblue", "goldenrod1", "darkorange1", "seagreen3", "orchid3")
+#qVennArgs$cat.col <- c("dodgerblue", "goldenrod1", "darkorange1", "seagreen3", "orchid3")
+qVennArgs$cat.cex <- 2
+qVennArgs$margin <- 0.1
+qVennArgs$cex <- c(1.5, 1.5, 1.5, 1.5, 1.5, 1, 0.8, 1, 0.8, 1, 0.8, 1, 0.8, 1, 0.8, 1, 0.55, 1, 0.55, 1, 0.55, 1, 0.55, 1, 0.55, 1, 1, 1, 1, 1, 1.5)
+qVennArgs$ind <- TRUE
+
+venPlot <- do.call("draw.quintuple.venn", qVennArgs) 
+```
+
+```{r intersectStats, include=FALSE}
+all5Intersect <- whichIntersect$n12345
+all5Class <- probeClass(all5Intersect)
+
+data(hgu133plus2probe)
+nPM <- nrow(hgu133plus2probe)
+
+goodPM <- sum(all5Class == "pm")
+percPM <- goodPM / nPM * 100
+
+goodMM <- all5Intersect[all5Class == "mm"]
+
+# which mm fall within exonic regions? This is not the best because it only
+# uses the exons that overlapped singleAnnot originally
+probeAlign <- allData$hg19$probeAlign
+probeAlign <- probeAlign[(elementMetadata(probeAlign)$probeNames %in% goodMM)]
+isExon <- subsetByOverlaps(probeAlign, exonIntervals, minoverlap=23)
+
+isExonNames <- elementMetadata(isExon)$probeNames
+tmVmm <- corOut[(corOut$'Probe ID' %in% isExonNames), c('tm','mm')]
+```
+
+- `r I(length(goodMM))` shared MM probes
+- `r I(length(isExon))` fall within RefSeq annotated exonic regions
+- `r I(sum(tmVmm["tm"] >= tmVmm["mm"]))` show higher correlation with TM than MM
+
+
+## Useful!!
+
+- MM probes **theoretically** capture non-specific binding
+- Small percentage appear able to capture true transcriptional events
+- Therefore, custom CDF workflows should include the MM probe sequences
+    - `Bowtie` makes this lightning fast compared to `Blat`
+
+## Tools Used
+
+- Produced using:
+    - `knitr`
+    - `pandoc`
+    - `bzslides`
+    
+- Source code on Github
+    - github.com/rmflight/affyMM
+
+- Draft publication on Github
+    - rmflight.github.com/affyMM
+    
+    
+## Questions??
+    
+## Session Info
+
+```{r sessionInfo, echo=FALSE, results='asis'}
+sessionInfo()
+```
+
+## 
+
+system("pandoc -s -S -t dzslides --slide-level=2 --mathjax affymm_jcPresentation_141012.md -o affymm_slides.html")
