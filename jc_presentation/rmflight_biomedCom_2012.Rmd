@@ -56,9 +56,13 @@ require(xtable)
 load("../counts_Plots_etc_allOrgs.RData")
 ```
 
-# Transcriptomics
+## Transcriptomics
 
+<img src="figure/dna_processing.svg" width="750"/>
 
+## Transcriptomics
+
+<img src="figure/dna_processing_highlight.svg" width="750"/>
 
 # Affymetrix GeneChips
 
@@ -66,7 +70,7 @@ load("../counts_Plots_etc_allOrgs.RData")
 ## GeneChip
 
 - measures abundance of RNA transcripts
-- solid support with attached 25 mer oligonucleotides
+- 25 mer oligonucleotides on solid support
 - oligonucleotides organized into **probesets**
 - **probeset** consists of 11, 16, 20, 25 probe pairs
 - each probe pair consists of a perfect match (PM) and mis-match (MM) probe
@@ -137,8 +141,8 @@ cat(paste("pm ", pmSeq, sep="", collapse=""), paste("mm ", mmSeq, sep="", collap
 ## Perfect Match & MisMatch
 
 - True Signal
-    - therefore true signal should be PMi - MMi
-- Problems
+    - should be PM - MM
+- But ...
     - MM may have higher signal than PM
     - most modern summarization methods ignore it
 
@@ -764,4 +768,6 @@ sessionInfo()
 
 ## 
 
-system("pandoc -s -S -t dzslides --slide-level=2 --mathjax affymm_jcPresentation_141012.md -o affymm_slides.html")
+require(knitr)
+knit("rmflight_biomedCom_2012.Rmd")
+system("pandoc -s -S -t dzslides --slide-level=2 --mathjax rmflight_biomedCom_2012.md -o rmflight_biomedCom_2012.html")
