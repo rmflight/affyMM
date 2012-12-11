@@ -1,6 +1,6 @@
 % Affymetrix MisMatch (MM) Probes: </br> Useful After All
 % Robert M Flight; Abdallah Eteleeb; Eric C Rouchka
-% 17/10/12
+% 14/12/12
 
 ```{r knitrSetup, include=FALSE}
 #opts_chunk$set(cache=TRUE)
@@ -56,12 +56,21 @@ require(xtable)
 load("../counts_Plots_etc_allOrgs.RData")
 ```
 
+## Transcriptomics
+
+<img src="figure/dna_processing.svg" width="750"/>
+
+## Transcriptomics
+
+<img src="figure/dna_processing_highlight.svg" width="750"/>
+
 # Affymetrix GeneChips
 
 
 ## GeneChip
 
-- solid support with attached 25 mer oligonucleotides
+- measures abundance of RNA **transcripts**
+- 25 mer oligonucleotides on solid support
 - oligonucleotides organized into **probesets**
 - **probeset** consists of 11, 16, 20, 25 probe pairs
 - each probe pair consists of a perfect match (PM) and mis-match (MM) probe
@@ -132,8 +141,8 @@ cat(paste("pm ", pmSeq, sep="", collapse=""), paste("mm ", mmSeq, sep="", collap
 ## Perfect Match & MisMatch
 
 - True Signal
-    - therefore true signal should be PMi - MMi
-- Problems
+    - should be PM - MM
+- But ...
     - MM may have higher signal than PM
     - most modern summarization methods ignore it
 
@@ -183,9 +192,7 @@ Cell21=511	580	N	control	243114_at	10	13	A	A	A	10	675631	-1	-1	99
 Cell22=511	579	N	control	243114_at	10	13	A	T	A	10	674467	-1	-1	99	
 </code></pre>
 
-# Custom CDF
-
-## Custom??
+## Custom CDF
 
 - Reorganize probes 
     - available probe sequences & chip locations
@@ -210,14 +217,14 @@ Cell22=511	579	N	control	243114_at	10	13	A	T	A	10	674467	-1	-1	99
 
 ## But...
 
-- Only uses perfect match probes!
-- Can we use mismatch probes in custom probesets??
+- only uses perfect match (PM) probes!
+- what about mismatch probes (MM)?
 - why not?
     - have sequences
     - matter of aligning to genome
 
 
-# Mismatch Probes in Custom Probesets
+# MM Probe Alignment
 
 
 ## Organisms
@@ -759,4 +766,6 @@ sessionInfo()
 
 ## 
 
-system("pandoc -s -S -t dzslides --slide-level=2 --mathjax affymm_jcPresentation_141012.md -o affymm_slides.html")
+require(knitr)
+knit("rmflight_biomedCom_2012.Rmd")
+system("pandoc -s -S -t --self-contained dzslides --slide-level=2 --mathjax rmflight_biomedCom_2012.md -o rmflight_biomedCom_2012.html")
