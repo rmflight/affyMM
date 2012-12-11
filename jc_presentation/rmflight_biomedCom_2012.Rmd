@@ -589,6 +589,12 @@ typeCounts <- typeCounts[, c("Organism", "_at", "_a_at", "_s_at", "_x_at")]
 # note: Eric gets 29 "other" probes for Ce here, and I think it is because he is counting control probes as other
 ```
 
+
+```{r insertTypeCounts, echo=FALSE, results='asis'}
+typeCounts$Organism <- paste("*", typeCounts$Organism, "*", sep="")
+print(xtable(typeCounts), type = 'html', html.table.attributes = 'style="font-size:70%; text-align:left; border-spacing:20px 5px;"', include.rownames=FALSE)
+```
+
 # Variation
 
 ## Data
@@ -736,12 +742,6 @@ tmVmm <- corOut[(corOut$'Probe ID' %in% isExonNames), c('tm','mm')]
 sessionInfo()
 ```
 
-
-
-```{r insertTypeCounts, echo=FALSE, results='asis'}
-typeCounts$Organism <- paste("*", typeCounts$Organism, "*", sep="")
-print(xtable(typeCounts), type = 'html', html.table.attributes = 'style="font-size:70%; text-align:left; border-spacing:20px 5px;"', include.rownames=FALSE)
-```
 
 ## 
 
