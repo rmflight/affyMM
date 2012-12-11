@@ -25,11 +25,11 @@
 
 ## GeneChip
 
-- measures abundance of RNA **transcripts**
+- Measures abundance of RNA **transcripts**
 - 25 mer oligonucleotides on solid support
-- oligonucleotides organized into **probesets**
-- **probeset** consists of 11, 16, 20, 25 probe pairs
-- each probe pair consists of a perfect match (PM) and mis-match (MM) probe
+- Oligonucleotides organized into **probesets**
+- **Probeset** consists of 11, 16, 20, 25 probe pairs
+- Each probe pair consists of a perfect match (PM) and mis-match (MM) probe
 
 ## GeneChip & ProbeSet
 
@@ -43,14 +43,14 @@
 ## Perfect Match & MisMatch
 
 - Perfect Match (PM)
-    - supposed to perfectly match the sequence of interest
-    - has exact complementarity
-    - binds **perfectly**
+    - Supposed to perfectly match the sequence of interest
+    - Has exact complementarity
+    - Binds **perfectly**
 - MisMatch (MM)
     - 13th base is reverse complement of **PM** sequence
-    - supposed to account for non-specific binding in the **PM**
-    - therefore should have lower signal
-    - useful for **PM** signal correction
+    - Supposed to account for non-specific binding in the **PM**
+    - Therefore should have lower signal
+    - Useful for **PM** signal correction
 
 
 ## 
@@ -67,67 +67,31 @@ pm CACCCAGCTGGT<font color="#0000FF">C</font>CTGTGGATGGGA</br>mm CACCCAGCTGGT<fo
 ## Perfect Match & MisMatch
 
 - True Signal
-    - should be PM - MM
+    - Should be PM - MM
 - But ...
     - MM may have higher signal than PM
-    - most modern summarization methods ignore it
+    - Most modern summarization methods ignore it
 
 
-## CDF: Chip Definition File
+## ProbeSets
 
-- Defines organization of probes into probesets
-    - genes
-    - gene families
-    - transcripts
+- Collection of probes that align to a sequence defined for
+    - Transcripts
+    - Genes
+    - Gene families
 
 ### Defined by Affymetrix based on available annotations
 
+## Custom ProbeSets
 
-## 
-
-<pre><code style="font-size:10pt">
-[Unit43914_Block1]
-Name=243114_at
-BlockNumber=1
-NumAtoms=11
-NumCells=22
-StartPosition=0
-StopPosition=10
-CellHeader=X	Y	PROBE	FEAT	QUAL	EXPOS	POS	CBASE	PBASE	TBASE	ATOM	INDEX	CODONIND	CODON	REGIONTYPE	REGION
-Cell1=928	614	N	control	243114_at	0	13	C	C	C	0	715624	-1	-1	99	
-Cell2=928	613	N	control	243114_at	0	13	C	G	C	0	714460	-1	-1	99	
-Cell3=185	304	N	control	243114_at	1	13	A	A	A	1	354041	-1	-1	99	
-Cell4=185	303	N	control	243114_at	1	13	A	T	A	1	352877	-1	-1	99	
-Cell5=1102	372	N	control	243114_at	2	13	A	A	A	2	434110	-1	-1	99	
-Cell6=1102	371	N	control	243114_at	2	13	A	T	A	2	432946	-1	-1	99	
-Cell7=129	770	N	control	243114_at	3	13	C	C	C	3	896409	-1	-1	99	
-Cell8=129	769	N	control	243114_at	3	13	C	G	C	3	895245	-1	-1	99	
-Cell9=375	556	N	control	243114_at	4	13	A	A	A	4	647559	-1	-1	99	
-Cell10=375	555	N	control	243114_at	4	13	A	T	A	4	646395	-1	-1	99	
-Cell11=526	364	N	control	243114_at	5	13	C	C	C	5	424222	-1	-1	99	
-Cell12=526	363	N	control	243114_at	5	13	C	G	C	5	423058	-1	-1	99	
-Cell13=1059	92	N	control	243114_at	6	13	A	A	A	6	108147	-1	-1	99	
-Cell14=1059	91	N	control	243114_at	6	13	A	T	A	6	106983	-1	-1	99	
-Cell15=1098	186	N	control	243114_at	7	13	C	C	C	7	217602	-1	-1	99	
-Cell16=1098	185	N	control	243114_at	7	13	C	G	C	7	216438	-1	-1	99	
-Cell17=399	565	N	control	243114_at	8	13	G	C	G	8	658059	-1	-1	99	
-Cell18=399	566	N	control	243114_at	8	13	G	G	G	8	659223	-1	-1	99	
-Cell19=1062	242	N	control	243114_at	9	13	A	A	A	9	282750	-1	-1	99	
-Cell20=1062	241	N	control	243114_at	9	13	A	T	A	9	281586	-1	-1	99	
-Cell21=511	580	N	control	243114_at	10	13	A	A	A	10	675631	-1	-1	99	
-Cell22=511	579	N	control	243114_at	10	13	A	T	A	10	674467	-1	-1	99	
-</code></pre>
-
-## Custom CDF
-
-- Reorganize probes 
-    - available probe sequences & chip locations
-    - available target genome sequences
-    - available genome annotations (genes, transcripts, exons, etc)
+- Reorganize probes based on the available
+    - Probe sequences & chip locations
+    - Target genome sequences (reference genome)
+    - Genome annotations (genes, transcripts, exons, etc)
 - Generate probe sets
-    - have perfect alignment
-    - all probes bind the same genomic element (exon, transcript, gene)
-    - binding region does not encompass a lot of SNPs
+    - Perfectly aligned to reference genome
+    - All probes bind the same genomic element (exon, transcript, gene)
+    - Binding region does not encompass a lot of SNPs
 
 ## Better Results
 
@@ -143,15 +107,18 @@ Cell22=511	579	N	control	243114_at	10	13	A	T	A	10	674467	-1	-1	99
 
 ## But...
 
-- only uses perfect match (PM) probes!
-- what about mismatch probes (MM)?
-- why not?
-    - have sequences
-    - matter of aligning to genome
+- Only uses perfect match (PM) probes!
+- What about mismatch probes (MM)?
+- Why not?
+    - Have sequences
+    - Align to genome
 
 
-# MM Probe Alignment
+## MM Probe Alignment
 
+- Compare 
+    - Alignment of PM and MM probes to genome
+    - Signal of PM and MM probes
 
 ## Organisms
 
@@ -159,7 +126,7 @@ Cell22=511	579	N	control	243114_at	10	13	A	T	A	10	674467	-1	-1	99
 
 
 <!-- html table generated in R 2.15.1 by xtable 1.7-0 package -->
-<!-- Mon Dec 10 15:49:33 2012 -->
+<!-- Tue Dec 11 16:22:19 2012 -->
 <TABLE style="border-spacing:20px 5px;">
 <TR> <TH> Organism </TH> <TH> Reference Assembly </TH> <TH> Build Date </TH>  </TR>
   <TR> <TD> *C elegans* </TD> <TD> ce6 </TD> <TD> May 2008 </TD> </TR>
@@ -179,7 +146,7 @@ Cell22=511	579	N	control	243114_at	10	13	A	T	A	10	674467	-1	-1	99
 
 
 <!-- html table generated in R 2.15.1 by xtable 1.7-0 package -->
-<!-- Mon Dec 10 15:49:33 2012 -->
+<!-- Tue Dec 11 16:22:19 2012 -->
 <TABLE style="border-spacing:20px 5px;">
 <TR> <TH> Organism </TH> <TH> GeneChip </TH>  </TR>
   <TR> <TD> *C elegans* </TD> <TD> C. elegans Genome </TD> </TR>
@@ -195,18 +162,18 @@ Cell22=511	579	N	control	243114_at	10	13	A	T	A	10	674467	-1	-1	99
 
 ## Microarray Data
 
-- random data from gene expression omnibus (GEO)
+- Random data from gene expression omnibus (GEO)
 - 20 random CEL files for each organism
     - Only 4 for *X. tropicalis*, 12 for Yeast
     
 ## Probe Sequences & Alignment
 
 - Sequences:
-    - from **Bioconductor** `probe` packages
+    - **Bioconductor** `probe` packages
     - MM sequences generated from PM sequences
 - Alignments:
-    - align both PM and MM to reference using `bowtie v0.12.8`
-    - report **all** alignments with **0** mismatches
+    - PM and MM sequence aligned to reference using `bowtie v0.12.8`
+    - **All** alignments with **0** mismatches
     
 # Results
 
@@ -216,7 +183,7 @@ Cell22=511	579	N	control	243114_at	10	13	A	T	A	10	674467	-1	-1	99
 
 
 <!-- html table generated in R 2.15.1 by xtable 1.7-0 package -->
-<!-- Mon Dec 10 15:49:33 2012 -->
+<!-- Tue Dec 11 16:22:20 2012 -->
 <TABLE style="font-size:70%; text-align:left; border-spacing:20px 5px;">
 <TR> <TH> Organism </TH> <TH> Number of Probe Pairs </TH> <TH> PM Mapped to Reference </TH> <TH> MM Mapped to Reference </TH> <TH> PM Unique </TH> <TH> MM Unique </TH>  </TR>
   <TR> <TD> *Ce* </TD> <TD align="right"> 249165 </TD> <TD align="right"> 226856 </TD> <TD align="right"> 143 </TD> <TD align="right"> 213745 </TD> <TD align="right">  96 </TD> </TR>
@@ -231,26 +198,6 @@ Cell22=511	579	N	control	243114_at	10	13	A	T	A	10	674467	-1	-1	99
 
 
 
-## Types of Alignments
-
-Which types of PM probes align to multiple locations?
-
-
-
-
-<!-- html table generated in R 2.15.1 by xtable 1.7-0 package -->
-<!-- Mon Dec 10 15:49:36 2012 -->
-<TABLE style="font-size:70%; text-align:left; border-spacing:20px 5px;">
-<TR> <TH> Organism </TH> <TH> _x_at </TH> <TH> _s_at </TH> <TH> _a_at </TH> <TH> _at </TH> <TH> control </TH>  </TR>
-  <TR> <TD> *Ce* </TD> <TD> 4040 (31%) </TD> <TD> 6416 (49%) </TD> <TD> 0 (0%) </TD> <TD> 2465 (19%) </TD> <TD> 190 (1.4%) </TD> </TR>
-  <TR> <TD> *Dm* </TD> <TD> 361 (6.1%) </TD> <TD> 2742 (47%) </TD> <TD> 224 (3.8%) </TD> <TD> 2520 (43%) </TD> <TD> 43 (0.73%) </TD> </TR>
-  <TR> <TD> *Dr* </TD> <TD> 1376 (4.7%) </TD> <TD> 374 (1.3%) </TD> <TD> 1203 (4.1%) </TD> <TD> 25879 (88%) </TD> <TD> 494 (1.7%) </TD> </TR>
-  <TR> <TD> *Hs* </TD> <TD> 9402 (23%) </TD> <TD> 10634 (26%) </TD> <TD> 803 (2%) </TD> <TD> 19961 (49%) </TD> <TD> 231 (0.56%) </TD> </TR>
-  <TR> <TD> *Mm* </TD> <TD> 4075 (14%) </TD> <TD> 2920 (10%) </TD> <TD> 4893 (17%) </TD> <TD> 16703 (58%) </TD> <TD> 163 (0.57%) </TD> </TR>
-  <TR> <TD> *Rn* </TD> <TD> 440 (2.5%) </TD> <TD> 394 (2.2%) </TD> <TD> 805 (4.5%) </TD> <TD> 16127 (90%) </TD> <TD> 96 (0.54%) </TD> </TR>
-  <TR> <TD> *Sc* </TD> <TD> 81 (4.5%) </TD> <TD> 1126 (63%) </TD> <TD> 0 (0%) </TD> <TD> 271 (15%) </TD> <TD> 311 (17%) </TD> </TR>
-  <TR> <TD> *Xt* </TD> <TD> 14092 (15%) </TD> <TD> 12086 (13%) </TD> <TD> 34877 (38%) </TD> <TD> 31754 (34%) </TD> <TD> 131 (0.14%) </TD> </TR>
-   </TABLE>
 
 
 ## Comparison of PM and MM Signals
@@ -265,9 +212,9 @@ Signal density for all probes and those that align to known exons.
 
 ## Comparison of PM and MM Signals
 
-- MM probes generally show lower signal intensity
-- MM probes in exons tend toward the signal of PM probes in exons
-- Although few in number, these would confound any analysis depending on PM - MM
+- MM generally show lower signal than PM
+- MM in exons **trend** toward the signal of PM in exons
+- These would confound any analysis depending on PM - MM
 
 ## PM MM Negative Difference
 
@@ -280,10 +227,10 @@ Signal density for all probes and those that align to known exons.
 
 ## TM Signal 
 
-- compare signal of exon matching MM with other probes in that exon
-- matches much better than with the other MM probes
-- call these "true match" probes, because they are based on alignment
-- is this a general phenomenom?
+- Compare signal of exon matching MM with other probes in that exon
+- Matches much better than with the other MM probes
+- Call these "true match" probes, because they are based on alignment
+- Is this a general phenomenom?
 
 <img src="figure/tmIntensity.svg" width="400"   alt="True Match Intensity Comparison" title="True Match Intensity Comparison" /> 
 
@@ -292,7 +239,7 @@ Signal density for all probes and those that align to known exons.
 
 ## MM vs TM Correlation
 
-- compare the correlation of TM with other MM or with TM on same exon
+- Compare correlations of candidate TM with MMs or TMs on same exon
 
 <img src="figure/correlationBoxPlot.svg"  height="350"  alt="Correlation of TM with MM or other TM" title="Correlation of TM with MM or other TM" /> 
 
@@ -304,7 +251,7 @@ Signal density for all probes and those that align to known exons.
 
 
 <!-- html table generated in R 2.15.1 by xtable 1.7-0 package -->
-<!-- Mon Dec 10 15:50:11 2012 -->
+<!-- Tue Dec 11 16:22:56 2012 -->
 <TABLE style="font-size:50%; text-align:left; border-spacing:20px 5px;">
 <TR> <TH> tm </TH> <TH> mm </TH> <TH> Annotated RefSeq </TH> <TH> Exon RefSeq </TH> <TH> Annotated Symbol </TH> <TH> Exon Symbol </TH>  </TR>
   <TR> <TD align="right"> 0.87 </TD> <TD align="right"> 0.53 </TD> <TD> NM_001164750, NM_001164751, NM_001164752, NM_001164753, NM_001164754, NM_001164755, NM_001164756, NM_004318, NM_020164, NM_032466, NM_032467, NM_032468 </TD> <TD> NM_032466, NM_032468, NM_001164755, NM_001164754, NM_001164753, NM_001164752, NM_001164751 </TD> <TD> ASPH </TD> <TD> ASPH </TD> </TR>
@@ -320,15 +267,43 @@ Signal density for all probes and those that align to known exons.
     - MM and TM map to the same transcript!
     - MM actually perfectly matches its transcript!
     
+    
 
-# Variation
 
-## Data
+## ProbeSet Classes
 
-- Five human genome assemblies
+Which types of PM probes align to multiple locations?
+
+<img src="figure/probeSet_relationships.gif"/>
+
+## ProbeSet Classes
+
+
+
+
 
 <!-- html table generated in R 2.15.1 by xtable 1.7-0 package -->
-<!-- Mon Dec 10 15:50:12 2012 -->
+<!-- Tue Dec 11 16:22:59 2012 -->
+<TABLE style="font-size:70%; text-align:left; border-spacing:20px 5px;">
+<TR> <TH> Organism </TH> <TH> _at </TH> <TH> _a_at </TH> <TH> _s_at </TH> <TH> _x_at </TH>  </TR>
+  <TR> <TD> *Ce* </TD> <TD> 2465 (19%) </TD> <TD> 0 (0%) </TD> <TD> 6416 (49%) </TD> <TD> 4040 (31%) </TD> </TR>
+  <TR> <TD> *Dm* </TD> <TD> 2520 (43%) </TD> <TD> 224 (3.8%) </TD> <TD> 2742 (47%) </TD> <TD> 361 (6.1%) </TD> </TR>
+  <TR> <TD> *Dr* </TD> <TD> 25879 (88%) </TD> <TD> 1203 (4.1%) </TD> <TD> 374 (1.3%) </TD> <TD> 1376 (4.7%) </TD> </TR>
+  <TR> <TD> *Hs* </TD> <TD> 19961 (49%) </TD> <TD> 803 (2%) </TD> <TD> 10634 (26%) </TD> <TD> 9402 (23%) </TD> </TR>
+  <TR> <TD> *Mm* </TD> <TD> 16703 (58%) </TD> <TD> 4893 (17%) </TD> <TD> 2920 (10%) </TD> <TD> 4075 (14%) </TD> </TR>
+  <TR> <TD> *Rn* </TD> <TD> 16127 (90%) </TD> <TD> 805 (4.5%) </TD> <TD> 394 (2.2%) </TD> <TD> 440 (2.5%) </TD> </TR>
+  <TR> <TD> *Sc* </TD> <TD> 271 (15%) </TD> <TD> 0 (0%) </TD> <TD> 1126 (63%) </TD> <TD> 81 (4.5%) </TD> </TR>
+  <TR> <TD> *Xt* </TD> <TD> 31754 (34%) </TD> <TD> 34877 (38%) </TD> <TD> 12086 (13%) </TD> <TD> 14092 (15%) </TD> </TR>
+   </TABLE>
+
+
+
+## Variation
+
+- Align PM to five human genome assemblies
+
+<!-- html table generated in R 2.15.1 by xtable 1.7-0 package -->
+<!-- Tue Dec 11 16:22:59 2012 -->
 <TABLE style="font-size:90%; text-align:left; border-spacing:20px 5px;">
 <TR> <TH> Name </TH> <TH> Abbr </TH> <TH> Assembly </TH> <TH> Bioproject </TH> <TH> Race </TH>  </TR>
   <TR> <TD> GRCh37 </TD> <TD> Hg19 </TD> <TD> 420368 </TD> <TD> 31257 </TD> <TD> Mixed </TD> </TR>
@@ -342,7 +317,7 @@ Signal density for all probes and those that align to known exons.
 ## Mapping Differences
 
 <!-- html table generated in R 2.15.1 by xtable 1.7-0 package -->
-<!-- Mon Dec 10 15:50:39 2012 -->
+<!-- Tue Dec 11 16:23:27 2012 -->
 <TABLE style="border-spacing:20px 5px;">
 <TR> <TH> Assembly </TH> <TH> Total </TH> <TH> Perfect Match </TH> <TH> Mismatch </TH>  </TR>
   <TR> <TD> Hg19 </TD> <TD align="right"> 522250 </TD> <TD align="right"> 521642 </TD> <TD align="right"> 608 </TD> </TR>
@@ -367,28 +342,32 @@ Signal density for all probes and those that align to known exons.
 - 16 show higher correlation with TM than MM
 
 
-## Useful!!
+## Summary
 
-- MM probes **theoretically** capture non-specific binding
-- Small percentage appear able to capture true transcriptional events
-- Therefore, custom CDF workflows should include the MM probe sequences
-    - `Bowtie` makes this lightning fast compared to `Blat`
+- MM probes 
+    - Small percentage appear able to capture **true** transcriptional events
+    - Therefore, custom probeset workflows should include the MM probe sequences
+- PM probes don't necessarily align as expected
+- Probe alignment varies depending on genome build
+
+## Questions??
 
 ## Tools Used
 
 - Produced using:
     - `knitr`
     - `pandoc`
-    - `bzslides`
+    - `dzslides`
     
 - Source code on Github
     - github.com/rmflight/affyMM
 
-- Draft publication on Github
+- Draft report on Github
     - rmflight.github.com/affyMM
+    - rmflight.github.com/affyMM/presentation.html
     
     
-## Questions??
+
     
 ## Session Info
 
@@ -427,8 +406,9 @@ loaded via a namespace (and not attached):
 [19] stringr_0.6.1         tools_2.15.1          zlibbioc_1.2.0       
 
 
+
 ## 
 
 require(knitr)
 knit("rmflight_biomedCom_2012.Rmd")
-system("pandoc -s -S -t dzslides --slide-level=2 --mathjax rmflight_biomedCom_2012.md -o rmflight_biomedCom_2012.html")
+system("pandoc --self-contained -s -S -t dzslides --slide-level=2 --mathjax rmflight_biomedCom_2012.md -o rmflight_biomedCom_2012.html")
