@@ -667,6 +667,73 @@ tmVmm <- corOut[(corOut$'Probe ID' %in% isExonNames), c('tm','mm')]
 sessionInfo()
 ```
 
+## Types of Alignments
+
+Which types of PM probes align to multiple locations?
+
+```{r probeTypeAnalysis, include=FALSE}
+translationTable <- matrix(ncol=3, byrow=T, data=c("ce6", "Ce", "celegans",
+																									 "dm3", "Dm", "drosophila2",
+																									 "dr6", "Dr", "zebrafish",
+																									 "hg19", "Hs", "hsa",
+																									 "mm10", "Mm", "mus",
+																									 "rn4", "Rn", "rat",
+																									 "sc3", "Sc", "yeast2",
+																									 "xt3", "Xt", "xtropicalis"))
+colnames(translationTable) <- c("short", "Organism", "array")
+
+multFiles <- file.path("../seqData", paste("multMatch_", translationTable[,"short"], ".txt", sep=""))
+nOrg <- nrow(translationTable)
+typeCounts <- matrix("", nrow=nOrg, ncol=5)
+colnames(typeCounts) <- c("_x_at", "_s_at", "_a_at", "_at", "control")
+rownames(typeCounts) <- translationTable[,"Organism"]
+#probeType <- c("_x_at", "_s_at", "_at", "_a_at", "affx")
+for (iOrg in 1:nOrg){
+	multProbes <- scan(file=multFiles[iOrg], what=character())
+	pClass <- probeClass(multProbes)
+	multProbes <- multProbes[pClass == "pm"]
+	totMult <- length(multProbes)
+	
+	cntrl <- grep("affx", multProbes, ignore.case=T)
+	n_cntrl <- length(cntrl)
+	p_cntrl <- format(n_cntrl / totMult * 100, digits=2)
+	multProbes <- multProbes[-1*cntrl]
+	
+	x_at <- grep("_x_at", multProbes)
+	n_xat <- length(x_at)
+	p_xat <- format(n_xat / totMult * 100, digits=2)
+	s_at <- grep("_s_at", multProbes)
+	n_sat <- length(s_at)
+	p_sat <- format(n_sat / totMult * 100, digits=2)
+	a_at <- grep("_a_at", multProbes)
+	n_aat <- length(a_at)
+	p_aat <- format(n_aat / totMult * 100, digits=2)
+	
+	oProbes <- multProbes[-1*c(x_at, s_at, a_at)]
+	o_at <- grep("_at", oProbes)
+	n_oat <- length(o_at)
+	p_oat <- format(n_oat / totMult * 100, digits=2)
+	otherProbes <- length(oProbes[-1*o_at])
+	pOther <- format(otherProbes / totMult * 100, digits=2)
+	typeCounts[iOrg, "_x_at"] <- paste(n_xat, " (", p_xat, "%)", collapse="", sep="") 
+	typeCounts[iOrg, "_s_at"] <- paste(n_sat, " (", p_sat, "%)", collapse="", sep="") 
+	typeCounts[iOrg, "_a_at"] <- paste(n_aat, " (", p_aat, "%)", collapse="", sep="") 
+	typeCounts[iOrg, "_at"] <- paste(n_oat, " (", p_oat, "%)", collapse="", sep="") 
+	#typeCounts[iOrg, "other"] <- paste(otherProbes, " (", pOther, "%)", collapse="", sep="") 
+	typeCounts[iOrg, "control"] <- paste(n_cntrl, " (", p_cntrl, "%)", collapse="", sep="")
+}
+
+typeCounts <- cbind(translationTable[,"Organism"], typeCounts)
+typeCounts <- as.data.frame(typeCounts)
+names(typeCounts)[1] <- "Organism"
+# note: Eric gets 29 "other" probes for Ce here, and I think it is because he is counting control probes as other
+```
+
+```{r insertTypeCounts, echo=FALSE, results='asis'}
+typeCounts$Organism <- paste("*", typeCounts$Organism, "*", sep="")
+print(xtable(typeCounts), type = 'html', html.table.attributes = 'style="font-size:70%; text-align:left; border-spacing:20px 5px;"', include.rownames=FALSE)
+```
+
 ## 
 
 require(knitr)
