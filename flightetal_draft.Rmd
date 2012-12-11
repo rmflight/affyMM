@@ -409,7 +409,7 @@ cat(typeTable, sep="\n")
 
 <a id="f.allPlots"></a>
 
-```{r allPlots, echo=FALSE, fig.width=7, dpi=300}
+```{r allPlots, echo=FALSE, fig.width=7, fig.height=4, dpi=300}
 theme_set(theme_bw())
 allData <- allData[!(names(allData) %in% "mm9")]
 
@@ -738,9 +738,10 @@ names(whichIntersect) <- intersectLabels
 qVennArgs <- c(qVennArgs, sumIntersect)
 qVennArgs$category <- probeCounts$Assembly
 qVennArgs$fill <- c("dodgerblue", "goldenrod1", "darkorange1", "seagreen3", "orchid3")
+qVennArgs$col <- "none"
 #qVennArgs$cat.col <- c("dodgerblue", "goldenrod1", "darkorange1", "seagreen3", "orchid3")
 qVennArgs$cat.cex <- 2
-qVennArgs$margin <- 0.1
+qVennArgs$margin <- 0.05
 qVennArgs$cex <- c(1.5, 1.5, 1.5, 1.5, 1.5, 1, 0.8, 1, 0.8, 1, 0.8, 1, 0.8, 1, 0.8, 1, 0.55, 1, 0.55, 1, 0.55, 1, 0.55, 1, 0.55, 1, 1, 1, 1, 1, 1.5)
 qVennArgs$ind <- TRUE
 ```

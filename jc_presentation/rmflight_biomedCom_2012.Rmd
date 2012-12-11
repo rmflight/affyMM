@@ -69,7 +69,7 @@ load("../counts_Plots_etc_allOrgs.RData")
 
 ## GeneChip
 
-- measures abundance of RNA transcripts
+- measures abundance of RNA **transcripts**
 - 25 mer oligonucleotides on solid support
 - oligonucleotides organized into **probesets**
 - **probeset** consists of 11, 16, 20, 25 probe pairs
@@ -192,9 +192,7 @@ Cell21=511	580	N	control	243114_at	10	13	A	A	A	10	675631	-1	-1	99
 Cell22=511	579	N	control	243114_at	10	13	A	T	A	10	674467	-1	-1	99	
 </code></pre>
 
-# Custom CDF
-
-## Custom??
+## Custom CDF
 
 - Reorganize probes 
     - available probe sequences & chip locations
@@ -219,14 +217,14 @@ Cell22=511	579	N	control	243114_at	10	13	A	T	A	10	674467	-1	-1	99
 
 ## But...
 
-- Only uses perfect match probes!
-- Can we use mismatch probes in custom probesets??
+- only uses perfect match (PM) probes!
+- what about mismatch probes (MM)?
 - why not?
     - have sequences
     - matter of aligning to genome
 
 
-# Mismatch Probes in Custom Probesets
+# MM Probe Alignment
 
 
 ## Organisms
@@ -770,4 +768,4 @@ sessionInfo()
 
 require(knitr)
 knit("rmflight_biomedCom_2012.Rmd")
-system("pandoc -s -S -t dzslides --slide-level=2 --mathjax rmflight_biomedCom_2012.md -o rmflight_biomedCom_2012.html")
+system("pandoc -s -S -t --self-contained dzslides --slide-level=2 --mathjax rmflight_biomedCom_2012.md -o rmflight_biomedCom_2012.html")

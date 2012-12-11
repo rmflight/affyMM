@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="888.50439"
+   height="304.04218"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.47 r22583"
+   version="1.0"
+   sodipodi:docname="dna_to_metabolites.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="C:\Documents and Settings\Ro\My Documents\My Pictures\artwork\dna_to_metabolites.png"
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend"
+       style="overflow:visible">
+      <path
+         id="path3193"
+         style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.97309,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Mend"
+       style="overflow:visible">
+      <path
+         id="path3181"
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.4,0,0,-0.4,-4,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleOutL"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="TriangleOutL"
+       style="overflow:visible">
+      <path
+         id="path3315"
+         d="M 5.77,0 L -2.88,5 L -2.88,-5 L 5.77,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="scale(0.8,0.8)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Send"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Send"
+       style="overflow:visible">
+      <path
+         id="path3187"
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.2,0,0,-0.2,-1.2,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend"
+       style="overflow:visible">
+      <path
+         id="path3175"
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
+    </marker>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     gridtolerance="10000"
+     guidetolerance="10"
+     objecttolerance="10"
+     inkscape:pageopacity="1"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="518.96582"
+     inkscape:cy="254.02742"
+     inkscape:document-units="px"
+     inkscape:current-layer="g2389"
+     showgrid="false"
+     inkscape:window-width="1276"
+     inkscape:window-height="874"
+     inkscape:window-x="32"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-30.066972,-163.22738)">
+    <g
+       id="g2389"
+       style="fill:none;stroke:#25179a;stroke-width:20.51308823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       transform="matrix(-0.1641296,-0.3493565,0.3029524,-0.1892698,59.364842,556.6709)">
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:16.21602821;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M -291.31164,2367.0649 C -291.31164,2367.0649 -196.34883,2109.8649 -280.6982,2038.0145 C -379.72367,1953.6627 -650.51122,2177.1779 -650.51122,2177.1779 L -669.87012,2190.2674"
+         id="path6626"
+         sodipodi:nodetypes="cscc"
+         inkscape:export-filename="C:\Documents and Settings\Ro\My Documents\My Pictures\artwork\dnatometabolites.png"
+         inkscape:export-xdpi="131.75999"
+         inkscape:export-ydpi="131.75999" />
+      <g
+         id="g3163"
+         transform="matrix(0.858138,-1.2563929e-2,-1.2563929e-2,0.8745219,160.01266,106.01574)"
+         style="stroke-width:22.07191849;stroke-miterlimit:4;stroke-dasharray:none"
+         inkscape:export-filename="C:\Documents and Settings\Ro\My Documents\My Pictures\artwork\dnatometabolites.png"
+         inkscape:export-xdpi="131.75999"
+         inkscape:export-ydpi="131.75999">
+        <path
+           style="fill:none;fill-rule:evenodd;stroke:#25179a;stroke-width:22.07191849;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="M 47.142857,323.57143 C 47.142857,323.57143 126.14452,417.27971 181.42857,416.42857 C 236.71262,415.57743 289.05737,314.09947 342.85714,313.57142 C 398.51102,313.02518 445.79586,432.34368 501.42857,430.71428 C 551.92929,429.23519 595.21548,323.68601 645.71428,322.14285 C 704.21483,320.35518 762.93061,434.01332 821.42857,432.14285"
+           id="path2385"
+           sodipodi:nodetypes="czssss" />
+        <path
+           style="fill:none;fill-rule:evenodd;stroke:#25179a;stroke-width:22.07191849;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="M 8.5714274,414.28669 C 8.5714274,414.28669 87.573091,310.57841 142.85714,311.42955 C 198.1412,312.28069 250.48595,415.18722 304.28572,415.71527 C 359.9396,416.26151 407.22444,305.51444 462.85715,307.14384 C 513.35787,308.62293 556.64406,414.17211 607.14286,415.71527 C 665.64341,417.50294 724.35919,303.8448 782.85715,305.71527"
+           id="path2387"
+           sodipodi:nodetypes="czssss" />
+      </g>
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:12.97282314;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 431.82098,608.42578 315.29526,823.51036 305.4202,841.73787"
+         id="path3167"
+         inkscape:export-filename="C:\Documents and Settings\Ro\My Documents\My Pictures\artwork\dnatometabolites.png"
+         inkscape:export-xdpi="131.75999"
+         inkscape:export-ydpi="131.75999"
+         sodipodi:nodetypes="ccc" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#f70e09;stroke-width:19.11869621;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M -125.90663,1065.8873 C -125.90663,1065.8873 -54.749111,975.96817 -7.4905917,977.41277 C 39.768018,978.85747 80.987079,1069.7331 126.98722,1070.8757 C 174.57263,1072.0576 218.84396,975.56717 266.37382,977.69847 C 309.51922,979.63307 342.89865,1072.711 386.04018,1074.7019 C 436.01769,1077.0082 490.16713,978.10997 540.13953,980.48887"
+         id="path6614"
+         sodipodi:nodetypes="czssss"
+         inkscape:export-filename="C:\Documents and Settings\Ro\My Documents\My Pictures\artwork\dnatometabolites.png"
+         inkscape:export-xdpi="131.75999"
+         inkscape:export-ydpi="131.75999" />
+      <path
+         style="fill:#c22b2b;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M -192.04417,2048.5529 C -148.71948,2107.2324 4.6426289,2014.8892 53.522016,1940.6489 C 108.63985,1856.9334 91.893797,1707.6679 65.066015,1624.2107 C 36.962104,1536.7838 -38.309148,1424.5518 -122.15159,1410.9158 C -209.80827,1396.6594 -365.50997,1459.8048 -423.67884,1553.0403 C -479.43297,1642.4053 -475.19318,1812.0471 -425.67687,1883.2553 C -406.02351,1911.5183 -351.63717,1920.0164 -316.5799,1907.9399 C -263.61727,1889.6953 -264.929,1794.213 -214.44703,1769.6567 C -174.19272,1750.0756 -109.86161,1773.8853 -99.018747,1858.0073 C -87.920887,1944.1077 -216.93765,2014.8368 -192.04417,2048.5529 z"
+         id="path6616"
+         sodipodi:nodetypes="csssssssss"
+         inkscape:export-filename="C:\Documents and Settings\Ro\My Documents\My Pictures\artwork\dnatometabolites.png"
+         inkscape:export-xdpi="131.75999"
+         inkscape:export-ydpi="131.75999" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:12.97282314;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 127.67061,1177.3781 11.14488,1392.4627 -0.02747633,1413.0848"
+         id="path6618"
+         inkscape:export-filename="C:\Documents and Settings\Ro\My Documents\My Pictures\artwork\dnatometabolites.png"
+         inkscape:export-xdpi="131.75999"
+         inkscape:export-ydpi="131.75999"
+         sodipodi:nodetypes="ccc" />
+      <path
+         sodipodi:type="arc"
+         style="opacity:1;fill:#00d400;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:4.80000019;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="path6620"
+         sodipodi:cx="899.28571"
+         sodipodi:cy="248.57143"
+         sodipodi:rx="47.857143"
+         sodipodi:ry="43.57143"
+         d="m 946.88989,253.04542 c -2.71396,23.93664 -26.22718,41.33805 -52.51824,38.86713 -26.29107,-2.47092 -45.40409,-23.87848 -42.69013,-47.81512 2.71396,-23.93664 26.22718,-41.33804 52.51824,-38.86713 26.28622,2.47047 45.39801,23.87095 42.69141,47.80382"
+         transform="matrix(-0.9904816,1.8282429,-1.7050537,-0.9237418,960.43589,1064.7222)"
+         sodipodi:start="0.10286312"
+         sodipodi:end="6.3857876"
+         sodipodi:open="true"
+         inkscape:export-filename="C:\Documents and Settings\Ro\My Documents\My Pictures\artwork\dnatometabolites.png"
+         inkscape:export-xdpi="131.75999"
+         inkscape:export-ydpi="131.75999" />
+      <path
+         sodipodi:type="star"
+         style="opacity:1;fill:#ff0000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:4.80000019;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="path6622"
+         sodipodi:sides="5"
+         sodipodi:cx="380"
+         sodipodi:cy="523.57141"
+         sodipodi:r1="42.976025"
+         sodipodi:r2="34.768333"
+         sodipodi:arg1="0.37433362"
+         sodipodi:arg2="1.0026521"
+         inkscape:flatsided="true"
+         inkscape:rounded="0"
+         inkscape:randomized="0"
+         d="m 420,539.2857 -42.58449,27.18395 -39.01281,-32.09995 18.47325,-47.02282 50.4299,3.03825 L 420,539.2857 z"
+         transform="matrix(-1.092056,2.0157302,-1.8133545,-0.9824156,608.89628,2070.8952)"
+         inkscape:export-filename="C:\Documents and Settings\Ro\My Documents\My Pictures\artwork\dnatometabolites.png"
+         inkscape:export-xdpi="131.75999"
+         inkscape:export-ydpi="131.75999" />
+      <text
+         xml:space="preserve"
+         style="font-size:75.67480469px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Calibri;-inkscape-font-specification:Calibri"
+         x="117.54539"
+         y="-241.84419"
+         id="text7187"
+         sodipodi:linespacing="125%"
+         transform="matrix(-0.5115341,0.9441958,-0.8187808,-0.4435884,0,0)"
+         inkscape:export-filename="C:\Documents and Settings\Ro\My Documents\My Pictures\artwork\dnatometabolites.png"
+         inkscape:export-xdpi="131.75999"
+         inkscape:export-ydpi="131.75999"><tspan
+           sodipodi:role="line"
+           id="tspan7189"
+           x="117.54539"
+           y="-241.84419">DNA</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:75.67480469px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Calibri;-inkscape-font-specification:Calibri"
+         x="743.02075"
+         y="-241.84422"
+         id="text7191"
+         sodipodi:linespacing="125%"
+         transform="matrix(-0.5115341,0.9441958,-0.8187808,-0.4435884,0,0)"
+         inkscape:export-filename="C:\Documents and Settings\Ro\My Documents\My Pictures\artwork\dnatometabolites.png"
+         inkscape:export-xdpi="131.75999"
+         inkscape:export-ydpi="131.75999"><tspan
+           sodipodi:role="line"
+           id="tspan7193"
+           x="743.02075"
+           y="-241.84422">mRNA</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:75.67480469px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Calibri;-inkscape-font-specification:Calibri"
+         x="1484.325"
+         y="-242.35097"
+         id="text7195"
+         sodipodi:linespacing="125%"
+         transform="matrix(-0.5115341,0.9441958,-0.8187808,-0.4435884,0,0)"
+         inkscape:export-filename="C:\Documents and Settings\Ro\My Documents\My Pictures\artwork\dnatometabolites.png"
+         inkscape:export-xdpi="131.75999"
+         inkscape:export-ydpi="131.75999"><tspan
+           sodipodi:role="line"
+           id="tspan7197"
+           x="1484.325"
+           y="-242.35097">Protein</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:75.67480469px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Calibri;-inkscape-font-specification:Calibri"
+         x="2071.1907"
+         y="-242.35097"
+         id="text7199"
+         sodipodi:linespacing="125%"
+         transform="matrix(-0.5115341,0.9441958,-0.8187808,-0.4435884,0,0)"
+         inkscape:export-filename="C:\Documents and Settings\Ro\My Documents\My Pictures\artwork\dnatometabolites.png"
+         inkscape:export-xdpi="131.75999"
+         inkscape:export-ydpi="131.75999"><tspan
+           sodipodi:role="line"
+           id="tspan7201"
+           x="2071.1907"
+           y="-242.35097">Metabolites</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:59.45877075px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Calibri;-inkscape-font-specification:Calibri"
+         x="426.42212"
+         y="-786.63379"
+         id="text7203"
+         sodipodi:linespacing="125%"
+         transform="matrix(-0.5115341,0.9441958,-0.8187808,-0.4435884,0,0)"
+         inkscape:export-filename="C:\Documents and Settings\Ro\My Documents\My Pictures\artwork\dnatometabolites.png"
+         inkscape:export-xdpi="131.75999"
+         inkscape:export-ydpi="131.75999"><tspan
+           sodipodi:role="line"
+           id="tspan7205"
+           x="426.42212"
+           y="-786.63379">Transcription</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:59.45877075px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Calibri;-inkscape-font-specification:Calibri"
+         x="1027.1868"
+         y="-780.56866"
+         id="text7207"
+         sodipodi:linespacing="125%"
+         transform="matrix(-0.5115341,0.9441958,-0.8187808,-0.4435884,0,0)"
+         inkscape:export-filename="C:\Documents and Settings\Ro\My Documents\My Pictures\artwork\dnatometabolites.png"
+         inkscape:export-xdpi="131.75999"
+         inkscape:export-ydpi="131.75999"><tspan
+           sodipodi:role="line"
+           id="tspan7209"
+           x="1027.1868"
+           y="-780.56866">Translation</tspan></text>
+    </g>
+  </g>
+</svg>
