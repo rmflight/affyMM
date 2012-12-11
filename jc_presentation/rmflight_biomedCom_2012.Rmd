@@ -667,7 +667,7 @@ tmVmm <- corOut[(corOut$'Probe ID' %in% isExonNames), c('tm','mm')]
 sessionInfo()
 ```
 
-## Types of Alignments
+## ProbeSet Classes
 
 Which types of PM probes align to multiple locations?
 
@@ -726,6 +726,7 @@ for (iOrg in 1:nOrg){
 typeCounts <- cbind(translationTable[,"Organism"], typeCounts)
 typeCounts <- as.data.frame(typeCounts)
 names(typeCounts)[1] <- "Organism"
+typeCounts <- typeCounts[, c("Organism", "_at", "_a_at", "_s_at", "_x_at")]
 # note: Eric gets 29 "other" probes for Ce here, and I think it is because he is counting control probes as other
 ```
 
