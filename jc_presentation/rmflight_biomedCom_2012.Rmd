@@ -258,7 +258,7 @@ print(xtable(chipTable), type = 'html', html.table.attributes = 'style="border-s
 
 ## Microarray Data
 
-- random data from gene expression omnibus (GEO)
+- Random data from gene expression omnibus (GEO)
 - 20 random CEL files for each organism
     - Only 4 for *X. tropicalis*, 12 for Yeast
     
@@ -313,9 +313,9 @@ print(g)
 
 ## Comparison of PM and MM Signals
 
-- MM probes generally show lower signal intensity
-- MM probes in exons tend toward the signal of PM probes in exons
-- Although few in number, these would confound any analysis depending on PM - MM
+- MM generally show lower signal than PM
+- MM in exons **trend** toward the signal of PM in exons
+- These would confound any analysis depending on PM - MM
 
 ## PM MM Negative Difference
 
@@ -641,7 +641,7 @@ tmVmm <- corOut[(corOut$'Probe ID' %in% isExonNames), c('tm','mm')]
 
 - MM probes **theoretically** capture non-specific binding
 - Small percentage appear able to capture true transcriptional events
-- Therefore, custom CDF workflows should include the MM probe sequences
+- Therefore, custom probeset workflows should include the MM probe sequences
     - `Bowtie` makes this lightning fast compared to `Blat`
 
 ## Tools Used
