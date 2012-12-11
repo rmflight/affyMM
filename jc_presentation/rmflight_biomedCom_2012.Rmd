@@ -595,11 +595,10 @@ typeCounts$Organism <- paste("*", typeCounts$Organism, "*", sep="")
 print(xtable(typeCounts), type = 'html', html.table.attributes = 'style="font-size:70%; text-align:left; border-spacing:20px 5px;"', include.rownames=FALSE)
 ```
 
-# Variation
 
-## Data
+## Variation
 
-- Five human genome assemblies
+- Align PM to five human genome assemblies
 
 ```{r humanGenomes, echo=FALSE, results='asis'}
 hNames <- c("GRCh37", "HS_Celera_WGSA", "HuRefPrime", "BIGAF", "HsapALLPATHS1")
