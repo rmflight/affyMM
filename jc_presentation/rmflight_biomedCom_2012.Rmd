@@ -712,12 +712,15 @@ tmVmm <- corOut[(corOut$'Probe ID' %in% isExonNames), c('tm','mm')]
 - `r I(sum(tmVmm["tm"] >= tmVmm["mm"]))` show higher correlation with TM than MM
 
 
-## Useful!!
+## Summary
 
-- MM probes **theoretically** capture non-specific binding
-- Small percentage appear able to capture true transcriptional events
-- Therefore, custom probeset workflows should include the MM probe sequences
-    - `Bowtie` makes this lightning fast compared to `Blat`
+- MM probes 
+    - Small percentage appear able to capture **true** transcriptional events
+    - Therefore, custom probeset workflows should include the MM probe sequences
+- PM probes don't necessarily align as expected
+- Probe alignment varies depending on genome build
+
+## Questions??
 
 ## Tools Used
 
@@ -729,12 +732,12 @@ tmVmm <- corOut[(corOut$'Probe ID' %in% isExonNames), c('tm','mm')]
 - Source code on Github
     - github.com/rmflight/affyMM
 
-- Draft publication on Github
+- Draft report on Github
     - rmflight.github.com/affyMM
     - rmflight.github.com/affyMM/presentation.html
     
     
-## Questions??
+
     
 ## Session Info
 
