@@ -1,6 +1,6 @@
 % Affymetrix MisMatch (MM) Probes: </br> Useful After All
 % Robert M Flight; Abdallah Eteleeb; Eric C Rouchka
-% 17/10/12
+% 14/12/12
 
 ```{r knitrSetup, include=FALSE}
 #opts_chunk$set(cache=TRUE)
