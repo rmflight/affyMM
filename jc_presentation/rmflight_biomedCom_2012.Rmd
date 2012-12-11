@@ -188,7 +188,7 @@ cat(paste("pm ", pmSeq, sep="", collapse=""), paste("mm ", mmSeq, sep="", collap
     - Align to genome
 
 
-# MM Probe Alignment
+## MM Probe Alignment
 
 - Compare 
     - Alignment of PM and MM probes to genome
