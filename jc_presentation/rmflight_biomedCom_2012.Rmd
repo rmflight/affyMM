@@ -719,6 +719,12 @@ tmVmm <- corOut[(corOut$'Probe ID' %in% isExonNames), c('tm','mm')]
 - PM probes don't necessarily align as expected
 - Probe alignment varies depending on genome build
 
+## Acknowledgements
+
+- National Institutes of Health (NIH) grant 8P20GM103436-12
+- University of Louisville Bioinformatics Lab
+    - bioinformatics.louisville.edu
+
 ## Questions??
 
 ## Tools Used
