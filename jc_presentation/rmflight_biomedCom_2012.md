@@ -12,6 +12,10 @@
 
 
 
+## 
+
+<img src="figure/permissions.svg"/>
+
 ## Transcriptomics
 
 <img src="figure/dna_processing.svg" width="750"/>
@@ -126,7 +130,7 @@ pm CACCCAGCTGGT<font color="#0000FF">C</font>CTGTGGATGGGA</br>mm CACCCAGCTGGT<fo
 
 
 <!-- html table generated in R 2.15.1 by xtable 1.7-0 package -->
-<!-- Wed Dec 12 08:38:41 2012 -->
+<!-- Thu Dec 13 21:38:40 2012 -->
 <TABLE style="border-spacing:20px 5px;">
 <TR> <TH> Organism </TH> <TH> Reference Assembly </TH> <TH> Build Date </TH>  </TR>
   <TR> <TD> *C elegans* </TD> <TD> ce6 </TD> <TD> May 2008 </TD> </TR>
@@ -146,7 +150,7 @@ pm CACCCAGCTGGT<font color="#0000FF">C</font>CTGTGGATGGGA</br>mm CACCCAGCTGGT<fo
 
 
 <!-- html table generated in R 2.15.1 by xtable 1.7-0 package -->
-<!-- Wed Dec 12 08:38:41 2012 -->
+<!-- Thu Dec 13 21:38:40 2012 -->
 <TABLE style="border-spacing:20px 5px;">
 <TR> <TH> Organism </TH> <TH> GeneChip </TH>  </TR>
   <TR> <TD> *C elegans* </TD> <TD> C. elegans Genome </TD> </TR>
@@ -183,7 +187,7 @@ pm CACCCAGCTGGT<font color="#0000FF">C</font>CTGTGGATGGGA</br>mm CACCCAGCTGGT<fo
 
 
 <!-- html table generated in R 2.15.1 by xtable 1.7-0 package -->
-<!-- Wed Dec 12 08:38:41 2012 -->
+<!-- Thu Dec 13 21:38:40 2012 -->
 <TABLE style="font-size:70%; text-align:left; border-spacing:20px 5px;">
 <TR> <TH> Organism </TH> <TH> Number of Probe Pairs </TH> <TH> PM Mapped to Reference </TH> <TH> MM Mapped to Reference </TH> <TH> PM Unique </TH> <TH> MM Unique </TH>  </TR>
   <TR> <TD> *Ce* </TD> <TD align="right"> 249165 </TD> <TD align="right"> 226856 </TD> <TD align="right"> 143 </TD> <TD align="right"> 213745 </TD> <TD align="right">  96 </TD> </TR>
@@ -251,7 +255,7 @@ Signal density for all probes and those that align to known exons.
 
 
 <!-- html table generated in R 2.15.1 by xtable 1.7-0 package -->
-<!-- Wed Dec 12 08:39:15 2012 -->
+<!-- Thu Dec 13 21:39:24 2012 -->
 <TABLE style="font-size:50%; text-align:left; border-spacing:20px 5px;">
 <TR> <TH> tm </TH> <TH> mm </TH> <TH> Annotated RefSeq </TH> <TH> Exon RefSeq </TH> <TH> Annotated Symbol </TH> <TH> Exon Symbol </TH>  </TR>
   <TR> <TD align="right"> 0.87 </TD> <TD align="right"> 0.53 </TD> <TD> NM_001164750, NM_001164751, NM_001164752, NM_001164753, NM_001164754, NM_001164755, NM_001164756, NM_004318, NM_020164, NM_032466, NM_032467, NM_032468 </TD> <TD> NM_032466, NM_032468, NM_001164755, NM_001164754, NM_001164753, NM_001164752, NM_001164751 </TD> <TD> ASPH </TD> <TD> ASPH </TD> </TR>
@@ -283,7 +287,7 @@ Which types of PM probes align to multiple locations?
 
 
 <!-- html table generated in R 2.15.1 by xtable 1.7-0 package -->
-<!-- Wed Dec 12 08:39:18 2012 -->
+<!-- Thu Dec 13 21:39:27 2012 -->
 <TABLE style="font-size:70%; text-align:left; border-spacing:20px 5px;">
 <TR> <TH> Organism </TH> <TH> _at </TH> <TH> _a_at </TH> <TH> _s_at </TH> <TH> _x_at </TH>  </TR>
   <TR> <TD> *Ce* </TD> <TD> 2465 (19%) </TD> <TD> 0 (0%) </TD> <TD> 6416 (49%) </TD> <TD> 4040 (31%) </TD> </TR>
@@ -303,7 +307,7 @@ Which types of PM probes align to multiple locations?
 - Align PM to five human genome assemblies
 
 <!-- html table generated in R 2.15.1 by xtable 1.7-0 package -->
-<!-- Wed Dec 12 08:39:18 2012 -->
+<!-- Thu Dec 13 21:39:27 2012 -->
 <TABLE style="font-size:90%; text-align:left; border-spacing:20px 5px;">
 <TR> <TH> Name </TH> <TH> Abbr </TH> <TH> Assembly </TH> <TH> Bioproject </TH> <TH> Race </TH>  </TR>
   <TR> <TD> GRCh37 </TD> <TD> Hg19 </TD> <TD> 420368 </TD> <TD> 31257 </TD> <TD> Mixed </TD> </TR>
@@ -317,7 +321,7 @@ Which types of PM probes align to multiple locations?
 ## Mapping Differences
 
 <!-- html table generated in R 2.15.1 by xtable 1.7-0 package -->
-<!-- Wed Dec 12 08:39:48 2012 -->
+<!-- Thu Dec 13 21:40:00 2012 -->
 <TABLE style="border-spacing:20px 5px;">
 <TR> <TH> Assembly </TH> <TH> Total </TH> <TH> Perfect Match </TH> <TH> Mismatch </TH>  </TR>
   <TR> <TD> Hg19 </TD> <TD align="right"> 522250 </TD> <TD align="right"> 521642 </TD> <TD align="right"> 608 </TD> </TR>
@@ -356,7 +360,7 @@ Which types of PM probes align to multiple locations?
 - University of Louisville Bioinformatics Lab
     - bioinformatics.louisville.edu
 
-## Questions??
+# Questions??
 
 ## Tools Used
 

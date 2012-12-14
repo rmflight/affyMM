@@ -56,6 +56,10 @@ require(xtable)
 load("../counts_Plots_etc_allOrgs.RData")
 ```
 
+## 
+
+<img src="figure/permissions.svg"/>
+
 ## Transcriptomics
 
 <img src="figure/dna_processing.svg" width="750"/>
@@ -725,7 +729,7 @@ tmVmm <- corOut[(corOut$'Probe ID' %in% isExonNames), c('tm','mm')]
 - University of Louisville Bioinformatics Lab
     - bioinformatics.louisville.edu
 
-## Questions??
+# Questions??
 
 ## Tools Used
 
